@@ -98,6 +98,7 @@ function renderNext(gig, today) {
 // Show or hide the upcoming gigs section (it starts hidden).
 function showGigs(open, scroll = true) {
   const section = document.getElementById("gigs");
+  if (open) setView("list");  // always opens on the list
   section.hidden = !open;
   const btn = document.getElementById("toggle-gigs");
   if (btn) {
@@ -227,14 +228,16 @@ function renderCalendar() {
   }
 }
 
+function setView(view) {
+  document.querySelectorAll(".view-switch button")
+    .forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === view)));
+  document.getElementById("upcoming").hidden = view !== "list";
+  document.getElementById("cal").hidden = view !== "calendar";
+}
+
 function setupViewSwitch() {
-  const buttons = document.querySelectorAll(".view-switch button");
-  buttons.forEach(btn => btn.addEventListener("click", () => {
-    const view = btn.dataset.view;
-    buttons.forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
-    document.getElementById("upcoming").hidden = view !== "list";
-    document.getElementById("cal").hidden = view !== "calendar";
-  }));
+  document.querySelectorAll(".view-switch button")
+    .forEach(btn => btn.addEventListener("click", () => setView(btn.dataset.view)));
 }
 
 async function loadGigs() {
