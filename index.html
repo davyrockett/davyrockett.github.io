@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>davyrockett · live music in San Diego</title>
+  <meta name="description" content="davyrockett: singer, songwriter and one-man band. Upcoming gigs, music, videos and booking.">
+  <meta property="og:title" content="davyrockett">
+  <meta property="og:description" content="Upcoming gigs, music, videos and booking.">
+  <meta property="og:image" content="images/live.jpg">
+  <link rel="icon" href="images/figure.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Questrial&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="davyrockett home"><img src="images/logo.png" alt="davyrockett" width="522" height="115"></a>
+    <nav>
+      <a href="#gigs">gigs</a>
+      <a href="#music">music</a>
+      <a href="#video">video</a>
+      <a href="#bio">bio</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-art" aria-hidden="true">
+        <p class="vertical-logo">davy<span>r</span>ockett</p>
+        <img src="images/figure.png" alt="" width="516" height="612">
+      </div>
+      <div class="next-gig" id="next-gig" aria-live="polite">
+        <div class="eyebrow">next gig</div>
+        <div class="when">&nbsp;</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="gigs" class="gigs">
+    <div class="wrap">
+      <h2>upcoming gigs</h2>
+      <ul class="gig-list" id="upcoming"></ul>
+      <p class="subscribe">
+        Never miss a show: add these gigs to
+        <a id="sub-google" href="#">Google Calendar</a> or
+        <a id="sub-ical" href="#">Apple / other calendars</a>.
+      </p>
+
+      <div class="past" id="past" hidden>
+        <h3>past gigs</h3>
+        <p class="stat" id="past-stat"></p>
+        <div id="past-years"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="music" class="music">
+    <div class="wrap">
+      <h2>music</h2>
+      <div class="albums">
+        <div class="album">
+          <a class="cover" href="https://www.amazon.com/untandem-Explicit-David-Ryan-Norgren/dp/B004Y8XMTA" target="_blank" rel="noopener">
+            <img src="images/untandem.jpg" alt="untandem… album cover" width="800" height="800" loading="lazy">
+          </a>
+          <div>
+          <h3>untandem…</h3>
+          <a class="buy" href="https://www.amazon.com/untandem-Explicit-David-Ryan-Norgren/dp/B004Y8XMTA" target="_blank" rel="noopener">Get the album on Amazon</a>
+          </div>
+          <ul class="tracks">
+            <li class="track" data-src="music/spent.m4a" data-name="Spent"></li>
+            <li class="track" data-src="music/old-timey.m4a" data-name="Old Timey"></li>
+          </ul>
+        </div>
+        <div class="album">
+          <a class="cover" href="https://www.amazon.com/Love-Lonely-Explicit-David-Norgren/dp/B00BCJEXSI" target="_blank" rel="noopener">
+            <img src="images/love-and-lonely.jpg" alt="love &amp; lonely album cover" width="800" height="800" loading="lazy">
+          </a>
+          <div>
+          <h3>love &amp; lonely</h3>
+          <a class="buy" href="https://www.amazon.com/Love-Lonely-Explicit-David-Norgren/dp/B00BCJEXSI" target="_blank" rel="noopener">Get the album on Amazon</a>
+          </div>
+          <ul class="tracks">
+            <li class="track" data-src="music/love-and-lonely.m4a" data-name="Love and Lonely"></li>
+            <li class="track" data-src="music/miranda.m4a" data-name="Miranda"></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="video" class="video">
+    <div class="wrap">
+      <h2>video</h2>
+      <div class="videos">
+        <figure class="vid" data-id="9X2zRvnam9s"><figcaption>davyrockett reel</figcaption></figure>
+        <figure class="vid" data-id="jb20GdQDYV0"><figcaption>Dancing in the Dark at Koi Zen</figcaption></figure>
+        <figure class="vid" data-id="XCoCTi0VZfg"><figcaption>Uptown Funk at Brew Bar</figcaption></figure>
+        <figure class="vid" data-id="2eL2wYj4M9w"><figcaption>Guitar Medley at Brew Bar</figcaption></figure>
+        <figure class="vid" data-id="hyH4ro0EBAk"><figcaption>Zoot Suit Riot at Whiskey Girl</figcaption></figure>
+        <figure class="vid" data-id="n_TUrSrVx_A"><figcaption>Folsom Prison Blues at Whiskey Girl</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="bio" class="bio">
+    <div class="wrap">
+      <div>
+        <h2>bio</h2>
+        <p>Emerging quietly yet powerfully from behind the soundboard comes davyrockett, a renowned artist representing</p>
+        <blockquote>
+          “…a new breed of one-man-band; one that prefers the studio to street corners… taking almost sole responsibility for the music he makes, writing and arranging everything, and playing an array of instruments.”
+          <cite>Phil S., Leicester Bangs (UK)</cite>
+        </blockquote>
+        <p>rockett is a frequent face among theatre and orchestra groups throughout the west coast, and counts many of the leading songwriters in the thriving southern California music scene as his friends and fans.</p>
+        <p>Growing up in a town just outside of Denver, Colorado, davyrockett took to music at a young age and grew an interest in most every instrument available to him. His drive and ambition led him to California, where he studied voice and composition at the university level, earning a BM in music and finding a welcoming community. After college he went to work in the recording studio of a major music publishing company, getting to know the industry’s top players and engineers. Along the way he slowly built a studio of his own, where he recorded his first two full-length albums, <em>untandem…</em> and <em>love &amp; lonely</em>. Both received notice from critics and music lovers throughout the nation.</p>
+        <blockquote>
+          “…intrigue and inspire his listeners. He’s Jason Mraz meets Ben Folds meets Shara Worden, but so much more… choosing instrumentation not only for the sounds made, but for the landscape and emotion they adorn.”
+          <cite>Andrew Thams, The Troubadour (US)</cite>
+        </blockquote>
+        <p>His newest music draws inspiration from love, love lost, hardship, and sometimes triumph. He’s constantly exploring the full extent of his musical knowledge and the potential for sound on all avenues.</p>
+      </div>
+      <img class="bio-photo" src="images/davy-guitar.png" alt="davyrockett playing acoustic guitar" width="480" height="800" loading="lazy">
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <h2>booking &amp; contact</h2>
+      <p class="muted">Restaurants, breweries, private parties and events. Get in touch:</p>
+      <a class="email" href="mailto:bookrockett@gmail.com">bookrockett@gmail.com</a>
+      <div class="social">
+        <a href="https://www.facebook.com/drnrockett/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg>
+          Facebook
+        </a>
+        <a href="https://www.youtube.com/channel/UCaC_6eV6p68mARrJ4yp2RQw" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+          YouTube
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© davyrockett</span>
+    <a href="promo-materials/">Press kit &amp; promo materials</a>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

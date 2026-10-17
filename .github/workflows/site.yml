@@ -1,0 +1,69 @@
+name: Update gigs and publish site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "12 * * * *"   # every hour
+  workflow_dispatch:       # "Run workflow" button on GitHub
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: site
+  cancel-in-progress: false
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Read the Google Calendar
+        run: |
+          pip install --quiet icalendar recurring-ical-events
+          python tools/sync_gigs.py
+
+      - name: Save gig changes
+        id: save
+        run: |
+          git config user.name "gig calendar"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet gigs.json; then
+            git add gigs.json
+            git commit -m "Update gigs from Google Calendar"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif [ $(( $(date +%s) - $(git log -1 --format=%ct) )) -gt 2592000 ]; then
+            # GitHub pauses hourly jobs in repos with no commits for 60 days; a monthly note keeps it running.
+            date -u +%F > .keepalive
+            git add .keepalive
+            git commit -m "Monthly keep-alive for the hourly gig check"
+            git push
+          fi
+
+      - name: Prepare site
+        if: github.event_name != 'schedule' || steps.save.outputs.changed == 'true'
+        run: |
+          mkdir _site
+          cp -R index.html styles.css site.js gigs.json images music promo-materials portfolio _site/
+          [ -f CNAME ] && cp CNAME _site/ || true
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'schedule' || steps.save.outputs.changed == 'true'
+        with:
+          path: _site
+
+      - uses: actions/deploy-pages@v4
+        id: deploy
+        if: github.event_name != 'schedule' || steps.save.outputs.changed == 'true'
