@@ -359,47 +359,7 @@ function setupVideos() {
   });
 }
 
-/* ---------- Parallax backgrounds ---------- */
-
-// Each .parallax-bg layer moves at 20% of the scroll speed, like the old Wix site, and sits
-// in its normal place when its section is centred on screen. Photo backgrounds are made taller
-// than their section so their edges never show while they move.
-const PARALLAX = 0.2;
-
-function setupParallax() {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const layers = [...document.querySelectorAll(".parallax-bg")];
-  let ticking = false;
-
-  const size = () => {
-    for (const layer of layers) {
-      if (layer.classList.contains("music-figure")) continue;
-      const extra = Math.ceil(PARALLAX * (innerHeight + layer.parentElement.offsetHeight) / 2) + 2;
-      layer.style.top = `${-extra}px`;
-      layer.style.bottom = `${-extra}px`;
-    }
-    update();
-  };
-  const update = () => {
-    ticking = false;
-    for (const layer of layers) {
-      const box = layer.parentElement.getBoundingClientRect();
-      if (box.top > innerHeight || box.bottom < 0) continue;  // off screen
-      const offset = (box.top + box.height / 2 - innerHeight / 2) * PARALLAX;
-      layer.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
-    }
-  };
-  addEventListener("scroll", () => {
-    if (!ticking) { ticking = true; requestAnimationFrame(update); }
-  }, { passive: true });
-  addEventListener("resize", size);
-  // Sections move when the gig list opens or closes.
-  new ResizeObserver(size).observe(document.body);
-  size();
-}
-
 setupViewSwitch();
 loadGigs();
 setupTracks();
 setupVideos();
-setupParallax();

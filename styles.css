@@ -280,40 +280,6 @@ section { padding: 72px 0; }
 
 /* ---------- Music ---------- */
 .music { background: var(--dark); color: #F4EEE7; }
-
-/* Parallax backgrounds (like the old Wix site): site.js moves the layer at 20% of scroll speed. */
-.music, .video { position: relative; overflow: hidden; }
-.music > .wrap, .video > .wrap { position: relative; z-index: 1; }
-.parallax-bg {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  will-change: transform;
-}
-.parallax-bg img { width: 100%; height: 100%; }
-.video-photo img { object-fit: cover; }
-.video-photo::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(rgba(30, 26, 23, .82), rgba(30, 26, 23, .9));
-}
-.music-figure {
-  left: auto;
-  top: auto;
-  bottom: 0;
-  right: max(0px, calc((100% - var(--wrap)) / 2));
-  width: 300px;
-  height: 92%;
-}
-.music-figure img { object-fit: contain; object-position: bottom center; }
-.music .albums { max-width: calc(100% - 300px); }
-@media (max-width: 1099px) {
-  .music-figure { display: none; }
-  .music .albums { max-width: none; }
-}
 .music h2 { color: #fff; }
 .albums {
   display: grid;
@@ -375,7 +341,9 @@ section { padding: 72px 0; }
 
 /* ---------- Video ---------- */
 .video {
-  background: #1E1A17;
+  background:
+    linear-gradient(rgba(30, 26, 23, .82), rgba(30, 26, 23, .9)),
+    url("images/live.jpg") center / cover;
   color: #fff;
 }
 .video h2 { color: #fff; }
@@ -413,7 +381,12 @@ section { padding: 72px 0; }
 .vid figcaption { margin-top: 8px; font-size: .95rem; color: #E6DED5; }
 
 /* ---------- Bio ---------- */
-.bio .wrap { max-width: 800px; margin-left: max(0px, calc((100% - var(--wrap)) / 2)); }
+.bio .wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: start;
+}
 .bio p { margin: 0 0 1.1em; }
 .bio blockquote {
   margin: 0 0 1.4em;
@@ -424,6 +397,7 @@ section { padding: 72px 0; }
   line-height: 1.5;
 }
 .bio blockquote cite { display: block; font-family: var(--body); font-style: normal; color: var(--grey); font-size: .9rem; margin-top: 4px; }
+.bio-photo { position: sticky; top: 90px; }
 
 /* ---------- Contact ---------- */
 .contact { background: var(--card); border-top: 1px solid var(--line); text-align: center; }
@@ -481,8 +455,9 @@ footer a { color: var(--grey); }
   .hero-art img { width: 52%; }
   .next-gig { padding: 22px; min-height: 0; }
   .next-gig .when { font-size: 1.7rem; }
-  .albums, .videos, .press .item { grid-template-columns: 1fr; }
+  .albums, .videos, .bio .wrap, .press .item { grid-template-columns: 1fr; }
   .videos { gap: 26px; }
+  .bio-photo { position: static; max-width: 240px; margin: 0 auto; }
   .album { grid-template-columns: 120px 1fr; }
   .cal-day { min-height: 48px; align-items: center; justify-content: center; padding: 4px 0; }
   .cal-day .venue { display: none; }
