@@ -36,10 +36,11 @@ def main():
     with urllib.request.urlopen(FEED_URL, timeout=60) as response:
         cal = icalendar.Calendar.from_ical(response.read())
 
-    # Expand repeating events (weekly residencies etc.) from the first gig until two years ahead.
-    end = date.today() + timedelta(days=730)
+    # Only gigs from yesterday on (the website shows upcoming gigs), with repeating events
+    # (weekly residencies etc.) expanded up to two years ahead.
+    today = datetime.now(TZ).date()
     gigs = []
-    for event in recurring_ical_events.of(cal).between(date(2000, 1, 1), end):
+    for event in recurring_ical_events.of(cal).between(today - timedelta(days=1), today + timedelta(days=730)):
         if str(event.get("STATUS", "")).upper() == "CANCELLED":
             continue
         start, all_day = local(event.decoded("DTSTART"))

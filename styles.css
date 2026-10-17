@@ -131,13 +131,113 @@ section { padding: 72px 0; }
 .next-gig .more {
   display: inline-block;
   margin-top: 18px;
-  font-family: var(--head);
-  text-decoration: none;
+  padding: 0 0 2px;
+  background: none;
+  border: 0;
   border-bottom: 2px solid var(--orange);
+  font: 1rem var(--head);
   color: var(--ink);
+  cursor: pointer;
 }
+.next-gig .more:hover { color: var(--orange-dark); }
 
 /* ---------- Gigs ---------- */
+.gigs { padding-top: 24px; }
+.gigs-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.view-switch {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  padding: 3px;
+}
+.view-switch button {
+  border: 0;
+  background: none;
+  border-radius: 999px;
+  padding: 6px 16px;
+  font: 700 .95rem var(--body);
+  color: var(--grey);
+  cursor: pointer;
+}
+.view-switch button[aria-pressed="true"] { background: var(--orange); color: #fff; }
+
+.cal { max-width: 720px; }
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.cal-title { font-family: var(--head); font-size: 1.4rem; }
+.cal-nav {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--ink);
+  cursor: pointer;
+}
+.cal-nav:disabled { opacity: .3; cursor: default; }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--grey);
+  padding: 4px 0;
+}
+.cal-day {
+  min-height: 74px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 5px 6px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+.cal-day.blank { background: none; border-color: transparent; }
+.cal-day.past { color: #B5ADA4; background: none; }
+.cal-day .num { font-size: .9rem; }
+.cal-day.is-today .num { color: var(--orange-dark); font-weight: 700; }
+.cal-day.has-gig {
+  cursor: pointer;
+  background: #FCE9DF;
+  border-color: #F2C3AA;
+}
+.cal-day.has-gig .num { font-weight: 700; }
+.cal-day .venue {
+  font-size: .75rem;
+  line-height: 1.2;
+  color: var(--orange-dark);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cal-day.selected { background: var(--orange); border-color: var(--orange); color: #fff; }
+.cal-day.selected .venue, .cal-day.selected .num { color: #fff; }
+.cal-detail { margin-top: 16px; min-height: 92px; }
+.cal-hint { list-style: none; color: var(--grey); padding: 14px 0; }
 .gig-list { list-style: none; margin: 0; padding: 0; }
 .gig {
   display: grid;
@@ -177,36 +277,6 @@ section { padding: 72px 0; }
   color: var(--grey);
 }
 .subscribe { margin-top: 22px; font-size: .95rem; color: var(--grey); }
-
-.past { margin-top: 56px; }
-.past h3 { font-size: 1.4rem; margin-bottom: 4px; text-transform: lowercase; }
-.past .stat { color: var(--grey); margin: 0 0 16px; }
-.past details {
-  border-top: 1px solid var(--line);
-}
-.past details:last-of-type { border-bottom: 1px solid var(--line); }
-.past summary {
-  cursor: pointer;
-  padding: 12px 0;
-  font-family: var(--head);
-  font-size: 1.15rem;
-  display: flex;
-  justify-content: space-between;
-  list-style: none;
-}
-.past summary::-webkit-details-marker { display: none; }
-.past summary::after { content: "+"; color: var(--orange); font-size: 1.3rem; line-height: 1; }
-.past details[open] summary::after { content: "–"; }
-.past summary .count { color: var(--grey); font-size: .95rem; margin-left: auto; margin-right: 16px; }
-.past ul {
-  list-style: none;
-  padding: 0 0 14px;
-  margin: 0;
-  columns: 2;
-  column-gap: 32px;
-}
-.past li { break-inside: avoid; padding: 3px 0; font-size: .95rem; }
-.past li .d { color: var(--grey); display: inline-block; min-width: 5.2em; }
 
 /* ---------- Music ---------- */
 .music { background: var(--dark); color: #F4EEE7; }
@@ -388,7 +458,10 @@ footer a { color: var(--grey); }
   .albums, .videos, .bio .wrap, .press .item { grid-template-columns: 1fr; }
   .videos { gap: 26px; }
   .bio-photo { position: static; max-width: 240px; margin: 0 auto; }
-  .past ul { columns: 1; }
   .album { grid-template-columns: 120px 1fr; }
+  .cal-day { min-height: 48px; align-items: center; justify-content: center; padding: 4px 0; }
+  .cal-day .venue { display: none; }
+  .cal-day.has-gig::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); }
+  .cal-day.selected::after { background: #fff; }
   h2 { font-size: 1.8rem; }
 }

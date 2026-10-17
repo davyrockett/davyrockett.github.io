@@ -44,21 +44,33 @@
     </div>
   </section>
 
-  <section id="gigs" class="gigs">
+  <section id="gigs" class="gigs" hidden>
     <div class="wrap">
-      <h2>upcoming gigs</h2>
+      <div class="gigs-head">
+        <h2>upcoming gigs</h2>
+        <div class="view-switch" role="group" aria-label="Show gigs as">
+          <button type="button" data-view="list" aria-pressed="true">List</button>
+          <button type="button" data-view="calendar" aria-pressed="false">Calendar</button>
+        </div>
+      </div>
+
       <ul class="gig-list" id="upcoming"></ul>
+
+      <div class="cal" id="cal" hidden>
+        <div class="cal-head">
+          <button type="button" class="cal-nav" id="cal-prev" aria-label="Previous month">‹</button>
+          <div class="cal-title" id="cal-title"></div>
+          <button type="button" class="cal-nav" id="cal-next" aria-label="Next month">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <ul class="gig-list cal-detail" id="cal-detail" aria-live="polite"></ul>
+      </div>
+
       <p class="subscribe">
         Never miss a show: add these gigs to
         <a id="sub-google" href="#">Google Calendar</a> or
         <a id="sub-ical" href="#">Apple / other calendars</a>.
       </p>
-
-      <div class="past" id="past" hidden>
-        <h3>past gigs</h3>
-        <p class="stat" id="past-stat"></p>
-        <div id="past-years"></div>
-      </div>
     </div>
   </section>
 

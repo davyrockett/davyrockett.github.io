@@ -50,14 +50,18 @@ It's a public *website*, not an installable app, so some shared rules don't appl
 manifest, Settings gear or version bumping (visitors should always get the latest page, and the gig list
 changes on its own).
 
-- One page (`index.html`, `styles.css`, `site.js`): next gig, upcoming gigs, past gigs by year, music
-  (4 songs in `music/`, album links to Amazon), YouTube videos (load only when clicked), bio, booking contact.
+- One page (`index.html`, `styles.css`, `site.js`): next gig card, music (4 songs in `music/`, album
+  links to Amazon), YouTube videos (load only when clicked), bio, booking contact.
+- **Upcoming gigs stay hidden** until a visitor clicks "See all upcoming gigs" in the next-gig card (or
+  the "gigs" menu link / a `#gigs` link). The section then offers **List** and **Calendar** views (month
+  grid limited to this month through the last gig's month). David asked (2026-10-17) for **no past gigs**
+  on the site, so `gigs.json` only holds gigs from yesterday on.
 - `promo-materials/` is the press kit; `portfolio/` only redirects home (David doesn't want the portfolio).
   Both keep the old Wix addresses working.
 - **Gigs come from the public Google Calendar "All Davy Rockett Gigs"**
   (`qlfaf5pt3ubfrqb158kub26g98@group.calendar.google.com`). `.github/workflows/site.yml` runs hourly:
-  `tools/sync_gigs.py` reads the calendar's public iCal feed and writes `gigs.json` (title, time,
-  location only, never the event description), commits it if it changed, then publishes the site.
+  `tools/sync_gigs.py` reads the calendar's public iCal feed and writes `gigs.json` (upcoming gigs
+  only; title, time, location, never the event description), commits it if it changed, then publishes the site.
   Every push to `main` also publishes. GitHub Pages source is "GitHub Actions", not a branch.
   The workflow commits `.keepalive` monthly so GitHub doesn't pause the hourly schedule.
 - Gig times are Pacific wall-clock times and are shown as-is (not converted to the visitor's time zone).
