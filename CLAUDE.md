@@ -64,6 +64,10 @@ changes on its own).
   only; title, time, location, never the event description), commits it if it changed, then publishes the site.
   Every push to `main` also publishes. GitHub Pages source is "GitHub Actions", not a branch.
   The workflow commits `.keepalive` monthly so GitHub doesn't pause the hourly schedule.
+- **Parallax** (asked for 2026-10-17, copied from the old Wix site): `.parallax-bg` layers move at 20% of
+  scroll speed (`setupParallax` in site.js): the guitar photo beside the albums in the music section
+  (only on screens 1100px+ wide) and the live band photo behind the video section. Off for visitors
+  who set "reduce motion". The guitar photo moved out of the bio so it isn't on the page twice.
 - Gig times are Pacific wall-clock times and are shown as-is (not converted to the visitor's time zone).
   A gig stays "upcoming" until its end time.
 - Colours: the logo orange `#E27039` is used as the accent here (to match the logo artwork), not the app
