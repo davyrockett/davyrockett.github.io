@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Apps · davyrockett</title>
   <!-- Unlinked page and installable app suite: David's apps from one Home Screen icon. Not in the menu or search engines. -->
   <meta name="robots" content="noindex, nofollow">
@@ -19,99 +19,106 @@
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Questrial&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
   <style>
-    .apps-page main { padding-bottom: 24px; }
-    .apps-page section { padding: 40px 0 8px; }
-    .apps-intro { color: var(--grey); max-width: 60ch; margin: -6px 0 6px; }
-    .group-title {
+    body { min-height: 100vh; }
+    .top {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: calc(18px + env(safe-area-inset-top, 0px)) 20px 8px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-family: var(--head);
-      font-size: 1.05rem;
-      text-transform: lowercase;
-      letter-spacing: .08em;
+      justify-content: space-between;
+    }
+    .top h1 { font-family: var(--head); font-size: 1.9rem; text-transform: lowercase; }
+    .icon-btn {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--card);
       color: var(--grey);
-      margin: 34px 0 14px;
-    }
-    .group-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-    .app-grid {
-      list-style: none;
-      margin: 0;
-      padding: 0;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-      gap: 16px;
+      place-items: center;
+      cursor: pointer;
     }
-    .app {
-      height: 100%;
+    .icon-btn svg { width: 21px; height: 21px; }
+
+    .grid {
+      list-style: none;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 12px 20px calc(32px + env(safe-area-inset-bottom, 0px));
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 14px;
+    }
+    .tile {
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-align: center;
       gap: 10px;
-      padding: 22px 16px 18px;
+      padding: 20px 10px 16px;
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 20px;
+      border-radius: 22px;
       text-decoration: none;
       color: var(--ink);
-      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
-    }
-    .app:hover, .app:focus-visible {
-      transform: translateY(-3px);
-      border-color: #F2C3AA;
-      box-shadow: 0 12px 28px rgba(60, 40, 20, .10);
-      outline: none;
-    }
-    .app img {
-      width: 88px;
-      height: 88px;
-      border-radius: 22%;
-      box-shadow: 0 6px 16px rgba(30, 20, 10, .22), 0 1px 3px rgba(30, 20, 10, .18);
-    }
-    .app .name { font-weight: 700; font-size: 1.05rem; line-height: 1.2; margin-top: 4px; }
-    .app .desc { color: var(--grey); font-size: .88rem; line-height: 1.4; }
-    .app .badge {
-      margin-top: auto;
-      font-size: .74rem;
       font-weight: 700;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      color: var(--orange-dark);
+      text-align: center;
+      line-height: 1.2;
+      transition: transform .12s ease, box-shadow .12s ease;
+      -webkit-tap-highlight-color: transparent;
     }
-    .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 20px 20px 18px;
+    .tile:hover { box-shadow: 0 10px 24px rgba(60, 40, 20, .10); }
+    .tile:active { transform: scale(.96); }
+    .tile img {
+      width: 76px; height: 76px;
+      border-radius: 22%;
+      box-shadow: 0 5px 14px rgba(30, 20, 10, .2), 0 1px 3px rgba(30, 20, 10, .15);
     }
-    .panel h3 { font-family: var(--head); font-size: 1.3rem; text-transform: lowercase; margin: 0 0 4px; }
-    .panel p { color: var(--grey); font-size: .93rem; margin: 0 0 12px; }
+    @media (max-width: 520px) {
+      .grid { grid-template-columns: repeat(3, 1fr); gap: 10px; padding-left: 14px; padding-right: 14px; }
+      .tile { padding: 16px 6px 12px; border-radius: 18px; font-size: .86rem; }
+      .tile img { width: 60px; height: 60px; }
+    }
+
+    /* Settings sheet */
+    dialog {
+      width: min(560px, calc(100% - 24px));
+      max-height: calc(100% - 40px);
+      border: 0;
+      border-radius: 22px;
+      padding: 0;
+      background: var(--bg);
+      color: var(--ink);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+    }
+    dialog::backdrop { background: rgba(30, 27, 24, .45); }
+    .sheet-head {
+      position: sticky; top: 0; z-index: 1;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px 10px;
+      background: var(--bg);
+    }
+    .sheet-head h2 { font-size: 1.5rem; margin: 0; }
+    .sheet-head h2::after { display: none; }
+    .sheet-body { padding: 0 18px 20px; display: grid; gap: 14px; }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px 16px 14px; }
+    .panel h3 { font-family: var(--head); font-size: 1.15rem; text-transform: lowercase; margin: 0 0 4px; }
+    .panel p { color: var(--grey); font-size: .92rem; margin: 0 0 12px; }
     .status-list { list-style: none; margin: 0 0 14px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; font-size: .9rem; }
+    #key-list { grid-template-columns: 1fr; }
     .status-list li { display: flex; align-items: center; gap: 8px; min-width: 0; }
     .status-list .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .status-list .note { margin-left: auto; color: var(--grey); font-size: .8rem; }
-    #key-list { grid-template-columns: 1fr; max-width: 320px; }
     .status-list .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--line); box-shadow: inset 0 0 0 1px #d8cfc4; }
     .status-list .state-ready .dot { background: #3E9B5E; box-shadow: none; }
     .status-list .state-working .dot { background: var(--orange); box-shadow: none; animation: pulse 1s ease-in-out infinite alternate; }
     @keyframes pulse { to { opacity: .35; } }
-    .btn {
-      font: 700 .95rem var(--body);
-      border: 0;
-      border-radius: 999px;
-      padding: 10px 18px;
-      background: var(--orange);
-      color: #fff;
-      cursor: pointer;
-    }
+    .btn { font: 700 .95rem var(--body); border: 0; border-radius: 999px; padding: 10px 18px; background: var(--orange); color: #fff; cursor: pointer; }
     .btn:disabled { background: var(--line); color: var(--grey); cursor: default; }
-    .btn.quiet { background: none; color: var(--grey); text-decoration: underline; padding: 10px 4px; font-weight: 400; }
+    .btn.quiet { background: none; color: var(--grey); text-decoration: underline; padding: 8px 2px 0; font-weight: 400; }
     .key-row { display: flex; gap: 8px; flex-wrap: wrap; }
     .key-row input {
-      flex: 1 1 200px;
-      min-width: 0;
+      flex: 1 1 200px; min-width: 0;
       font: 1rem var(--body);
       padding: 10px 12px;
       border: 1px solid var(--line);
@@ -120,99 +127,67 @@
       color: var(--ink);
     }
     .key-msg { min-height: 1.4em; margin: 10px 0 0; font-size: .9rem; color: var(--ink); }
-    @media (max-width: 760px) { .panels { grid-template-columns: 1fr; } }
-    .tip {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      margin-top: 40px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 16px 18px;
-      color: var(--grey);
-      font-size: .95rem;
-    }
-    .tip svg { flex: none; width: 26px; height: 26px; color: var(--orange); margin-top: 2px; }
-    .tip b { color: var(--ink); }
-    @media (max-width: 520px) {
-      .app-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .app { padding: 18px 10px 14px; border-radius: 18px; }
-      .app img { width: 72px; height: 72px; }
-      .app .desc { font-size: .82rem; }
-    }
   </style>
 </head>
-<body class="apps-page">
+<body>
 
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="../" aria-label="davyrockett home"><img src="../images/logo.png" alt="davyrockett" width="522" height="115"></a>
-  </div>
+<header class="top">
+  <h1>apps</h1>
+  <button type="button" class="icon-btn" id="settings-open" aria-label="Settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
 </header>
 
-<main class="wrap">
-  <section>
-    <h2>apps</h2>
-    <p class="apps-intro">Every app in one place. Tap one to open it; inside, the <b>All apps</b> button brings you back here.</p>
-
-    <h3 class="group-title">teaching &amp; practice</h3>
-    <ul class="app-grid">
-      <li><a class="app" href="../first-frets/"><img src="../first-frets/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">First Frets</span><span class="desc">Guitar lessons for absolute beginners.</span><span class="badge">share with students</span></a></li>
-      <li><a class="app" href="../page-fright/"><img src="../page-fright/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Page Fright</span><span class="desc">Endless sight-reading, plus improv practice.</span></a></li>
-      <li><a class="app" href="../lip-service/"><img src="../lip-service/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Lip Service</span><span class="desc">Vocal warm-up for the drive to the gig.</span></a></li>
-    </ul>
-
-    <h3 class="group-title">sessions &amp; gigs</h3>
-    <ul class="app-grid">
-      <li><a class="app" href="../jam-session/"><img src="../jam-session/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Jam Session</span><span class="desc">Music activities for client sessions.</span></a></li>
-      <li><a class="app" href="../memory-lane/"><img src="../memory-lane/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Memory Lane</span><span class="desc">Big sing-along lyrics for the TV.</span></a></li>
-      <li><a class="app" href="../sos-band-editor/"><img src="../sos-band-editor/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">SOS Band Editor</span><span class="desc">Setlists, charts, stage plot, gear and mixer.</span><span class="badge">just for you</span></a></li>
-      <li><a class="app" href="../sos-band/"><img src="../sos-band/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">SOS Band</span><span class="desc">The band’s view-only copy.</span><span class="badge">share with the band</span></a></li>
-      <li><a class="app" href="../ge150-presets/"><img src="../ge150-presets/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">GE150 Presets</span><span class="desc">Mooer GE150 presets, bank by bank.</span></a></li>
-    </ul>
-
-    <h3 class="group-title">personal</h3>
-    <ul class="app-grid">
-      <li><a class="app" href="../health-log/"><img src="../health-log/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Health Log</span><span class="desc">Weight, medications and appointments.</span></a></li>
-      <li><a class="app" href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Z4 Log</span><span class="desc">Garage log and fault codes for the Z4.</span></a></li>
-    </ul>
-
-    <div class="panels">
-      <div class="panel">
-        <h3>offline</h3>
-        <p id="offline-summary">Checking…</p>
-        <ul class="status-list" id="offline-list"></ul>
-        <button type="button" class="btn" id="offline-btn">Make everything work offline</button>
-      </div>
-      <form class="panel" id="key-form" autocomplete="off">
-        <h3>access key</h3>
-        <p>One key for every app that syncs. It’s checked with GitHub, then saved on this device only.</p>
-        <ul class="status-list" id="key-list"></ul>
-        <div class="key-row">
-          <input id="key-input" type="password" placeholder="Paste your access key" aria-label="Access key" autocapitalize="off" spellcheck="false">
-          <button type="submit" class="btn" id="key-save">Save for every app</button>
-        </div>
-        <p class="key-msg" id="key-msg" aria-live="polite"></p>
-        <button type="button" class="btn quiet" id="key-forget" hidden>Remove the key from this device</button>
-      </form>
-    </div>
-
-    <div class="tip">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 7v6M9 10h6"/></svg>
-      <div><b>Use them all from one icon:</b> on this page tap <b>Share</b> (iPhone/iPad) or the <b>⋮</b> menu
-        (Android/Chrome), then <b>Add to Home Screen</b>. Then, inside that app, tap <b>Make everything work offline</b>
-        and paste your access key once. (You can still add any single app on its own the same way.)</div>
-    </div>
-  </section>
+<main>
+  <ul class="grid">
+    <li><a class="tile" href="../first-frets/"><img src="../first-frets/icons/icon-192.png" alt="" width="76" height="76">First Frets</a></li>
+    <li><a class="tile" href="../page-fright/"><img src="../page-fright/icons/icon-192.png" alt="" width="76" height="76">Page Fright</a></li>
+    <li><a class="tile" href="../lip-service/"><img src="../lip-service/icons/icon-192.png" alt="" width="76" height="76">Lip Service</a></li>
+    <li><a class="tile" href="../jam-session/"><img src="../jam-session/icons/icon-192.png" alt="" width="76" height="76">Jam Session</a></li>
+    <li><a class="tile" href="../memory-lane/"><img src="../memory-lane/icons/icon-192.png" alt="" width="76" height="76">Memory Lane</a></li>
+    <li><a class="tile" href="../sos-band-editor/"><img src="../sos-band-editor/icons/icon-192.png" alt="" width="76" height="76">SOS Editor</a></li>
+    <li><a class="tile" href="../sos-band/"><img src="../sos-band/icons/icon-192.png" alt="" width="76" height="76">SOS Band</a></li>
+    <li><a class="tile" href="../ge150-presets/"><img src="../ge150-presets/icons/icon-192.png" alt="" width="76" height="76">GE150 Presets</a></li>
+    <li><a class="tile" href="../health-log/"><img src="../health-log/icons/icon-192.png" alt="" width="76" height="76">Health Log</a></li>
+    <li><a class="tile" href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt="" width="76" height="76">Z4 Log</a></li>
+  </ul>
 </main>
 
-<footer>
-  <div class="wrap">
-    <span>© davyrockett</span>
-    <a href="../">davyrockett.com</a>
+<dialog id="settings" aria-labelledby="settings-title">
+  <div class="sheet-head">
+    <h2 id="settings-title">settings</h2>
+    <button type="button" class="icon-btn" id="settings-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
   </div>
-</footer>
+  <div class="sheet-body">
+    <form class="panel" id="key-form" autocomplete="off">
+      <h3>access key</h3>
+      <p>One key for every app that syncs. It’s checked with GitHub, then saved on this device only.</p>
+      <ul class="status-list" id="key-list"></ul>
+      <div class="key-row">
+        <input id="key-input" type="password" placeholder="Paste your access key" aria-label="Access key" autocapitalize="off" spellcheck="false">
+        <button type="submit" class="btn" id="key-save">Save for every app</button>
+      </div>
+      <p class="key-msg" id="key-msg" aria-live="polite"></p>
+      <button type="button" class="btn quiet" id="key-forget" hidden>Remove the key from this device</button>
+    </form>
+
+    <div class="panel">
+      <h3>offline</h3>
+      <p id="offline-summary">Checking…</p>
+      <ul class="status-list" id="offline-list"></ul>
+      <button type="button" class="btn" id="offline-btn">Make everything work offline</button>
+    </div>
+
+    <div class="panel">
+      <h3>home screen</h3>
+      <p style="margin:0">To use every app from one icon, open this page in Safari (or Chrome), tap <b>Share</b> (or <b>⋮</b>),
+        then <b>Add to Home Screen</b>. Apps opened from here show an <b>All apps</b> button to come back.</p>
+    </div>
+  </div>
+</dialog>
+
 <script src="launcher.js"></script>
 </body>
 </html>

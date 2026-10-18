@@ -1,7 +1,7 @@
 // Offline copy of the app suite's home screen (www.davyrockett.com/apps/).
 // Each app keeps its own offline copy (its own sw.js); this one only covers the launcher and the icons.
 // Shows the saved copy straight away and refreshes it in the background, so changes appear on the next open.
-const CACHE = 'davyrockett-apps-v1';
+const CACHE = 'davyrockett-apps-v2';
 const APPS = ['first-frets', 'page-fright', 'lip-service', 'jam-session', 'memory-lane',
   'sos-band-editor', 'sos-band', 'ge150-presets', 'health-log', 'z4-log'];
 const ASSETS = [

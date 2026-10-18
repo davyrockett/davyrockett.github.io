@@ -166,6 +166,18 @@ $('key-forget').addEventListener('click', () => {
   renderKeys();
 });
 
+/* ---------- Settings sheet ---------- */
+
+const sheet = $('settings');
+$('settings-open').addEventListener('click', () => {
+  renderOffline();
+  renderKeys();
+  if (sheet.showModal) sheet.showModal(); else sheet.setAttribute('open', '');
+});
+$('settings-close').addEventListener('click', () => sheet.close ? sheet.close() : sheet.removeAttribute('open'));
+// A tap on the dimmed area outside the sheet closes it.
+sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.close(); });
+
 renderOffline();
 renderKeys();
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { renderOffline(); renderKeys(); } });
