@@ -65,6 +65,8 @@ changes on its own).
   the "gigs" menu link / a `#gigs` link). The section then offers **List** and **Calendar** views (month
   grid limited to this month through the last gig's month). David asked (2026-10-17) for **no past gigs**
   on the site, so `gigs.json` only holds gigs from yesterday on.
+- `apps/` is David's **unlinked** list of every app (noindex, not in the menu), for adding them to Home Screens.
+  Add each new app there.
 - `promo-materials/` is the press kit; `portfolio/` only redirects home (David doesn't want the portfolio).
   Both keep the old Wix addresses working.
 - **Gigs come from the public Google Calendar "All Davy Rockett Gigs"**

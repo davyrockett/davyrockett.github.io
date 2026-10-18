@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apps · davyrockett</title>
+  <!-- Unlinked page: David's list of every app, for adding them to Home Screens. Not in the menu or search engines. -->
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="../images/figure.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Questrial&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .apps-page section { padding: 40px 0 24px; }
+    .apps-page h3 {
+      font-family: var(--head);
+      font-size: 1.15rem;
+      text-transform: lowercase;
+      letter-spacing: .04em;
+      color: var(--grey);
+      margin: 28px 0 10px;
+    }
+    .app-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .app-list a {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 10px 14px 10px 10px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+    .app-list a:hover { border-color: var(--orange); }
+    .app-list img { width: 56px; height: 56px; border-radius: 13px; }
+    .app-list .name { font-weight: 700; font-size: 1.05rem; }
+    .app-list .desc { color: var(--grey); font-size: .92rem; line-height: 1.35; }
+    .app-list .go { color: var(--orange); font-size: 1.4rem; }
+    .tip {
+      background: var(--card);
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: var(--grey);
+      font-size: .95rem;
+    }
+  </style>
+</head>
+<body class="apps-page">
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../" aria-label="davyrockett home"><img src="../images/logo.png" alt="davyrockett" width="522" height="115"></a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <h2>apps</h2>
+    <p class="tip"><b>Add one to your Home Screen:</b> open it, tap <b>Share</b> (iPhone/iPad) or the <b>⋮</b> menu
+      (Android/Chrome), then <b>Add to Home Screen</b>. Apps that sync need your access key pasted in their Settings
+      once on each device.</p>
+
+    <h3>teaching &amp; practice</h3>
+    <ul class="app-list">
+      <li><a href="../first-frets/"><img src="../first-frets/icons/icon-192.png" alt=""><span><span class="name">First Frets</span><br><span class="desc">An interactive guitar method for absolute beginners. The one to share with students.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+      <li><a href="../page-fright/"><img src="../page-fright/icons/icon-192.png" alt=""><span><span class="name">Page Fright</span><br><span class="desc">Endless guitar sight-reading exercises, plus improv practice.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+      <li><a href="../lip-service/"><img src="../lip-service/icons/icon-192.png" alt=""><span><span class="name">Lip Service</span><br><span class="desc">Gentle vocal warm-up for the drive to the gig.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+    </ul>
+
+    <h3>sessions &amp; gigs</h3>
+    <ul class="app-list">
+      <li><a href="../jam-session/"><img src="../jam-session/icons/icon-192.png" alt=""><span><span class="name">Jam Session</span><br><span class="desc">Music activities for client sessions.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+      <li><a href="../memory-lane/"><img src="../memory-lane/icons/icon-192.png" alt=""><span><span class="name">Memory Lane Songbook</span><br><span class="desc">Big sing-along lyrics for the TV, with song facts and conversation starters.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+      <li><a href="../sos-band-editor/"><img src="../sos-band-editor/icons/icon-192.png" alt=""><span><span class="name">SOS Band Editor</span><br><span class="desc">Your editor for the SOS Band: setlist, charts, stage plot, gear and mixer.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+      <li><a href="../sos-band/"><img src="../sos-band/icons/icon-192.png" alt=""><span><span class="name">SOS Band</span><br><span class="desc">The band's view-only app. The link to give band members.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+      <li><a href="../ge150-presets/"><img src="../ge150-presets/icons/icon-192.png" alt=""><span><span class="name">GE150 Presets</span><br><span class="desc">The presets on the Mooer GE150 Pro Li, bank by bank.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+    </ul>
+
+    <h3>personal</h3>
+    <ul class="app-list">
+      <li><a href="../health-log/"><img src="../health-log/icons/icon-192.png" alt=""><span><span class="name">Health Log</span><br><span class="desc">Weight, medications and appointments.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+      <li><a href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt=""><span><span class="name">Z4 Log</span><br><span class="desc">Garage log and fault codes for the Z4.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© davyrockett</span>
+    <a href="../">davyrockett.com</a>
+  </div>
+</footer>
+</body>
+</html>
