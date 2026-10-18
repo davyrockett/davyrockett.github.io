@@ -49,7 +49,11 @@ with this section (copy it from any other app) plus an "## This app" section.
 
 ## This app
 
-**davyrockett.com**, David's music website (replaces the old Wix site). Repo `davyrockett/website`.
+**davyrockett.com**, David's music website (replaces the old Wix site). Repo `davyrockett/davyrockett.github.io`
+(renamed from `website` on 2026-10-18). It's the account's main GitHub Pages site, so with its custom domain
+every app repo with Pages is served at `www.davyrockett.com/<repo>/` and old `davyrockett.github.io/...` links
+redirect there. **Never rename or delete this repo or remove its custom domain:** every app's address depends on it.
+On the Mac the folder is still `Claude Apps/website`.
 It's a public *website*, not an installable app, so some shared rules don't apply: no service worker,
 manifest, Settings gear or version bumping (visitors should always get the latest page, and the gig list
 changes on its own).
