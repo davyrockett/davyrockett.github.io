@@ -34,31 +34,50 @@ To look at it on the Mac first, double-click **Start Website.command**.
 
 ## Moving davyrockett.com from Wix to this site
 
-The domain is registered at **Network Solutions** (paid through April 2027). Its DNS (the "address book"
-that says where the website and email live) is currently run by **Wix**. Your Google email also uses the
-domain, so the email records must come along, or email to @davyrockett.com stops arriving.
+You already own the domain: it's registered at **Network Solutions**, paid through April 22, 2027.
+Wix only runs its DNS (the "address book" saying where the website and email live). Google email
+records (MX) are on the domain, so they must come along.
 
-1. Log in where the domain's DNS can be changed: Network Solutions (or the Wix **Domains** page if you
-   bought it through Wix). Switch the domain to Network Solutions' own DNS (or Cloudflare's free DNS).
-2. Add these records:
+Plan: move the DNS to **Cloudflare** (free), point it at GitHub, then (optional) move the registration
+to Cloudflare too (about $10–11 a year, versus Network Solutions' higher prices). Don't cancel Wix
+until the new site shows at davyrockett.com.
 
-   | Type | Name | Value |
-   | --- | --- | --- |
-   | A | @ | 185.199.108.153 |
-   | A | @ | 185.199.109.153 |
-   | A | @ | 185.199.110.153 |
-   | A | @ | 185.199.111.153 |
-   | CNAME | www | davyrockett.github.io |
-   | MX | @ | 10 → aspmx.l.google.com |
-   | MX | @ | 20 → alt1.aspmx.l.google.com |
-   | MX | @ | 20 → alt2.aspmx.l.google.com |
-   | MX | @ | 30 → aspmx2.googlemail.com |
-   | MX | @ | 30 → aspmx3.googlemail.com |
-   | MX | @ | 30 → aspmx4.googlemail.com |
-   | MX | @ | 30 → aspmx5.googlemail.com |
-3. Tell Claude when it's done. Claude sets `www.davyrockett.com` as the custom domain in this repo's
-   GitHub Pages settings and turns on HTTPS (GitHub issues the certificate in about 15–60 minutes).
-4. Once the new site shows at davyrockett.com, cancel the Wix premium plan.
+### 1. Cloudflare account and DNS (about 15 minutes)
+1. Sign up at cloudflare.com (free plan) and turn on two-factor sign-in.
+2. **Add a domain** → `davyrockett.com` → Free plan. Cloudflare copies the current records from Wix.
+3. In **DNS → Records**, delete the Wix website records (A records `185.230.63.x` and the `www` CNAME
+   pointing at `wixdns.net`), keep every **MX** record, and add:
 
-Optional money saver: transfer the domain itself to Cloudflare Registrar or Porkbun (about $11 a year,
-versus Network Solutions' higher renewal price). Do it any time before April 2027.
+   | Type | Name | Content | Proxy |
+   | --- | --- | --- | --- |
+   | A | @ | 185.199.108.153 | DNS only (grey cloud) |
+   | A | @ | 185.199.109.153 | DNS only |
+   | A | @ | 185.199.110.153 | DNS only |
+   | A | @ | 185.199.111.153 | DNS only |
+   | CNAME | www | davyrockett.github.io | DNS only |
+
+   The MX records should read: 10 `aspmx.l.google.com`, 20 `alt1.aspmx.l.google.com`,
+   20 `alt2.aspmx.l.google.com`, 30 `aspmx2.googlemail.com`, `aspmx3…`, `aspmx4…`, `aspmx5.googlemail.com`.
+   Add any that are missing.
+4. Cloudflare shows two nameservers (like `xxx.ns.cloudflare.com`). Write them down.
+
+### 2. Network Solutions (5 minutes)
+1. Log in → **Domains** → davyrockett.com → **Nameservers** → custom → enter the two Cloudflare ones.
+2. Wait until Cloudflare says the domain is **Active** (usually under an hour, can take up to a day).
+
+### 3. GitHub (Claude does this)
+Tell Claude it's active. Claude sets `www.davyrockett.com` as the site's custom domain and turns on
+HTTPS once GitHub's certificate is ready (15–60 minutes). davyrockett.com redirects to www automatically.
+
+### 4. Cancel Wix
+Once the new site shows at davyrockett.com: Wix → Subscriptions → cancel the Premium plan (and turn
+off auto-renew on anything else there).
+
+### 5. Optional: move the registration to Cloudflare (saves money)
+1. Network Solutions: turn off **domain lock** / transfer lock and get the **authorization (EPP) code**.
+   If they offer to cancel privacy protection, that's fine: Cloudflare hides your details for free.
+2. Cloudflare → **Domain Registration → Transfer Domains** → davyrockett.com → enter the code → pay
+   (about $10–11; it adds a year, so it then runs to April 2028). Turn on **auto-renew**.
+3. Approve the confirmation email(s). The transfer finishes within 5 days, with no downtime, since
+   Cloudflare is already running the DNS.
+4. Afterwards, close or let lapse anything left at Network Solutions (make sure nothing auto-renews).
