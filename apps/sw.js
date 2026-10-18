@@ -1,7 +1,8 @@
 // Offline copy of the app suite's home screen (www.davyrockett.com/apps/).
 // Each app keeps its own offline copy (its own sw.js); this one only covers the launcher and the icons.
-// Shows the saved copy straight away and refreshes it in the background, so changes appear on the next open.
-const CACHE = 'davyrockett-apps-v2';
+// Uses the internet when it's there (so the page and its script always match after an update) and the
+// saved copy when it isn't.
+const CACHE = 'davyrockett-apps-v3';
 const APPS = ['first-frets', 'page-fright', 'lip-service', 'jam-session', 'memory-lane',
   'sos-band-editor', 'sos-band', 'ge150-presets', 'health-log', 'z4-log'];
 const ASSETS = [
@@ -33,13 +34,11 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET' || new URL(request.url).origin !== location.origin) return;
   const key = request.mode === 'navigate' ? './' : request;
   event.respondWith(
-    caches.open(CACHE).then(async (cache) => {
-      const cached = await cache.match(key, { ignoreSearch: true });
-      const fresh = fetch(request).then((res) => {
-        if (res.ok) cache.put(key, res.clone());
+    fetch(request)
+      .then((res) => {
+        if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(key, copy)); }
         return res;
-      }).catch(() => cached);
-      return cached || fresh;
-    })
+      })
+      .catch(() => caches.match(key, { ignoreSearch: true }))
   );
 });
