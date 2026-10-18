@@ -96,6 +96,64 @@ $('offline-btn').addEventListener('click', async () => {
   await renderOffline();
 });
 
+/* ---------- Updates ---------- */
+
+// Waits until a newly found version has finished downloading (or failed). Resolves the worker's final state.
+function waitInstalled(sw) {
+  return new Promise((resolve) => {
+    if (sw.state !== 'installing') return resolve(sw.state);
+    sw.addEventListener('statechange', () => { if (sw.state !== 'installing') resolve(sw.state); });
+    setTimeout(() => resolve(sw.state), 60000);
+  });
+}
+
+// Asks each app's offline copy to look for a newer version on the site, then switches to it straight
+// away (the same thing the app's own "Update" button does). Apps that aren't kept offline always load
+// the latest version anyway.
+$('update-btn').addEventListener('click', async () => {
+  const btn = $('update-btn');
+  const msg = $('update-msg');
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+  if (!navigator.onLine) {
+    msg.textContent = 'You’re offline. Connect to the internet to check for updates.';
+    btn.disabled = false; btn.textContent = 'Check for updates';
+    return;
+  }
+  const updated = [];
+  let checked = 0;
+  for (const [slug, name] of APPS) {
+    const reg = await navigator.serviceWorker.getRegistration(`/${slug}/`).catch(() => null);
+    if (!reg || new URL(reg.scope).pathname !== `/${slug}/`) continue;
+    checked++;
+    msg.textContent = `Checking ${name}…`;
+    try { await reg.update(); } catch { /* offline or site busy: skip this one */ }
+    if (reg.installing) await waitInstalled(reg.installing);
+    if (reg.waiting) {
+      reg.waiting.postMessage('skipWaiting');
+      updated.push(name);
+    }
+  }
+  // The suite itself.
+  let suiteUpdated = false;
+  const own = await navigator.serviceWorker.getRegistration('/apps/').catch(() => null);
+  if (own) {
+    try { await own.update(); } catch { /* skip */ }
+    suiteUpdated = Boolean(own.installing || own.waiting);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Check for updates';
+  const time = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  msg.textContent = updated.length
+    ? `Updated ${updated.join(', ')} (checked at ${time}).`
+    : checked ? `Everything is up to date (checked at ${time}).` : 'No apps are kept offline yet, so they always open the latest version.';
+  if (suiteUpdated) {
+    msg.textContent += ' This screen has an update too: reloading…';
+    setTimeout(() => location.reload(), 1500);
+  }
+  renderOffline();
+});
+
 /* ---------- One access key for every app ---------- */
 
 function renderKeys() {
