@@ -12,40 +12,85 @@
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Questrial&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
   <style>
-    .apps-page section { padding: 40px 0 24px; }
-    .apps-page h3 {
-      font-family: var(--head);
-      font-size: 1.15rem;
-      text-transform: lowercase;
-      letter-spacing: .04em;
-      color: var(--grey);
-      margin: 28px 0 10px;
-    }
-    .app-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-    .app-list a {
-      display: grid;
-      grid-template-columns: 56px 1fr auto;
-      gap: 14px;
+    .apps-page main { padding-bottom: 24px; }
+    .apps-page section { padding: 40px 0 8px; }
+    .apps-intro { color: var(--grey); max-width: 60ch; margin: -6px 0 6px; }
+    .group-title {
+      display: flex;
       align-items: center;
-      padding: 10px 14px 10px 10px;
+      gap: 12px;
+      font-family: var(--head);
+      font-size: 1.05rem;
+      text-transform: lowercase;
+      letter-spacing: .08em;
+      color: var(--grey);
+      margin: 34px 0 14px;
+    }
+    .group-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    .app-grid {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 16px;
+    }
+    .app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      padding: 22px 16px 18px;
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 20px;
       text-decoration: none;
       color: var(--ink);
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
     }
-    .app-list a:hover { border-color: var(--orange); }
-    .app-list img { width: 56px; height: 56px; border-radius: 13px; }
-    .app-list .name { font-weight: 700; font-size: 1.05rem; }
-    .app-list .desc { color: var(--grey); font-size: .92rem; line-height: 1.35; }
-    .app-list .go { color: var(--orange); font-size: 1.4rem; }
+    .app:hover, .app:focus-visible {
+      transform: translateY(-3px);
+      border-color: #F2C3AA;
+      box-shadow: 0 12px 28px rgba(60, 40, 20, .10);
+      outline: none;
+    }
+    .app img {
+      width: 88px;
+      height: 88px;
+      border-radius: 22%;
+      box-shadow: 0 6px 16px rgba(30, 20, 10, .22), 0 1px 3px rgba(30, 20, 10, .18);
+    }
+    .app .name { font-weight: 700; font-size: 1.05rem; line-height: 1.2; margin-top: 4px; }
+    .app .desc { color: var(--grey); font-size: .88rem; line-height: 1.4; }
+    .app .badge {
+      margin-top: auto;
+      font-size: .74rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--orange-dark);
+    }
     .tip {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      margin-top: 40px;
       background: var(--card);
-      border: 1px dashed var(--line);
-      border-radius: 12px;
-      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 18px;
       color: var(--grey);
       font-size: .95rem;
+    }
+    .tip svg { flex: none; width: 26px; height: 26px; color: var(--orange); margin-top: 2px; }
+    .tip b { color: var(--ink); }
+    @media (max-width: 520px) {
+      .app-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .app { padding: 18px 10px 14px; border-radius: 18px; }
+      .app img { width: 72px; height: 72px; }
+      .app .desc { font-size: .82rem; }
     }
   </style>
 </head>
@@ -60,31 +105,36 @@
 <main class="wrap">
   <section>
     <h2>apps</h2>
-    <p class="tip"><b>Add one to your Home Screen:</b> open it, tap <b>Share</b> (iPhone/iPad) or the <b>⋮</b> menu
-      (Android/Chrome), then <b>Add to Home Screen</b>. Apps that sync need your access key pasted in their Settings
-      once on each device.</p>
+    <p class="apps-intro">Every app in one place. Tap one to open it.</p>
 
-    <h3>teaching &amp; practice</h3>
-    <ul class="app-list">
-      <li><a href="../first-frets/"><img src="../first-frets/icons/icon-192.png" alt=""><span><span class="name">First Frets</span><br><span class="desc">An interactive guitar method for absolute beginners. The one to share with students.</span></span><span class="go" aria-hidden="true">›</span></a></li>
-      <li><a href="../page-fright/"><img src="../page-fright/icons/icon-192.png" alt=""><span><span class="name">Page Fright</span><br><span class="desc">Endless guitar sight-reading exercises, plus improv practice.</span></span><span class="go" aria-hidden="true">›</span></a></li>
-      <li><a href="../lip-service/"><img src="../lip-service/icons/icon-192.png" alt=""><span><span class="name">Lip Service</span><br><span class="desc">Gentle vocal warm-up for the drive to the gig.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+    <h3 class="group-title">teaching &amp; practice</h3>
+    <ul class="app-grid">
+      <li><a class="app" href="../first-frets/"><img src="../first-frets/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">First Frets</span><span class="desc">Guitar lessons for absolute beginners.</span><span class="badge">share with students</span></a></li>
+      <li><a class="app" href="../page-fright/"><img src="../page-fright/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Page Fright</span><span class="desc">Endless sight-reading, plus improv practice.</span></a></li>
+      <li><a class="app" href="../lip-service/"><img src="../lip-service/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Lip Service</span><span class="desc">Vocal warm-up for the drive to the gig.</span></a></li>
     </ul>
 
-    <h3>sessions &amp; gigs</h3>
-    <ul class="app-list">
-      <li><a href="../jam-session/"><img src="../jam-session/icons/icon-192.png" alt=""><span><span class="name">Jam Session</span><br><span class="desc">Music activities for client sessions.</span></span><span class="go" aria-hidden="true">›</span></a></li>
-      <li><a href="../memory-lane/"><img src="../memory-lane/icons/icon-192.png" alt=""><span><span class="name">Memory Lane Songbook</span><br><span class="desc">Big sing-along lyrics for the TV, with song facts and conversation starters.</span></span><span class="go" aria-hidden="true">›</span></a></li>
-      <li><a href="../sos-band-editor/"><img src="../sos-band-editor/icons/icon-192.png" alt=""><span><span class="name">SOS Band Editor</span><br><span class="desc">Your editor for the SOS Band: setlist, charts, stage plot, gear and mixer.</span></span><span class="go" aria-hidden="true">›</span></a></li>
-      <li><a href="../sos-band/"><img src="../sos-band/icons/icon-192.png" alt=""><span><span class="name">SOS Band</span><br><span class="desc">The band's view-only app. The link to give band members.</span></span><span class="go" aria-hidden="true">›</span></a></li>
-      <li><a href="../ge150-presets/"><img src="../ge150-presets/icons/icon-192.png" alt=""><span><span class="name">GE150 Presets</span><br><span class="desc">The presets on the Mooer GE150 Pro Li, bank by bank.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+    <h3 class="group-title">sessions &amp; gigs</h3>
+    <ul class="app-grid">
+      <li><a class="app" href="../jam-session/"><img src="../jam-session/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Jam Session</span><span class="desc">Music activities for client sessions.</span></a></li>
+      <li><a class="app" href="../memory-lane/"><img src="../memory-lane/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Memory Lane</span><span class="desc">Big sing-along lyrics for the TV.</span></a></li>
+      <li><a class="app" href="../sos-band-editor/"><img src="../sos-band-editor/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">SOS Band Editor</span><span class="desc">Setlists, charts, stage plot, gear and mixer.</span><span class="badge">just for you</span></a></li>
+      <li><a class="app" href="../sos-band/"><img src="../sos-band/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">SOS Band</span><span class="desc">The band’s view-only copy.</span><span class="badge">share with the band</span></a></li>
+      <li><a class="app" href="../ge150-presets/"><img src="../ge150-presets/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">GE150 Presets</span><span class="desc">Mooer GE150 presets, bank by bank.</span></a></li>
     </ul>
 
-    <h3>personal</h3>
-    <ul class="app-list">
-      <li><a href="../health-log/"><img src="../health-log/icons/icon-192.png" alt=""><span><span class="name">Health Log</span><br><span class="desc">Weight, medications and appointments.</span></span><span class="go" aria-hidden="true">›</span></a></li>
-      <li><a href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt=""><span><span class="name">Z4 Log</span><br><span class="desc">Garage log and fault codes for the Z4.</span></span><span class="go" aria-hidden="true">›</span></a></li>
+    <h3 class="group-title">personal</h3>
+    <ul class="app-grid">
+      <li><a class="app" href="../health-log/"><img src="../health-log/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Health Log</span><span class="desc">Weight, medications and appointments.</span></a></li>
+      <li><a class="app" href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Z4 Log</span><span class="desc">Garage log and fault codes for the Z4.</span></a></li>
     </ul>
+
+    <div class="tip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 7v6M9 10h6"/></svg>
+      <div><b>Add one to your Home Screen:</b> open it, tap <b>Share</b> (iPhone/iPad) or the <b>⋮</b> menu
+        (Android/Chrome), then <b>Add to Home Screen</b>. Apps that sync need your access key pasted in their
+        Settings once on each device.</div>
+    </div>
   </section>
 </main>
 
