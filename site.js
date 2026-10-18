@@ -359,7 +359,38 @@ function setupVideos() {
   });
 }
 
+/* ---------- Bio photo parallax ---------- */
+
+// On wide screens the bio photo drifts down its column more slowly than the page scrolls:
+// at the top of the column when the bio scrolls into view, at the bottom when it leaves.
+function setupBioParallax() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const section = document.getElementById("bio");
+  const photo = section.querySelector(".bio-photo");
+  const text = photo.previousElementSibling;
+  const wide = matchMedia("(min-width: 761px)");
+  let ticking = false;
+
+  const update = () => {
+    ticking = false;
+    if (!wide.matches) { photo.style.transform = ""; return; }
+    const box = section.getBoundingClientRect();
+    if (box.top > innerHeight || box.bottom < 0) return;  // off screen
+    const progress = Math.min(1, Math.max(0, (innerHeight - box.top) / (innerHeight + box.height)));
+    const room = Math.max(0, text.offsetHeight - photo.offsetHeight);
+    photo.style.transform = `translate3d(0, ${(progress * room).toFixed(1)}px, 0)`;
+  };
+  const request = () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  };
+  addEventListener("scroll", request, { passive: true });
+  addEventListener("resize", request);
+  photo.addEventListener("load", request);
+  update();
+}
+
 setupViewSwitch();
 loadGigs();
 setupTracks();
 setupVideos();
+setupBioParallax();

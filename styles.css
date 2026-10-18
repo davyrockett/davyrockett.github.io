@@ -341,9 +341,7 @@ section { padding: 72px 0; }
 
 /* ---------- Video ---------- */
 .video {
-  background:
-    linear-gradient(rgba(30, 26, 23, .82), rgba(30, 26, 23, .9)),
-    url("images/live.jpg") center / cover;
+  background: #221E1B;
   color: #fff;
 }
 .video h2 { color: #fff; }
@@ -397,7 +395,7 @@ section { padding: 72px 0; }
   line-height: 1.5;
 }
 .bio blockquote cite { display: block; font-family: var(--body); font-style: normal; color: var(--grey); font-size: .9rem; margin-top: 4px; }
-.bio-photo { position: sticky; top: 90px; }
+.bio-photo { will-change: transform; }  /* site.js slides it down the column as you scroll (parallax) */
 
 /* ---------- Contact ---------- */
 .contact { background: var(--card); border-top: 1px solid var(--line); text-align: center; }
@@ -457,7 +455,7 @@ footer a { color: var(--grey); }
   .next-gig .when { font-size: 1.7rem; }
   .albums, .videos, .bio .wrap, .press .item { grid-template-columns: 1fr; }
   .videos { gap: 26px; }
-  .bio-photo { position: static; max-width: 240px; margin: 0 auto; }
+  .bio-photo { max-width: 240px; margin: 0 auto; }
   .album { grid-template-columns: 120px 1fr; }
   .cal-day { min-height: 48px; align-items: center; justify-content: center; padding: 4px 0; }
   .cal-day .venue { display: none; }
