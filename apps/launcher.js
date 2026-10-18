@@ -98,7 +98,20 @@ $('offline-btn').addEventListener('click', async () => {
 
 /* ---------- Updates ---------- */
 
-// Waits until a newly found version has finished downloading (or failed). Resolves the worker's final state.
+// Each app's saved copy is named "<prefix><version>" (see each app's sw.js).
+const CACHE_PREFIX = {
+  'first-frets': 'firstfrets-v', 'page-fright': 'pagefright-v', 'lip-service': 'lipservice-v',
+  'jam-session': 'jamsession-v', 'memory-lane': 'memory-lane-v', 'sos-band-editor': 'sos-band-editor-v',
+  'sos-band': 'sos-band-v', 'ge150-presets': 'presets-v', 'health-log': 'healthlog-v', 'z4-log': 'z4log-v',
+};
+
+// Version numbers saved on this device for one app (oldest first). With an update waiting there are two.
+async function savedVersions(prefix) {
+  const keys = await caches.keys().catch(() => []);
+  return keys.filter((k) => k.startsWith(prefix)).map((k) => Number(k.slice(prefix.length))).filter((n) => n > 0).sort((x, y) => x - y);
+}
+
+// Waits until a newly found version has finished downloading (or failed).
 function waitInstalled(sw) {
   return new Promise((resolve) => {
     if (sw.state !== 'installing') return resolve(sw.state);
@@ -107,52 +120,104 @@ function waitInstalled(sw) {
   });
 }
 
-// Asks each app's offline copy to look for a newer version on the site, then switches to it straight
-// away (the same thing the app's own "Update" button does). Apps that aren't kept offline always load
-// the latest version anyway.
-$('update-btn').addEventListener('click', async () => {
-  const btn = $('update-btn');
-  const msg = $('update-msg');
-  btn.disabled = true;
-  btn.textContent = 'Checking…';
-  if (!navigator.onLine) {
-    msg.textContent = 'You’re offline. Connect to the internet to check for updates.';
-    btn.disabled = false; btn.textContent = 'Check for updates';
+const SUITE = ['apps', 'This Apps screen'];
+const updateState = {};   // slug -> { reg, status: 'ready' | 'current' | 'latest' | 'checking', from, to }
+
+function updateRow([slug, name]) {
+  const s = updateState[slug] || { status: 'checking' };
+  const li = document.createElement('li');
+  li.className = s.status;
+  const icon = slug === 'apps' ? 'icons/icon-192.png' : `../${slug}/icons/icon-192.png`;
+  li.innerHTML = `<img src="${icon}" alt=""><span class="name"></span><span class="note"></span>`;
+  li.querySelector('.name').textContent = name;
+  li.querySelector('.note').textContent = {
+    checking: 'checking…',
+    ready: s.from && s.to ? `update ready: v${s.from} → v${s.to}` : 'update ready',
+    current: s.to ? `up to date · v${s.to}` : 'up to date',
+    latest: 'always the latest (not kept offline)',
+    error: 'couldn’t check',
+  }[s.status];
+  if (s.status === 'ready') {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn small';
+    btn.textContent = 'Update';
+    btn.addEventListener('click', () => applyUpdate(slug));
+    li.append(btn);
+  }
+  return li;
+}
+
+function renderUpdates() {
+  $('update-list').replaceChildren(...[SUITE, ...APPS].map(updateRow));
+  const ready = Object.values(updateState).filter((s) => s.status === 'ready').length;
+  $('update-all').hidden = ready < 2;
+}
+
+async function checkOne(slug) {
+  if (slug === 'apps') {
+    const reg = await navigator.serviceWorker.getRegistration('/apps/').catch(() => null);
+    if (!reg) { updateState.apps = { status: 'latest' }; return; }
+    const before = await savedVersions('davyrockett-apps-v');
+    try { await reg.update(); } catch { updateState.apps = { status: 'error' }; return; }
+    if (reg.installing) await waitInstalled(reg.installing);
+    const after = await savedVersions('davyrockett-apps-v');
+    const newer = after[after.length - 1] > (before[before.length - 1] || 0);
+    // This screen switches to a new version by itself; reloading shows it.
+    updateState.apps = newer ? { status: 'ready', from: before[before.length - 1], to: after[after.length - 1] }
+      : { status: 'current', to: after[after.length - 1] };
     return;
   }
-  const updated = [];
-  let checked = 0;
-  for (const [slug, name] of APPS) {
-    const reg = await navigator.serviceWorker.getRegistration(`/${slug}/`).catch(() => null);
-    if (!reg || new URL(reg.scope).pathname !== `/${slug}/`) continue;
-    checked++;
-    msg.textContent = `Checking ${name}…`;
-    try { await reg.update(); } catch { /* offline or site busy: skip this one */ }
-    if (reg.installing) await waitInstalled(reg.installing);
-    if (reg.waiting) {
-      reg.waiting.postMessage('skipWaiting');
-      updated.push(name);
-    }
+  const reg = await navigator.serviceWorker.getRegistration(`/${slug}/`).catch(() => null);
+  if (!reg || new URL(reg.scope).pathname !== `/${slug}/`) { updateState[slug] = { status: 'latest' }; return; }
+  try { await reg.update(); } catch { /* offline: report what's already known */ }
+  if (reg.installing) await waitInstalled(reg.installing);
+  const v = await savedVersions(CACHE_PREFIX[slug]);
+  updateState[slug] = reg.waiting
+    ? { status: 'ready', reg, from: v[0], to: v[v.length - 1] }
+    : { status: 'current', to: v[v.length - 1] };
+}
+
+let checking = false;
+async function checkUpdates() {
+  if (checking || !('serviceWorker' in navigator)) return;
+  checking = true;
+  const msg = $('update-msg');
+  if (!navigator.onLine) {
+    msg.textContent = 'You’re offline. Connect to the internet to check for updates.';
+    checking = false;
+    return;
   }
-  // The suite itself.
-  let suiteUpdated = false;
-  const own = await navigator.serviceWorker.getRegistration('/apps/').catch(() => null);
-  if (own) {
-    try { await own.update(); } catch { /* skip */ }
-    suiteUpdated = Boolean(own.installing || own.waiting);
-  }
-  btn.disabled = false;
-  btn.textContent = 'Check for updates';
+  msg.textContent = 'Checking every app for a newer version…';
+  for (const k of Object.keys(updateState)) delete updateState[k];
+  renderUpdates();
+  await Promise.all([SUITE, ...APPS].map(async ([slug]) => {
+    try { await checkOne(slug); } catch { updateState[slug] = { status: 'error' }; }
+    renderUpdates();
+  }));
+  const ready = Object.values(updateState).filter((s) => s.status === 'ready').length;
   const time = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  msg.textContent = updated.length
-    ? `Updated ${updated.join(', ')} (checked at ${time}).`
-    : checked ? `Everything is up to date (checked at ${time}).` : 'No apps are kept offline yet, so they always open the latest version.';
-  if (suiteUpdated) {
-    msg.textContent += ' This screen has an update too: reloading…';
-    setTimeout(() => location.reload(), 1500);
-  }
-  renderOffline();
+  msg.textContent = ready ? `${ready} update${ready === 1 ? '' : 's'} ready (checked at ${time}).` : `Everything is up to date (checked at ${time}).`;
+  checking = false;
+}
+
+function applyUpdate(slug) {
+  const s = updateState[slug];
+  if (!s || s.status !== 'ready') return;
+  if (slug === 'apps') { location.reload(); return; }
+  // Same as tapping "Update" inside the app: switch to the version that's already downloaded.
+  if (s.reg && s.reg.waiting) s.reg.waiting.postMessage('skipWaiting');
+  updateState[slug] = { status: 'current', to: s.to };
+  renderUpdates();
+}
+
+$('update-all').addEventListener('click', () => {
+  const suiteReady = updateState.apps && updateState.apps.status === 'ready';
+  APPS.forEach(([slug]) => applyUpdate(slug));
+  $('update-msg').textContent = 'All updated.';
+  if (suiteReady) setTimeout(() => location.reload(), 800);
 });
+$('update-check').addEventListener('click', checkUpdates);
 
 /* ---------- One access key for every app ---------- */
 
@@ -230,6 +295,7 @@ const sheet = $('settings');
 $('settings-open').addEventListener('click', () => {
   renderOffline();
   renderKeys();
+  checkUpdates();
   if (sheet.showModal) sheet.showModal(); else sheet.setAttribute('open', '');
 });
 $('settings-close').addEventListener('click', () => sheet.close ? sheet.close() : sheet.removeAttribute('open'));

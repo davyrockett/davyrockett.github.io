@@ -125,6 +125,14 @@
       background: var(--bg);
       color: var(--ink);
     }
+    .update-list { list-style: none; margin: 0 0 12px; padding: 0; }
+    .update-list li { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); font-size: .92rem; }
+    .update-list li:first-child { border-top: 0; }
+    .update-list img { width: 28px; height: 28px; border-radius: 22%; }
+    .update-list .name { font-weight: 700; }
+    .update-list .note { margin-left: auto; color: var(--grey); font-size: .8rem; text-align: right; }
+    .update-list .ready .note { color: var(--orange-dark); font-weight: 700; }
+    .btn.small { padding: 6px 12px; font-size: .82rem; }
     .key-msg { min-height: 1.4em; margin: 10px 0 0; font-size: .9rem; color: var(--ink); }
   </style>
 </head>
@@ -181,8 +189,12 @@
 
     <div class="panel">
       <h3>updates</h3>
-      <p id="update-msg">Apps also update themselves when you open them. This checks every app at once.</p>
-      <button type="button" class="btn" id="update-btn">Check for updates</button>
+      <p id="update-msg">Checks every app (and this screen) for a newer version.</p>
+      <ul class="update-list" id="update-list"></ul>
+      <div class="key-row">
+        <button type="button" class="btn" id="update-all" hidden>Update all</button>
+        <button type="button" class="btn quiet" id="update-check">Check again</button>
+      </div>
     </div>
 
     <div class="panel">
