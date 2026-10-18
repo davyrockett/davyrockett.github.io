@@ -4,9 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Apps · davyrockett</title>
-  <!-- Unlinked page: David's list of every app, for adding them to Home Screens. Not in the menu or search engines. -->
+  <!-- Unlinked page and installable app suite: David's apps from one Home Screen icon. Not in the menu or search engines. -->
   <meta name="robots" content="noindex, nofollow">
-  <link rel="icon" href="../images/figure.png">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#FBF8F4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Apps">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Questrial&display=swap" rel="stylesheet">
@@ -72,6 +79,48 @@
       text-transform: uppercase;
       color: var(--orange-dark);
     }
+    .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px 20px 18px;
+    }
+    .panel h3 { font-family: var(--head); font-size: 1.3rem; text-transform: lowercase; margin: 0 0 4px; }
+    .panel p { color: var(--grey); font-size: .93rem; margin: 0 0 12px; }
+    .status-list { list-style: none; margin: 0 0 14px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; font-size: .9rem; }
+    .status-list li { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .status-list .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .status-list .note { margin-left: auto; color: var(--grey); font-size: .8rem; }
+    #key-list { grid-template-columns: 1fr; max-width: 320px; }
+    .status-list .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--line); box-shadow: inset 0 0 0 1px #d8cfc4; }
+    .status-list .state-ready .dot { background: #3E9B5E; box-shadow: none; }
+    .status-list .state-working .dot { background: var(--orange); box-shadow: none; animation: pulse 1s ease-in-out infinite alternate; }
+    @keyframes pulse { to { opacity: .35; } }
+    .btn {
+      font: 700 .95rem var(--body);
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 18px;
+      background: var(--orange);
+      color: #fff;
+      cursor: pointer;
+    }
+    .btn:disabled { background: var(--line); color: var(--grey); cursor: default; }
+    .btn.quiet { background: none; color: var(--grey); text-decoration: underline; padding: 10px 4px; font-weight: 400; }
+    .key-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .key-row input {
+      flex: 1 1 200px;
+      min-width: 0;
+      font: 1rem var(--body);
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .key-msg { min-height: 1.4em; margin: 10px 0 0; font-size: .9rem; color: var(--ink); }
+    @media (max-width: 760px) { .panels { grid-template-columns: 1fr; } }
     .tip {
       display: flex;
       gap: 14px;
@@ -105,7 +154,7 @@
 <main class="wrap">
   <section>
     <h2>apps</h2>
-    <p class="apps-intro">Every app in one place. Tap one to open it.</p>
+    <p class="apps-intro">Every app in one place. Tap one to open it; inside, the <b>All apps</b> button brings you back here.</p>
 
     <h3 class="group-title">teaching &amp; practice</h3>
     <ul class="app-grid">
@@ -129,11 +178,31 @@
       <li><a class="app" href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt="" width="88" height="88" loading="lazy"><span class="name">Z4 Log</span><span class="desc">Garage log and fault codes for the Z4.</span></a></li>
     </ul>
 
+    <div class="panels">
+      <div class="panel">
+        <h3>offline</h3>
+        <p id="offline-summary">Checking…</p>
+        <ul class="status-list" id="offline-list"></ul>
+        <button type="button" class="btn" id="offline-btn">Make everything work offline</button>
+      </div>
+      <form class="panel" id="key-form" autocomplete="off">
+        <h3>access key</h3>
+        <p>One key for every app that syncs. It’s checked with GitHub, then saved on this device only.</p>
+        <ul class="status-list" id="key-list"></ul>
+        <div class="key-row">
+          <input id="key-input" type="password" placeholder="Paste your access key" aria-label="Access key" autocapitalize="off" spellcheck="false">
+          <button type="submit" class="btn" id="key-save">Save for every app</button>
+        </div>
+        <p class="key-msg" id="key-msg" aria-live="polite"></p>
+        <button type="button" class="btn quiet" id="key-forget" hidden>Remove the key from this device</button>
+      </form>
+    </div>
+
     <div class="tip">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M12 7v6M9 10h6"/></svg>
-      <div><b>Add one to your Home Screen:</b> open it, tap <b>Share</b> (iPhone/iPad) or the <b>⋮</b> menu
-        (Android/Chrome), then <b>Add to Home Screen</b>. Apps that sync need your access key pasted in their
-        Settings once on each device.</div>
+      <div><b>Use them all from one icon:</b> on this page tap <b>Share</b> (iPhone/iPad) or the <b>⋮</b> menu
+        (Android/Chrome), then <b>Add to Home Screen</b>. Then, inside that app, tap <b>Make everything work offline</b>
+        and paste your access key once. (You can still add any single app on its own the same way.)</div>
     </div>
   </section>
 </main>
@@ -144,5 +213,6 @@
     <a href="../">davyrockett.com</a>
   </div>
 </footer>
+<script src="launcher.js"></script>
 </body>
 </html>
