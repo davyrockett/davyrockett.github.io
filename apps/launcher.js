@@ -134,6 +134,7 @@ function updateRow([slug, name]) {
     checking: 'checking…',
     ready: s.from && s.to ? `update ready: v${s.from} → v${s.to}` : 'update ready',
     current: s.to ? `up to date · v${s.to}` : 'up to date',
+    updated: `updated: v${s.from} → v${s.to}`,
     latest: 'always the latest (not kept offline)',
     error: 'couldn’t check',
   }[s.status];
@@ -170,12 +171,16 @@ async function checkOne(slug) {
   }
   const reg = await navigator.serviceWorker.getRegistration(`/${slug}/`).catch(() => null);
   if (!reg || new URL(reg.scope).pathname !== `/${slug}/`) { updateState[slug] = { status: 'latest' }; return; }
+  const before = await savedVersions(CACHE_PREFIX[slug]);
   try { await reg.update(); } catch { /* offline: report what's already known */ }
   if (reg.installing) await waitInstalled(reg.installing);
   const v = await savedVersions(CACHE_PREFIX[slug]);
-  updateState[slug] = reg.waiting
-    ? { status: 'ready', reg, from: v[0], to: v[v.length - 1] }
-    : { status: 'current', to: v[v.length - 1] };
+  const was = before[before.length - 1];
+  const now = v[v.length - 1];
+  // A new version waits only while the app is open somewhere; otherwise it takes over straight away.
+  updateState[slug] = reg.waiting ? { status: 'ready', reg, from: v[0], to: now }
+    : was && now > was ? { status: 'updated', from: was, to: now }
+    : { status: 'current', to: now };
 }
 
 let checking = false;
@@ -196,8 +201,11 @@ async function checkUpdates() {
     renderUpdates();
   }));
   const ready = Object.values(updateState).filter((s) => s.status === 'ready').length;
+  const done = Object.values(updateState).filter((s) => s.status === 'updated').length;
   const time = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  msg.textContent = ready ? `${ready} update${ready === 1 ? '' : 's'} ready (checked at ${time}).` : `Everything is up to date (checked at ${time}).`;
+  msg.textContent = (ready ? `${ready} update${ready === 1 ? '' : 's'} ready to install. ` : '') +
+    (done ? `${done} app${done === 1 ? '' : 's'} updated. ` : '') +
+    (ready || done ? `(Checked at ${time}.)` : `Everything is up to date (checked at ${time}).`);
   checking = false;
 }
 
