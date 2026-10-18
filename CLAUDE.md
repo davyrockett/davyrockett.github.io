@@ -72,7 +72,9 @@ changes on its own).
   A gig stays "upcoming" until its end time.
 - Colours: the logo orange `#E27039` is used as the accent here (to match the logo artwork), not the app
   orange `#F57C14`. Fonts: Questrial headings (lowercase, like the logo), Atkinson Hyperlegible body.
-- Domain: davyrockett.com is registered at Network Solutions (renews April 2027); DNS was on Wix.
-  Google Workspace email uses the domain (MX records at Google), so **any DNS change must keep the
-  Google MX records**. Custom domain is set in the repo's Pages settings.
+- Domain (switched 2026-10-17): bought through **Wix** (account davidrnorgren2@gmail.com, auto-renews
+  Mar 22, 2027 for $56.50/2 yrs). DNS is edited in Wix (A records → GitHub's 4 IPs, `www` CNAME →
+  davyrockett.github.io). **Keep the 7 Google MX records.** Pages custom domain: www.davyrockett.com.
+  Wix Premium plan (Light) is no longer needed; next charge $336 on Mar 9, 2027 (cancel before then).
+  Optional: transfer the domain to Cloudflare Registrar before Mar 2027. Details in README.
 - Local preview: `Start Website.command` (port 8775).

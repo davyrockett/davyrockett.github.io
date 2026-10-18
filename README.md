@@ -32,52 +32,27 @@ To look at it on the Mac first, double-click **Start Website.command**.
 | `promo-materials/` | Press kit page (davyrockett.com/promo-materials) |
 | `tools/sync_gigs.py` | Reads the Google Calendar |
 
-## Moving davyrockett.com from Wix to this site
+## The davyrockett.com domain
 
-You already own the domain: it's registered at **Network Solutions**, paid through April 22, 2027.
-Wix only runs its DNS (the "address book" saying where the website and email live). Google email
-records (MX) are on the domain, so they must come along.
+**Switched to this site on 2026-10-17.** The domain was bought through **Wix** (account
+davidrnorgren2@gmail.com), and its records are managed in Wix → Domains → davyrockett.com →
+Manage DNS records:
 
-Plan: move the DNS to **Cloudflare** (free), point it at GitHub, then (optional) move the registration
-to Cloudflare too (about $10–11 a year, versus Network Solutions' higher prices). Don't cancel Wix
-until the new site shows at davyrockett.com.
+| Type | Name | Value |
+| --- | --- | --- |
+| A | davyrockett.com | 185.199.108.153, .109.153, .110.153, .111.153 (GitHub) |
+| CNAME | www | davyrockett.github.io |
+| MX | davyrockett.com | Google email (7 records): leave these alone |
 
-### 1. Cloudflare account and DNS (about 15 minutes)
-1. Sign up at cloudflare.com (free plan) and turn on two-factor sign-in.
-2. **Add a domain** → `davyrockett.com` → Free plan. Cloudflare copies the current records from Wix.
-3. In **DNS → Records**, delete the Wix website records (A records `185.230.63.x` and the `www` CNAME
-   pointing at `wixdns.net`), keep every **MX** record, and add:
+(`m.davyrockett.com` still points at the old Wix mobile site; harmless, delete any time.)
 
-   | Type | Name | Content | Proxy |
-   | --- | --- | --- | --- |
-   | A | @ | 185.199.108.153 | DNS only (grey cloud) |
-   | A | @ | 185.199.109.153 | DNS only |
-   | A | @ | 185.199.110.153 | DNS only |
-   | A | @ | 185.199.111.153 | DNS only |
-   | CNAME | www | davyrockett.github.io | DNS only |
+GitHub repo Settings → Pages has the custom domain `www.davyrockett.com` with HTTPS enforced.
 
-   The MX records should read: 10 `aspmx.l.google.com`, 20 `alt1.aspmx.l.google.com`,
-   20 `alt2.aspmx.l.google.com`, 30 `aspmx2.googlemail.com`, `aspmx3…`, `aspmx4…`, `aspmx5.googlemail.com`.
-   Add any that are missing.
-4. Cloudflare shows two nameservers (like `xxx.ns.cloudflare.com`). Write them down.
-
-### 2. Network Solutions (5 minutes)
-1. Log in → **Domains** → davyrockett.com → **Nameservers** → custom → enter the two Cloudflare ones.
-2. Wait until Cloudflare says the domain is **Active** (usually under an hour, can take up to a day).
-
-### 3. GitHub (Claude does this)
-Tell Claude it's active. Claude sets `www.davyrockett.com` as the site's custom domain and turns on
-HTTPS once GitHub's certificate is ready (15–60 minutes). davyrockett.com redirects to www automatically.
-
-### 4. Cancel Wix
-Once the new site shows at davyrockett.com: Wix → Subscriptions → cancel the Premium plan (and turn
-off auto-renew on anything else there).
-
-### 5. Optional: move the registration to Cloudflare (saves money)
-1. Network Solutions: turn off **domain lock** / transfer lock and get the **authorization (EPP) code**.
-   If they offer to cancel privacy protection, that's fine: Cloudflare hides your details for free.
-2. Cloudflare → **Domain Registration → Transfer Domains** → davyrockett.com → enter the code → pay
-   (about $10–11; it adds a year, so it then runs to April 2028). Turn on **auto-renew**.
-3. Approve the confirmation email(s). The transfer finishes within 5 days, with no downtime, since
-   Cloudflare is already running the DNS.
-4. Afterwards, close or let lapse anything left at Network Solutions (make sure nothing auto-renews).
+### Before March 2027 (both Wix subscriptions were paid through then)
+- **Wix Premium plan (Light):** no longer needed. Next charge **$336 on Mar 9, 2027**. Cancel it any
+  time before then (Wix → Premium Subscriptions → Premium Plan → ⋯ → Cancel plan). Cancelling takes
+  effect immediately with no refund, so there's no benefit to doing it early.
+- **Domain:** renews through Wix for **$56.50 / 2 years on Mar 22, 2027**. Cheaper option: transfer it to
+  Cloudflare Registrar (about $10–11/year) before then: Wix → Domains → ⋯ → Transfer away from Wix gives
+  the transfer code; start the transfer at Cloudflare (needs a Cloudflare account), and copy the DNS
+  records above into Cloudflare first. **Don't let the domain lapse.**
