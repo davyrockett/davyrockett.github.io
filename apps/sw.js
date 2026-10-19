@@ -2,7 +2,7 @@
 // Each app keeps its own offline copy (its own sw.js); this one only covers the launcher and the icons.
 // Uses the internet when it's there (so the page and its script always match after an update) and the
 // saved copy when it isn't.
-const CACHE = 'davyrockett-apps-v8';
+const CACHE = 'davyrockett-apps-v9';
 const APPS = ['first-frets', 'page-fright', 'lip-service', 'jam-session', 'memory-lane', 'song-party',
   'sos-band-editor', 'sos-band', 'ge150-presets', 'health-log', 'z4-log'];
 const ASSETS = [
@@ -11,7 +11,6 @@ const ASSETS = [
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/apple-touch-icon.png',
-  './icons/website-192.png',
   '../styles.css',
   '../images/logo.png',
   '../images/figure.png',
