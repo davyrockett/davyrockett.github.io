@@ -56,7 +56,7 @@ jobs:
         if: github.event_name != 'schedule' || steps.save.outputs.changed == 'true'
         run: |
           mkdir _site
-          cp -R index.html styles.css site.js gigs.json images music promo-materials portfolio apps _site/
+          cp -R index.html styles.css site.js suite.js gigs.json images music promo-materials portfolio apps _site/
           [ -f CNAME ] && cp CNAME _site/ || true
           # Stamp the script and stylesheet links so browsers never mix an old copy with a new page.
           v="${GITHUB_SHA::7}"
