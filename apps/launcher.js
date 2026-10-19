@@ -298,6 +298,56 @@ $('key-forget').addEventListener('click', () => {
   renderKeys();
 });
 
+/* ---------- Sharing an app ---------- */
+
+// A small share button on each icon opens a panel with that app's link: Copy, or Share… (the
+// device's share sheet) where the browser has one.
+const shareSheet = $('share-sheet');
+let shareUrl = '';
+const SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>';
+
+document.querySelectorAll('.grid .tile').forEach((tile) => {
+  const name = tile.textContent.trim();
+  const badge = document.createElement('button');
+  badge.type = 'button';
+  badge.className = 'share-badge';
+  badge.setAttribute('aria-label', `Share ${name}`);
+  badge.innerHTML = SHARE_ICON;
+  badge.addEventListener('click', () => {
+    shareUrl = tile.href;
+    $('share-title').textContent = name;
+    $('share-icon').src = tile.querySelector('img').src;
+    $('share-link').textContent = shareUrl;
+    $('share-copy').textContent = 'Copy link';
+    if (shareSheet.showModal) shareSheet.showModal(); else shareSheet.setAttribute('open', '');
+  });
+  tile.parentElement.append(badge);
+});
+
+if (navigator.share) {
+  $('share-send').hidden = false;
+  $('share-send').addEventListener('click', () => {
+    navigator.share({ title: $('share-title').textContent, url: shareUrl }).catch(() => { /* closed */ });
+  });
+}
+$('share-copy').addEventListener('click', async () => {
+  const btn = $('share-copy');
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+    btn.textContent = 'Copied';
+  } catch {
+    const range = document.createRange();
+    range.selectNodeContents($('share-link'));
+    const sel = getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    btn.textContent = 'Selected: copy it';
+  }
+  setTimeout(() => { btn.textContent = 'Copy link'; }, 2000);
+});
+$('share-close').addEventListener('click', () => shareSheet.close());
+shareSheet.addEventListener('click', (e) => { if (e.target === shareSheet) shareSheet.close(); });
+
 /* ---------- Settings sheet ---------- */
 
 const sheet = $('settings');

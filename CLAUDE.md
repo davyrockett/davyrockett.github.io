@@ -81,6 +81,8 @@ changes on its own).
   offline" button (registers each app's own `sw.js`), and one access key saved into every syncing app's own storage
   keys (`SYNCED` list; checked against each data repo first). Add each new app to the grid, `APPS` in launcher.js
   and `APPS` in apps/sw.js.
+  Each icon has a small share button (added by launcher.js) that opens a panel with the app's link: Copy link,
+  and Share… where the device has a share sheet.
   The suite's first tile is **Website** (same icon as the suite: the outline figure). The site's own
   pages load `suite.js` (copy of `Claude Apps/tools/suite.js`) so the "All apps" button shows there too when
   opened from the suite (no browser back button inside the installed suite).

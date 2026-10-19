@@ -73,7 +73,42 @@
     .tile:active img { transform: scale(.93); }
     .tile:focus-visible { outline: none; }
     .tile:focus-visible img { outline: 3px solid var(--orange); outline-offset: 3px; }
+    .grid li { position: relative; display: flex; justify-content: center; }
+    .share-badge {
+      position: absolute;
+      top: -8px;
+      right: calc(50% - 50px);
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--grey);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(30, 20, 10, .15);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .share-badge svg { width: 15px; height: 15px; }
+    .share-badge:active { transform: scale(.92); }
+    .share-head { display: flex; align-items: center; gap: 12px; }
+    .share-head img { width: 48px; height: 48px; border-radius: 22%; }
+    .share-head h2 { font-size: 1.35rem; margin: 0; text-transform: none; }
+    .share-head h2::after { display: none; }
+    .share-link {
+      margin: 14px 0 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card);
+      font-size: .95rem;
+      word-break: break-all;
+      user-select: all;
+      -webkit-user-select: all;
+    }
     @media (max-width: 520px) {
+      .share-badge { right: calc(50% - 42px); width: 28px; height: 28px; }
       .grid { grid-template-columns: repeat(4, 1fr); gap: 22px 6px; padding-left: 10px; padding-right: 10px; }
       .tile { font-size: .76rem; gap: 6px; }
       .tile img { width: 62px; height: 62px; }
@@ -162,6 +197,23 @@
     <li><a class="tile" href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt="" width="76" height="76">Z4 Log</a></li>
   </ul>
 </main>
+
+<dialog id="share-sheet" aria-labelledby="share-title">
+  <div class="sheet-body" style="padding-top:18px">
+    <div class="share-head">
+      <img id="share-icon" src="icons/icon-192.png" alt="">
+      <h2 id="share-title">share</h2>
+      <button type="button" class="icon-btn" id="share-close" aria-label="Close" style="margin-left:auto">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <p class="share-link" id="share-link"></p>
+    <div class="key-row">
+      <button type="button" class="btn" id="share-copy">Copy link</button>
+      <button type="button" class="btn" id="share-send" hidden>Share…</button>
+    </div>
+  </div>
+</dialog>
 
 <dialog id="settings" aria-labelledby="settings-title">
   <div class="sheet-head">
