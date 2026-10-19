@@ -8,7 +8,7 @@
 const OWNER = 'davyrockett';
 const APPS = [
   ['first-frets', 'First Frets'], ['page-fright', 'Page Fright'], ['lip-service', 'Lip Service'],
-  ['jam-session', 'Jam Session'], ['memory-lane', 'Memory Lane'], ['sos-band-editor', 'SOS Band Editor'],
+  ['jam-session', 'Jam Session'], ['memory-lane', 'Memory Lane'], ['song-party', 'Song Party'], ['sos-band-editor', 'SOS Band Editor'],
   ['sos-band', 'SOS Band'], ['ge150-presets', 'GE150 Presets'], ['health-log', 'Health Log'], ['z4-log', 'Z4 Log'],
 ];
 
@@ -19,6 +19,7 @@ const SYNCED = [
   { name: 'Z4 Log', repo: 'z4-log-data', token: 'z4log-sync-token', repoKey: 'z4log-sync-repo', last: 'z4log-sync-last' },
   { name: 'Jam Session', repo: 'jam-session-data', token: 'js.syncToken', repoKey: 'js.syncRepo', last: 'js.syncLast', json: true },
   { name: 'Memory Lane', repo: 'memory-lane-data', token: 'ml.sync-token', last: 'ml.sync-last' },
+  { name: 'Song Party', repo: 'song-party-data', token: 'sp.sync-token', last: 'sp.sync-last' },
   { name: 'SOS Band Editor', repo: 'sos-band-data', token: 'sosed.sync-token', last: 'sosed.sync-last' },
   { name: 'GE150 Presets', repo: 'ge150-presets-data', token: 'ge150.sync-token', last: 'ge150.sync-last' },
 ];
@@ -101,7 +102,7 @@ $('offline-btn').addEventListener('click', async () => {
 // Each app's saved copy is named "<prefix><version>" (see each app's sw.js).
 const CACHE_PREFIX = {
   'first-frets': 'firstfrets-v', 'page-fright': 'pagefright-v', 'lip-service': 'lipservice-v',
-  'jam-session': 'jamsession-v', 'memory-lane': 'memory-lane-v', 'sos-band-editor': 'sos-band-editor-v',
+  'jam-session': 'jamsession-v', 'memory-lane': 'memory-lane-v', 'song-party': 'song-party-v', 'sos-band-editor': 'sos-band-editor-v',
   'sos-band': 'sos-band-v', 'ge150-presets': 'presets-v', 'health-log': 'healthlog-v', 'z4-log': 'z4log-v',
 };
 
