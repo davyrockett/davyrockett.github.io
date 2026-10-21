@@ -7,7 +7,7 @@
 
 const OWNER = 'davyrockett';
 const APPS = [
-  ['first-frets', 'First Frets'], ['page-fright', 'Page Fright'], ['lip-service', 'Lip Service'],
+  ['rundown', 'Rundown'], ['first-frets', 'First Frets'], ['page-fright', 'Page Fright'], ['lip-service', 'Lip Service'],
   ['jam-session', 'Jam Session'], ['memory-lane', 'Memory Lane'], ['song-party', 'Song Party'], ['sos-band-editor', 'SOS Band Editor'],
   ['sos-band', 'SOS Band'], ['ge150-presets', 'GE150 Presets'], ['health-log', 'Health Log'], ['z4-log', 'Z4 Log'],
 ];
@@ -22,6 +22,7 @@ const SYNCED = [
   { name: 'Song Party', repo: 'song-party-data', token: 'sp.sync-token', last: 'sp.sync-last' },
   { name: 'SOS Band Editor', repo: 'sos-band-data', token: 'sosed.sync-token', last: 'sosed.sync-last' },
   { name: 'GE150 Presets', repo: 'ge150-presets-data', token: 'ge150.sync-token', last: 'ge150.sync-last' },
+  { name: 'Rundown', repo: 'rundown-data', token: 'rundown.sync-token', last: 'rundown.sync-last' },
 ];
 
 const $ = (id) => document.getElementById(id);
@@ -35,7 +36,11 @@ function hasKey(app) {
 }
 
 // Opened from here: apps show their "All apps" button for the rest of this visit.
-try { sessionStorage.setItem('davyrockett-suite', '1'); } catch { /* blocked */ }
+// (Rundown, a copy of this screen, sets its own address as home instead.)
+try {
+  sessionStorage.setItem('davyrockett-suite', '1');
+  sessionStorage.setItem('davyrockett-suite-home', '/apps/');
+} catch { /* blocked */ }
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 
@@ -101,7 +106,7 @@ $('offline-btn').addEventListener('click', async () => {
 
 // Each app's saved copy is named "<prefix><version>" (see each app's sw.js).
 const CACHE_PREFIX = {
-  'first-frets': 'firstfrets-v', 'page-fright': 'pagefright-v', 'lip-service': 'lipservice-v',
+  rundown: 'rundown-v', 'first-frets': 'firstfrets-v', 'page-fright': 'pagefright-v', 'lip-service': 'lipservice-v',
   'jam-session': 'jamsession-v', 'memory-lane': 'memory-lane-v', 'song-party': 'song-party-v', 'sos-band-editor': 'sos-band-editor-v',
   'sos-band': 'sos-band-v', 'ge150-presets': 'presets-v', 'health-log': 'healthlog-v', 'z4-log': 'z4log-v',
 };

@@ -89,6 +89,9 @@ changes on its own).
   own IndexedDB on the device, else the last saved list). **All ticks are only on this screen** (localStorage
   `apps.practice`, cleared each day; `apps.z4-ticked`): David ticks them himself; they never change or read
   anything in Lip Service, Page Fright or Z4 Log.
+  **Rundown** (www.davyrockett.com/rundown/, its own repo, 2026-10-21) is David's dashboard, started as a copy of this
+  screen; it sets `sessionStorage['davyrockett-suite-home']` to `/rundown/` so apps' "All apps" button returns there
+  (this screen sets `/apps/`). It's the second tile here.
   The suite's first tile is **Website** (same icon as the suite: the outline figure). The site's own
   pages load `suite.js` (copy of `Claude Apps/tools/suite.js`) so the "All apps" button shows there too when
   opened from the suite (no browser back button inside the installed suite).
