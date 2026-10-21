@@ -348,6 +348,199 @@ $('share-copy').addEventListener('click', async () => {
 $('share-close').addEventListener('click', () => shareSheet.close());
 shareSheet.addEventListener('click', (e) => { if (e.target === shareSheet) shareSheet.close(); });
 
+/* ---------- Today (below the icons) ---------- */
+
+// Practice ticks and Z4 ticks live only on this screen: nothing is sent to the apps.
+// Practice ticks clear each new day; Z4 ticks stay until that to-do is done in Z4 Log.
+const PRACTICE = ['Vocal warm-up', 'Reading', 'Improv'];
+const PRACTICE_KEY = 'apps.practice';      // {"date": "2026-10-21", "done": ["Reading"]}
+const Z4_TICKS_KEY = 'apps.z4-ticked';     // ids of Z4 to-dos ticked here
+const SAVED_KEY = 'apps.today-saved';      // last gigs and to-dos fetched, for when there's no internet
+const Z4_SHOWN = 5;
+const TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>';
+
+function lsJSON(k, fallback) { try { return JSON.parse(lsGet(k)) ?? fallback; } catch { return fallback; } }
+// Today's date as YYYY-MM-DD on this device.
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function tickButton(cls, label, on, onToggle) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = cls;
+  b.setAttribute('aria-pressed', String(on));
+  b.innerHTML = `<span class="t-chk">${TICK}</span><span></span>`;
+  b.lastChild.textContent = label;
+  b.addEventListener('click', () => {
+    const now = b.getAttribute('aria-pressed') !== 'true';
+    b.setAttribute('aria-pressed', String(now));
+    onToggle(now);
+  });
+  return b;
+}
+
+function renderPractice() {
+  let state = lsJSON(PRACTICE_KEY, {});
+  if (state.date !== todayISO()) state = { date: todayISO(), done: [] };
+  $('practice').replaceChildren(...PRACTICE.map((name) => tickButton('t-chip', name, state.done.includes(name), (on) => {
+    state.done = on ? [...state.done, name] : state.done.filter((n) => n !== name);
+    state.date = todayISO();
+    lsSet(PRACTICE_KEY, JSON.stringify(state));
+  })));
+}
+
+/* Gigs: the next Davy Rockett gig (the website's gigs.json, from the Google Calendar) and the next SOS
+   Band show (sos-band-data, public). Gig times are Pacific wall-clock times, shown as written. */
+
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function untilText(date) {
+  const [y, m, d] = date.split('-').map(Number);
+  const [ty, tm, td] = todayISO().split('-').map(Number);
+  const n = Math.round((Date.UTC(y, m - 1, d) - Date.UTC(ty, tm - 1, td)) / 864e5);
+  return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : `In ${n} days`;
+}
+
+function clockText(start) {
+  let h = Number(start.slice(11, 13));
+  const min = start.slice(14, 16);
+  const ampm = h < 12 ? 'am' : 'pm';
+  h = h % 12 || 12;
+  return `${h}${min === '00' ? '' : `:${min}`} ${ampm}`;
+}
+
+function gigRow(g) {
+  const [y, m, d] = g.date.split('-').map(Number);
+  const weekday = DAYS[new Date(y, m - 1, d).getDay()];
+  const a = document.createElement('a');
+  a.className = 't-gig';
+  a.href = g.href;
+  a.innerHTML = '<div class="t-date"><b></b><span></span></div><div><div class="title"></div><div class="when"></div></div><span class="who"></span>';
+  a.querySelector('b').textContent = MONTHS[m - 1];
+  a.querySelector('.t-date span').textContent = d;
+  a.querySelector('.title').textContent = g.title;
+  a.querySelector('.when').textContent = [weekday, g.time, untilText(g.date)].filter(Boolean).join(' · ');
+  a.querySelector('.who').textContent = g.who;
+  return a;
+}
+
+function renderGigs(gigs) {
+  const today = todayISO();
+  const upcoming = (gigs || []).filter((g) => g.date >= today).sort((x, y) => x.date.localeCompare(y.date));
+  $('gigs-card').hidden = !upcoming.length;
+  $('gig-list').replaceChildren(...upcoming.map(gigRow));
+}
+
+async function loadGigs() {
+  const [site, sos] = await Promise.all([
+    fetch('../gigs.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    fetch(`https://raw.githubusercontent.com/${OWNER}/sos-band-data/main/data.json`, { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null)).catch(() => null),
+  ]);
+  const saved = lsJSON(SAVED_KEY, {});
+  const out = [];
+  const now = new Date();
+  const nowLocal = `${todayISO()}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  if (site) {
+    const next = (site.gigs || [])
+      .filter((g) => (g.allDay ? (g.end || g.start).slice(0, 10) >= todayISO() : (g.end || g.start) >= nowLocal))
+      .sort((x, y) => x.start.localeCompare(y.start))[0];
+    if (next) out.push({ date: next.start.slice(0, 10), time: next.allDay ? '' : clockText(next.start), title: next.title, who: 'Davy Rockett', href: '../#gigs' });
+  } else if (saved.gigs) {
+    out.push(...saved.gigs.filter((g) => g.who === 'Davy Rockett'));
+  }
+  if (sos) {
+    const next = Object.values(sos.items || {})
+      .filter((i) => i && i.type === 'show' && !i.deleted && i.date && i.date >= todayISO())
+      .sort((x, y) => x.date.localeCompare(y.date))[0];
+    if (next) out.push({ date: next.date, time: '', title: next.name, who: 'SOS Band', href: '../sos-band/' });
+  } else if (saved.gigs) {
+    out.push(...saved.gigs.filter((g) => g.who === 'SOS Band'));
+  }
+  lsSet(SAVED_KEY, JSON.stringify({ ...lsJSON(SAVED_KEY, {}), gigs: out }));
+  renderGigs(out);
+}
+
+/* Z4 to-dos: from GitHub with the Z4 Log key when there is one, otherwise Z4 Log's own copy on this
+   device (same website, so its database is readable here), otherwise the last list seen. */
+
+function readZ4Device() {
+  return new Promise((resolve) => {
+    // Only open Z4 Log's database if it already exists: opening a missing one would create an empty one.
+    if (!indexedDB.databases) return resolve(null);
+    indexedDB.databases().then((dbs) => {
+      if (!dbs.some((d) => d.name === 'z4log')) return resolve(null);
+      const req = indexedDB.open('z4log');
+      req.onerror = () => resolve(null);
+      req.onsuccess = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains('todos')) { db.close(); return resolve(null); }
+        const get = db.transaction('todos').objectStore('todos').getAll();
+        get.onsuccess = () => { db.close(); resolve(get.result); };
+        get.onerror = () => { db.close(); resolve(null); };
+      };
+    }).catch(() => resolve(null));
+  });
+}
+
+async function readZ4GitHub() {
+  const token = lsGet('z4log-sync-token');
+  if (!token) return null;
+  const repo = lsGet('z4log-sync-repo') || `${OWNER}/z4-log-data`;
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repo}/contents/data.json`, {
+      cache: 'no-store',
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.raw+json' },
+    });
+    return res.ok ? (await res.json()).todos || [] : null;
+  } catch {
+    return null;
+  }
+}
+
+function renderZ4(todos) {
+  const open = (todos || []).filter((t) => t && !t.done && !t.deleted).sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+  // Forget ticks for to-dos that are now done (or gone) in Z4 Log.
+  const ticked = lsJSON(Z4_TICKS_KEY, []).filter((id) => open.some((t) => t.id === id));
+  lsSet(Z4_TICKS_KEY, JSON.stringify(ticked));
+  $('z4-card').hidden = !open.length;
+  const rows = open.slice(0, Z4_SHOWN).map((t) => tickButton('t-todo', t.title, ticked.includes(t.id), (on) => {
+    const now = lsJSON(Z4_TICKS_KEY, []).filter((id) => id !== t.id);
+    if (on) now.push(t.id);
+    lsSet(Z4_TICKS_KEY, JSON.stringify(now));
+  }));
+  if (open.length > Z4_SHOWN) {
+    const more = document.createElement('p');
+    more.className = 't-more';
+    more.textContent = `and ${open.length - Z4_SHOWN} more in Z4 Log`;
+    rows.push(more);
+  }
+  $('z4-list').replaceChildren(...rows);
+}
+
+async function loadZ4() {
+  const saved = lsJSON(SAVED_KEY, {});
+  if (saved.z4) renderZ4(saved.z4);
+  const todos = (await readZ4GitHub()) || (await readZ4Device());
+  if (!todos) return;
+  const slim = todos.map(({ id, title, done, deleted, createdAt }) => ({ id, title, done, deleted, createdAt }));
+  lsSet(SAVED_KEY, JSON.stringify({ ...lsJSON(SAVED_KEY, {}), z4: slim }));
+  renderZ4(slim);
+}
+
+function renderToday() {
+  $('today-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  renderPractice();
+  renderGigs(lsJSON(SAVED_KEY, {}).gigs);
+  loadGigs();
+  loadZ4();
+}
+
+renderToday();
+
 /* ---------- Settings sheet ---------- */
 
 const sheet = $('settings');
@@ -363,4 +556,4 @@ sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.close(); 
 
 renderOffline();
 renderKeys();
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { renderOffline(); renderKeys(); } });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { renderOffline(); renderKeys(); renderToday(); } });

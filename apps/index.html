@@ -46,7 +46,7 @@
       list-style: none;
       max-width: 760px;
       margin: 0 auto;
-      padding: 18px 16px calc(32px + env(safe-area-inset-bottom, 0px));
+      padding: 18px 16px 10px;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
       gap: 26px 10px;
@@ -113,6 +113,76 @@
       .tile { font-size: .76rem; gap: 6px; }
       .tile img { width: 62px; height: 62px; }
     }
+
+    /* Today: sits below the icons and only fills the space under them (the icons never shrink for it).
+       Ticks here are only for this screen; they never change anything in the apps. */
+    .today {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 6px 16px calc(32px + env(safe-area-inset-bottom, 0px));
+    }
+    .today-head { display: flex; align-items: baseline; justify-content: space-between; margin: 0 4px 10px; }
+    .today-head h2 { font-family: var(--head); font-size: 1.4rem; text-transform: lowercase; margin: 0; }
+    .today-head h2::after { display: none; }
+    .today-head span { color: var(--grey); font-size: .88rem; }
+    .t-cards { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .t-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 12px 14px; }
+    .t-card h3 { font-family: var(--head); font-size: 1rem; text-transform: lowercase; margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+    .t-card h3::after { display: none; }
+    .t-card h3 a { margin-left: auto; font: 700 .8rem var(--body); color: var(--orange-dark); text-transform: none; text-decoration: none; }
+    .t-chk {
+      flex: none;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid #d8cfc4;
+      background: var(--bg);
+      color: #fff;
+      display: grid;
+      place-items: center;
+    }
+    .t-chk svg { width: 13px; height: 13px; opacity: 0; }
+    [aria-pressed="true"] .t-chk { background: #3E9B5E; border-color: #3E9B5E; }
+    [aria-pressed="true"] .t-chk svg { opacity: 1; }
+    .t-chips { display: flex; gap: 6px; }
+    .t-chips .t-chk { width: 18px; height: 18px; }
+    .t-chips .t-chk svg { width: 11px; height: 11px; }
+    .t-chip {
+      flex: 1 1 auto; min-width: 0;
+      white-space: nowrap;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      padding: 8px 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--bg);
+      font: .88rem var(--body);
+      color: var(--ink);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .t-chip[aria-pressed="true"] { color: var(--grey); }
+    @media (max-width: 374px) { .t-chip { font-size: .8rem; } }
+    .t-todo {
+      width: 100%;
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 0;
+      border: 0; border-top: 1px solid var(--line);
+      background: none;
+      font: .93rem/1.3 var(--body);
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .t-list > :first-child { border-top: 0; padding-top: 2px; }
+    .t-todo[aria-pressed="true"] span:last-child { color: var(--grey); text-decoration: line-through; }
+    .t-more { margin: 4px 0 0; color: var(--grey); font-size: .82rem; }
+    .t-gig { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+    .t-date { flex: none; width: 46px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; text-align: center; background: var(--bg); }
+    .t-date b { display: block; background: var(--orange); color: #fff; font-size: .62rem; letter-spacing: .06em; padding: 2px 0; }
+    .t-date span { display: block; font: 700 1.15rem/1.45 var(--head); }
+    .t-gig .title { font-weight: 700; font-size: .95rem; line-height: 1.25; }
+    .t-gig .when { color: var(--grey); font-size: .82rem; }
+    .t-gig .who { margin-left: auto; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--grey); font-size: .75rem; font-weight: 700; white-space: nowrap; }
 
     /* Settings sheet */
     dialog {
@@ -196,6 +266,15 @@
     <li><a class="tile" href="../health-log/"><img src="../health-log/icons/icon-192.png" alt="" width="76" height="76">Health Log</a></li>
     <li><a class="tile" href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt="" width="76" height="76">Z4 Log</a></li>
   </ul>
+
+  <section class="today" aria-labelledby="today-title">
+    <div class="today-head"><h2 id="today-title">today</h2><span id="today-date"></span></div>
+    <div class="t-cards">
+      <div class="t-card"><h3>practice</h3><div class="t-chips" id="practice"></div></div>
+      <div class="t-card" id="gigs-card" hidden><h3>next gigs</h3><div class="t-list" id="gig-list"></div></div>
+      <div class="t-card" id="z4-card" hidden><h3>z4 to-dos<a href="../z4-log/">Z4 Log ›</a></h3><div class="t-list" id="z4-list"></div></div>
+    </div>
+  </section>
 </main>
 
 <dialog id="share-sheet" aria-labelledby="share-title">

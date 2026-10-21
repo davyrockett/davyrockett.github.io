@@ -83,6 +83,12 @@ changes on its own).
   and `APPS` in apps/sw.js.
   Each icon has a small share button (added by launcher.js) that opens a panel with the app's link: Copy link,
   and Share… where the device has a share sheet.
+  **Today** (David, 2026-10-21) sits *below* the icons only to fill the empty space: it must never make the icons
+  smaller, and no badges on icons. Cards: practice (Vocal warm-up / Reading / Improv), next gigs (next Davy Rockett
+  gig from `gigs.json` + next SOS show from public sos-band-data), Z4 to-dos (GitHub with the Z4 key, else Z4 Log's
+  own IndexedDB on the device, else the last saved list). **All ticks are only on this screen** (localStorage
+  `apps.practice`, cleared each day; `apps.z4-ticked`): David ticks them himself; they never change or read
+  anything in Lip Service, Page Fright or Z4 Log.
   The suite's first tile is **Website** (same icon as the suite: the outline figure). The site's own
   pages load `suite.js` (copy of `Claude Apps/tools/suite.js`) so the "All apps" button shows there too when
   opened from the suite (no browser back button inside the installed suite).
