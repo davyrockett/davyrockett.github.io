@@ -90,7 +90,7 @@ changes on its own).
   the icons (never make the icons smaller, no badges on icons): **practice first**, a small 5-day San Diego weather
   forecast, next gigs (Davy Rockett from `gigs.json` + next SOS show), Z4 to-dos, autocross (date, title, weekday ·
   track · town), plus The Crossing and RJ sessions, which stay hidden until rundown-data has them. The calendar
-  card is commented out for now. Cards read the public `davyrockett/rundown-data` (details in the rundown repo's
+  card and the Z4 to-dos card are commented out for now (David). Cards read the public `davyrockett/rundown-data` (details in the rundown repo's
   CLAUDE.md). Practice / Z4 ticks are only on this screen and Rundown (same storage keys); they never change or
   read anything in Lip Service, Page Fright or Z4 Log. If Rundown changes later, this screen doesn't follow
   automatically: copy the change over only if David asks.

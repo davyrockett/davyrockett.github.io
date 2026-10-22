@@ -533,6 +533,7 @@ function renderZ4(todos) {
 }
 
 async function loadZ4() {
+  if (!$('z4-card')) return;   // the Z4 card is off for now (index.html)
   const saved = lsJSON(SAVED_KEY, {});
   if (saved.z4) renderZ4(saved.z4);
   const todos = (await readZ4GitHub()) || (await readZ4Device());
