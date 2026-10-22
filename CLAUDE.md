@@ -86,7 +86,7 @@ changes on its own).
   **Since 2026-10-21 this screen is the same as Rundown** (David: "Make the apps app exactly like this. We'll work on
   Rundown at a later date"): `apps/index.html`, `apps/launcher.js` and `apps/apps.css` were copied from the rundown
   repo (index.html, rundown.js, rundown.css) with only the Apps-specific bits changed (name, icon, `/apps/` as home,
-  its own offline/update entry, a Rundown tile). Header: the time and date instead of the "apps" title. Cards below
+  its own offline/update entry, a Rundown tile, which David hid for now on 2026-10-21: commented out in index.html). Header: the time and date instead of the "apps" title. Cards below
   the icons (never make the icons smaller, no badges on icons): **practice first**, a small 5-day San Diego weather
   forecast, next gigs (Davy Rockett from `gigs.json` + next SOS show), Z4 to-dos, autocross (date, title, weekday ·
   track · town), plus The Crossing and RJ sessions, which stay hidden until rundown-data has them. The calendar
@@ -96,7 +96,7 @@ changes on its own).
   automatically: copy the change over only if David asks.
   **Rundown** (www.davyrockett.com/rundown/, its own repo, 2026-10-21) is David's dashboard, started as a copy of this
   screen; it sets `sessionStorage['davyrockett-suite-home']` to `/rundown/` so apps' "All apps" button returns there
-  (this screen sets `/apps/`). It's the second tile here.
+  (this screen sets `/apps/`). Its tile here is hidden for now (commented out).
   The suite's first tile is **Website** (same icon as the suite: the outline figure). The site's own
   pages load `suite.js` (copy of `Claude Apps/tools/suite.js`) so the "All apps" button shows there too when
   opened from the suite (no browser back button inside the installed suite).
