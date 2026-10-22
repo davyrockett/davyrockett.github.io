@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Apps · davyrockett</title>
-  <!-- Unlinked page and installable app suite: David's apps from one Home Screen icon. Not in the menu or search engines. -->
+  <!-- Unlinked page and installable app suite: David's apps from one Home Screen icon, then his day at a glance.
+       Since 2026-10-21 it matches Rundown (www.davyrockett.com/rundown/, its own repo) as David had it that day. Not in the menu or search engines. -->
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
@@ -241,11 +242,15 @@
     .btn.small { padding: 6px 12px; font-size: .82rem; }
     .key-msg { min-height: 1.4em; margin: 10px 0 0; font-size: .9rem; color: var(--ink); }
   </style>
+  <link rel="stylesheet" href="apps.css">
 </head>
 <body>
 
 <header class="top">
-  <h1>apps</h1>
+  <div class="now">
+    <h1 class="clock" id="clock" aria-live="off"></h1>
+    <div class="date" id="today-date"></div>
+  </div>
   <button type="button" class="icon-btn" id="settings-open" aria-label="Settings">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
   </button>
@@ -268,13 +273,32 @@
     <li><a class="tile" href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt="" width="76" height="76">Z4 Log</a></li>
   </ul>
 
-  <section class="today" aria-labelledby="today-title">
-    <div class="today-head"><h2 id="today-title">today</h2><span id="today-date"></span></div>
+  <section class="today" aria-label="Today">
     <div class="t-cards">
+      <!-- Practice always comes first (David, 2026-10-21). -->
       <div class="t-card"><h3>practice</h3><div class="t-chips" id="practice"></div></div>
+      <div class="t-card" id="weather-card">
+        <h3>weather<span class="t-sub">San Diego</span></h3>
+        <div id="weather"><p class="t-empty">Loading…</p></div>
+      </div>
+      <!-- Calendar card taken off for now (David, 2026-10-21). To bring it back:
+      <div class="t-card" id="cal-card"><h3>calendar</h3><div id="cal"><p class="t-empty">Loading…</p></div></div> -->
+      <div class="t-card" id="crossing-card" hidden>
+        <h3>the crossing<span class="t-sub" id="crossing-date"></span><a id="crossing-link" href="https://services.planningcenteronline.com/" target="_blank" rel="noopener">Planning Center ›</a></h3>
+        <div id="crossing"></div>
+      </div>
+      <div class="t-card" id="rj-card" hidden>
+        <h3>rj sessions<span class="t-sub" id="rj-sub"></span></h3>
+        <div id="rj"></div>
+      </div>
       <div class="t-card" id="gigs-card" hidden><h3>next gigs</h3><div class="t-list" id="gig-list"></div></div>
       <div class="t-card" id="z4-card" hidden><h3>z4 to-dos<a href="../z4-log/">Z4 Log ›</a></h3><div class="t-list" id="z4-list"></div></div>
+      <div class="t-card" id="ax-card" hidden>
+        <h3>autocross<span class="t-sub">near San Diego</span><a href="https://www.motorsportreg.com/calendar/?types=autocross" target="_blank" rel="noopener">More ›</a></h3>
+        <div class="t-list" id="ax-list"></div>
+      </div>
     </div>
+    <p class="t-updated" id="updated"></p>
   </section>
 </main>
 

@@ -83,12 +83,17 @@ changes on its own).
   and `APPS` in apps/sw.js.
   Each icon has a small share button (added by launcher.js) that opens a panel with the app's link: Copy link,
   and Share… where the device has a share sheet.
-  **Today** (David, 2026-10-21) sits *below* the icons only to fill the empty space: it must never make the icons
-  smaller, and no badges on icons. Cards: practice (Vocal warm-up / Reading / Improv), next gigs (next Davy Rockett
-  gig from `gigs.json` + next SOS show from public sos-band-data), Z4 to-dos (GitHub with the Z4 key, else Z4 Log's
-  own IndexedDB on the device, else the last saved list). **All ticks are only on this screen** (localStorage
-  `apps.practice`, cleared each day; `apps.z4-ticked`): David ticks them himself; they never change or read
-  anything in Lip Service, Page Fright or Z4 Log.
+  **Since 2026-10-21 this screen is the same as Rundown** (David: "Make the apps app exactly like this. We'll work on
+  Rundown at a later date"): `apps/index.html`, `apps/launcher.js` and `apps/apps.css` were copied from the rundown
+  repo (index.html, rundown.js, rundown.css) with only the Apps-specific bits changed (name, icon, `/apps/` as home,
+  its own offline/update entry, a Rundown tile). Header: the time and date instead of the "apps" title. Cards below
+  the icons (never make the icons smaller, no badges on icons): **practice first**, a small 5-day San Diego weather
+  forecast, next gigs (Davy Rockett from `gigs.json` + next SOS show), Z4 to-dos, autocross (date, title, weekday ·
+  track · town), plus The Crossing and RJ sessions, which stay hidden until rundown-data has them. The calendar
+  card is commented out for now. Cards read the public `davyrockett/rundown-data` (details in the rundown repo's
+  CLAUDE.md). Practice / Z4 ticks are only on this screen and Rundown (same storage keys); they never change or
+  read anything in Lip Service, Page Fright or Z4 Log. If Rundown changes later, this screen doesn't follow
+  automatically: copy the change over only if David asks.
   **Rundown** (www.davyrockett.com/rundown/, its own repo, 2026-10-21) is David's dashboard, started as a copy of this
   screen; it sets `sessionStorage['davyrockett-suite-home']` to `/rundown/` so apps' "All apps" button returns there
   (this screen sets `/apps/`). It's the second tile here.

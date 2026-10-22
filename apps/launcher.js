@@ -1,5 +1,10 @@
-// The app suite (www.davyrockett.com/apps/): one Home Screen icon for all of David's apps.
-// - Tells the apps they were opened from here, so each shows an "All apps" button (suite.js in each app).
+// The app suite (www.davyrockett.com/apps/): one Home Screen icon for all of David's apps, then his day at a glance.
+// Since 2026-10-21 this is the same as Rundown's rundown.js (www.davyrockett.com/rundown/) as David had it that day.
+// Below the icons: time, weather, calendars, The Crossing (Planning Center), RJ sessions, gigs, practice,
+// Z4 to-dos and autocross. Calendar, Planning Center and autocross come from the public rundown-data repo
+// (David doesn't share the link), which an hourly GitHub job there fills in; RJ ticks are saved there too.
+// - Tells the apps they were opened from here, so each shows an "All apps" button (suite.js in each app)
+//   that comes back here.
 // - "Make everything work offline": installs every app's own offline copy in one go.
 // - One access key for every app that syncs: checks it against each data repo, then saves it the way
 //   each app expects (the same browser storage the apps read, since they're all on www.davyrockett.com).
@@ -35,8 +40,7 @@ function hasKey(app) {
   try { return Boolean(JSON.parse(v)); } catch { return false; }
 }
 
-// Opened from here: apps show their "All apps" button for the rest of this visit.
-// (Rundown, a copy of this screen, sets its own address as home instead.)
+// Opened from here: apps show their "All apps" button for the rest of this visit, and it comes back here.
 try {
   sessionStorage.setItem('davyrockett-suite', '1');
   sessionStorage.setItem('davyrockett-suite-home', '/apps/');
@@ -292,6 +296,7 @@ $('key-form').addEventListener('submit', async (e) => {
   });
   input.value = '';
   renderKeys();
+  loadData();
   msg.textContent = (saved.length ? `Saved for ${saved.join(', ')}.` : 'Not saved anywhere.') +
     (skipped.length ? ` Not saved for ${skipped.join(', ')}: give the key access to that data repo on GitHub.` : '');
 });
@@ -355,7 +360,8 @@ shareSheet.addEventListener('click', (e) => { if (e.target === shareSheet) share
 
 /* ---------- Today (below the icons) ---------- */
 
-// Practice ticks and Z4 ticks live only on this screen: nothing is sent to the apps.
+// Practice ticks and Z4 ticks live only on this screen (and the Apps screen, which uses the same storage
+// keys): nothing is sent to the apps.
 // Practice ticks clear each new day; Z4 ticks stay until that to-do is done in Z4 Log.
 const PRACTICE = ['Vocal warm-up', 'Reading', 'Improv'];
 const PRACTICE_KEY = 'apps.practice';      // {"date": "2026-10-21", "done": ["Reading"]}
@@ -536,15 +542,456 @@ async function loadZ4() {
   renderZ4(slim);
 }
 
+/* ---------- Clock, weather, calendars, The Crossing, RJ sessions, autocross (same as Rundown) ---------- */
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+// A date as YYYY-MM-DD / YYYY-MM-DDTHH:MM on this device's clock (calendar times are Pacific wall-clock).
+function isoDay(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+function isoNow() { const d = new Date(); return `${isoDay(d)}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
+function addDays(day, n) { const [y, m, d] = day.split('-').map(Number); return isoDay(new Date(y, m - 1, d + n)); }
+function dayLabel(day) {
+  const today = todayISO();
+  if (day === today) return 'Today';
+  if (day === addDays(today, 1)) return 'Tomorrow';
+  const [y, m, d] = day.split('-').map(Number);
+  return `${DAYS[new Date(y, m - 1, d).getDay()]}, ${MONTH_NAMES[m - 1]} ${d}`;
+}
+
+/* Clock: the big time at the top. A new day redraws everything (practice ticks clear, calendar moves on). */
+
+let shownDay = '';
+function renderClock() {
+  const d = new Date();
+  const h = d.getHours();
+  $('clock').innerHTML = `${h % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}<small>${h < 12 ? 'am' : 'pm'}</small>`;
+  $('today-date').textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+function everyMinute() {
+  if (todayISO() !== shownDay) renderToday();
+  else { renderClock(); renderData(lsJSON(DATA_KEY, null)); }
+  setTimeout(everyMinute, 60000 - (Date.now() % 60000) + 50);
+}
+
+/* Weather: a small 5-day forecast for San Diego (David, 2026-10-21: "use san diego. Just show highs and lows and
+   general forecast for 5 days. Not too big"). Open-Meteo, free, no key. The last forecast is kept for offline. */
+
+const WX_KEY = 'rundown.forecast';   // {at, data}
+const SAN_DIEGO = { lat: 32.7157, lon: -117.1611 };
+const WX = {
+  0: ['☀️', 'Clear'], 1: ['🌤️', 'Mostly clear'], 2: ['⛅', 'Partly cloudy'], 3: ['☁️', 'Cloudy'],
+  45: ['🌫️', 'Fog'], 48: ['🌫️', 'Fog'], 51: ['🌦️', 'Light drizzle'], 53: ['🌦️', 'Drizzle'], 55: ['🌧️', 'Heavy drizzle'],
+  56: ['🌧️', 'Freezing drizzle'], 57: ['🌧️', 'Freezing drizzle'], 61: ['🌦️', 'Light rain'], 63: ['🌧️', 'Rain'],
+  65: ['🌧️', 'Heavy rain'], 66: ['🌧️', 'Freezing rain'], 67: ['🌧️', 'Freezing rain'], 71: ['🌨️', 'Light snow'],
+  73: ['🌨️', 'Snow'], 75: ['❄️', 'Heavy snow'], 77: ['🌨️', 'Snow'], 80: ['🌦️', 'Showers'], 81: ['🌧️', 'Showers'],
+  82: ['🌧️', 'Heavy showers'], 85: ['🌨️', 'Snow showers'], 86: ['🌨️', 'Snow showers'], 95: ['⛈️', 'Thunderstorms'],
+  96: ['⛈️', 'Thunderstorms, hail'], 99: ['⛈️', 'Thunderstorms, hail'],
+};
+
+function renderWeather(saved) {
+  if (!saved || !saved.data) return;
+  const d = saved.data.daily;
+  const days = el('div', 'wx-days');
+  d.time.forEach((t, i) => {
+    const [y, m, dd] = t.split('-').map(Number);
+    const [icon, words] = WX[d.weather_code[i]] || ['🌡️', ''];
+    const cell = el('div');
+    cell.append(el('b', '', i === 0 ? 'Today' : DAYS[new Date(y, m - 1, dd).getDay()]), el('i', '', icon), el('span', 'what', words));
+    const temps = el('span', 'temps', `${Math.round(d.temperature_2m_max[i])}°`);
+    temps.append(el('span', 'lo', ` ${Math.round(d.temperature_2m_min[i])}°`));
+    cell.append(temps);
+    days.append(cell);
+  });
+  $('weather').replaceChildren(days);
+}
+
+let wxLoading = false;
+async function loadWeather() {
+  const saved = lsJSON(WX_KEY, null);
+  renderWeather(saved);
+  if (wxLoading || (saved && Date.now() - saved.at < 30 * 60e3)) return;
+  wxLoading = true;
+  try {
+    const q = new URLSearchParams({
+      latitude: SAN_DIEGO.lat, longitude: SAN_DIEGO.lon,
+      daily: 'weather_code,temperature_2m_max,temperature_2m_min',
+      temperature_unit: 'fahrenheit', timezone: 'America/Los_Angeles', forecast_days: '5',
+    });
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?${q}`);
+    if (!res.ok) return;
+    const next = { at: Date.now(), data: await res.json() };
+    lsSet(WX_KEY, JSON.stringify(next));
+    lsSet('rundown.weather', null);   // the old forecast for this device's location
+    renderWeather(next);
+  } catch { /* offline: the saved forecast stays */ } finally {
+    wxLoading = false;
+  }
+}
+
+/* Calendars, The Crossing, RJ sessions and autocross: data.json in the public rundown-data repo (no key needed
+   to read it). RJ ticks are saved back there (ticks.json, needs the access key) so every device shows the same. */
+
+const DATA_REPO = `${OWNER}/rundown-data`;
+const DATA_KEY = 'rundown.data';            // last data.json read, plus when ({..., fetchedAt})
+const TICKS_KEY = 'rundown.ticks';          // {sessions: {id: {doc, billed, skip}}}
+const PENDING_KEY = 'rundown.ticks-pending'; // ticks changed here and not yet saved to GitHub
+const CAL_COLORS = { personal: '#4A7FC1', rj: '#3E9B5E', gigs: '#E27039', us: '#B4589A' };
+
+// The one access key: Rundown's own, or any syncing app's (same website, so same storage in a browser).
+function accessKey() {
+  const own = lsGet('rundown.sync-token');
+  if (own) return own;
+  for (const app of SYNCED) {
+    if (!hasKey(app)) continue;
+    const v = lsGet(app.token);
+    return app.json ? JSON.parse(v) : v;
+  }
+  return null;
+}
+
+function fromBase64(b64) {
+  return new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, '')), (ch) => ch.charCodeAt(0)));
+}
+function toBase64(text) {
+  let bin = '';
+  new TextEncoder().encode(text).forEach((b) => { bin += String.fromCharCode(b); });
+  return btoa(bin);
+}
+
+// One file from rundown-data: {json, sha}, null if it isn't there, or throws ('offline' / 'no-access').
+async function readFile(path, token) {
+  let res;
+  try {
+    res = await fetch(`https://api.github.com/repos/${DATA_REPO}/contents/${path}`, {
+      cache: 'no-store', headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+    });
+  } catch { throw new Error('offline'); }
+  if (res.status === 404) {
+    // Either the file isn't there yet or the key can't see the repo.
+    const repo = await fetch(`https://api.github.com/repos/${DATA_REPO}`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => null);
+    if (repo && !repo.ok) throw new Error('no-access');
+    return null;
+  }
+  if (res.status === 401 || res.status === 403) throw new Error('no-access');
+  if (!res.ok) throw new Error('offline');
+  const info = await res.json();
+  return { json: JSON.parse(fromBase64(info.content)), sha: info.sha };
+}
+
+let dataLoading = false;
+// A public file from rundown-data. GitHub's copy can be up to 5 minutes behind.
+async function readPublic(path) {
+  let res;
+  try { res = await fetch(`https://raw.githubusercontent.com/${DATA_REPO}/main/${path}`, { cache: 'no-store' }); } catch { throw new Error('offline'); }
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error('offline');
+  return { json: await res.json() };
+}
+
+async function loadData() {
+  if (dataLoading) return;
+  dataLoading = true;
+  try {
+    // Ticks through GitHub's API when there's a key: right after saving, the public copy is still the old one.
+    const token = accessKey();
+    const [data, ticks] = await Promise.all([
+      readPublic('data.json'),
+      (token ? readFile('ticks.json', token).catch(() => readPublic('ticks.json')) : readPublic('ticks.json')).catch(() => null),
+    ]);
+    if (ticks) lsSet(TICKS_KEY, JSON.stringify(ticks.json));
+    if (data) lsSet(DATA_KEY, JSON.stringify({ ...data.json, fetchedAt: Date.now() }));
+    $('updated').textContent = '';
+    renderData(lsJSON(DATA_KEY, null));
+  } catch (e) {
+    const saved = lsJSON(DATA_KEY, null);
+    renderData(saved);
+    if (saved && saved.fetchedAt) {
+      $('updated').textContent = `Offline · calendar as of ${new Date(saved.fetchedAt).toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' })}`;
+    }
+  } finally {
+    dataLoading = false;
+  }
+}
+
+function renderData(data) {
+  if (!data) return;
+  if ($('cal')) renderCalendar(data);   // the calendar card is off for now (index.html)
+  renderCrossing(data.crossing);
+  renderSessions(data.rjSessions || []);
+  renderAutocross(data.autocross || []);
+}
+
+/* Calendar: today (including what's already happened, faded), then the rest of the week. */
+
+const CAL_SHOWN = 14;
+
+function renderCalendar(data) {
+  const today = todayISO();
+  const now = isoNow();
+  const last = addDays(today, 6);
+  const names = data.calendars || {};
+  const rows = [];
+  for (let day = today; day <= last; day = addDays(day, 1)) {
+    const events = (data.events || [])
+      .filter((e) => (e.allDay ? e.start.slice(0, 10) <= day && (e.end || e.start).slice(0, 10) >= day : e.start.slice(0, 10) === day))
+      .sort((a, b) => (a.allDay === b.allDay ? a.start.localeCompare(b.start) : a.allDay ? -1 : 1));
+    if (!events.length && day !== today) continue;
+    rows.push({ day });
+    if (!events.length) rows.push({ empty: true });
+    events.forEach((e) => rows.push({ e }));
+  }
+  const out = [];
+  let shown = 0;
+  let hidden = 0;
+  rows.forEach((r) => {
+    if (r.day) { if (shown < CAL_SHOWN) out.push(el('div', 't-day', dayLabel(r.day))); return; }
+    if (r.empty) { out.push(el('p', 't-empty', 'Nothing on the calendar.')); return; }
+    const e = r.e;
+    if (shown >= CAL_SHOWN && e.start.slice(0, 10) !== today) { hidden += 1; return; }
+    shown += 1;
+    const row = el('div', 'c-row');
+    if (!e.allDay && (e.end || e.start) <= now) row.classList.add('past');
+    else if (!e.allDay && e.start <= now) row.classList.add('now');
+    const dot = el('span', 'c-dot');
+    dot.style.background = CAL_COLORS[e.cal] || 'var(--grey)';
+    dot.title = names[e.cal] || '';
+    const title = el('div', 'c-title', e.title);
+    if (e.location) title.append(el('span', '', e.location));
+    row.append(el('span', 'c-time', e.allDay ? 'all day' : clockText(e.start)), dot, title);
+    out.push(row);
+  });
+  if (hidden) out.push(el('p', 't-more', `and ${hidden} more this week`));
+  const legend = el('div', 'c-legend');
+  Object.entries(names).forEach(([key, name]) => {
+    const item = el('span');
+    const dot = el('span', 'c-dot');
+    dot.style.background = CAL_COLORS[key] || 'var(--grey)';
+    item.append(dot, name + (data.errors && data.errors[key] ? ' (not loading)' : ''));
+    legend.append(item);
+  });
+  out.push(legend);
+  $('cal').replaceChildren(...out);
+}
+
+/* The Crossing: the next plan in Planning Center: times, your spot, the songs with keys, and the band. */
+
+const STATUS_TEXT = { C: 'confirmed', U: 'not answered yet', D: 'declined' };
+
+function renderCrossing(x) {
+  $('crossing-card').hidden = !x || !x.date;
+  if (!x || !x.date) return;
+  $('crossing-date').textContent = dayLabel(x.date);
+  if (x.url) $('crossing-link').href = x.url;
+  const out = [];
+  if (x.times && x.times.length) {
+    const t = el('div', 'x-times');
+    x.times.forEach((pt) => {
+      const s = el('span');
+      s.append(el('b', '', pt.name || pt.type || ''), ` ${clockText(pt.start)}${pt.start.slice(0, 10) !== x.date ? ` ${dayLabel(pt.start.slice(0, 10))}` : ''}`);
+      t.append(s);
+    });
+    out.push(t);
+  }
+  if (x.me) {
+    out.push(el('p', `x-me${x.me.status === 'U' ? ' ask' : ''}`,
+      `You: ${x.me.position || x.me.team || 'scheduled'} · ${x.me.status === 'U' ? 'please accept or decline' : STATUS_TEXT[x.me.status] || ''}`));
+  }
+  const others = (x.requests || []).filter((r) => r.date !== x.date);
+  if (others.length) {
+    out.push(el('p', 'x-me ask', `Also waiting for your answer: ${others.map((r) => `${dayLabel(r.date)} (${r.position || r.service})`).join(', ')}`));
+  }
+  if (x.songs && x.songs.length) {
+    const list = el('div');
+    x.songs.forEach((song, i) => {
+      const row = el('div', 'x-song');
+      const t = el('div', 't', song.title);
+      if (song.author) t.append(el('span', '', song.author));
+      row.append(el('span', 'n', String(i + 1)), t);
+      if (song.key) row.append(el('span', 'x-key', song.key));
+      list.append(row);
+    });
+    out.push(el('div', 't-day', 'Songs'), list);
+  } else {
+    out.push(el('p', 't-empty', 'No songs in the plan yet.'));
+  }
+  (x.teams || []).forEach((team) => {
+    out.push(el('div', 't-day', team.name));
+    const band = el('div', 'x-band');
+    team.people.forEach((p) => {
+      const who = el('div', p.status || '', p.name);
+      who.title = STATUS_TEXT[p.status] || '';
+      who.append(el('span', '', p.position || ''));
+      band.append(who);
+    });
+    out.push(band);
+  });
+  $('crossing').replaceChildren(...out);
+}
+
+/* RJ sessions: every session from the Resounding Joy calendar this pay period and last (1st–15th,
+   16th–end), with Documented / Billed ticks. "Not a session" hides check-ins and cancelled ones. */
+
+let rjShowAll = false;
+
+function payPeriodStart(day) {
+  const [y, m, d] = day.split('-').map(Number);
+  return d >= 16 ? `${day.slice(0, 8)}16` : `${day.slice(0, 8)}01`;
+}
+function ticksNow() {
+  const t = lsJSON(TICKS_KEY, {});
+  const sessions = { ...(t.sessions || {}) };
+  Object.entries(lsJSON(PENDING_KEY, {})).forEach(([id, change]) => { sessions[id] = { ...(sessions[id] || {}), ...change }; });
+  return sessions;
+}
+
+function renderSessions(all) {
+  const today = todayISO();
+  const current = payPeriodStart(today);
+  const previous = payPeriodStart(addDays(current, -1));
+  const now = isoNow();
+  const ticks = ticksNow();
+  const sessions = all.filter((s) => s.start.slice(0, 10) >= previous && s.start <= now).sort((a, b) => a.start.localeCompare(b.start));
+  $('rj-card').hidden = !sessions.length;
+  if (!sessions.length) return;
+  const isDone = (s) => { const t = ticks[s.id] || {}; return t.skip || (t.doc && t.billed); };
+  const toDoc = sessions.filter((s) => !(ticks[s.id] || {}).skip && !(ticks[s.id] || {}).doc).length;
+  const toBill = sessions.filter((s) => !(ticks[s.id] || {}).skip && !(ticks[s.id] || {}).billed).length;
+  $('rj-sub').textContent = toDoc || toBill ? [toDoc && `${toDoc} to document`, toBill && `${toBill} to bill`].filter(Boolean).join(' · ') : 'all caught up ✓';
+
+  const list = el('div', 'rj-list');
+  sessions.filter((s) => rjShowAll || !isDone(s)).forEach((s) => {
+    const t = ticks[s.id] || {};
+    const row = el('div', `rj-row${isDone(s) ? ' done' : ''}`);
+    const head = el('div', 'rj-head');
+    const [y, m, d] = s.start.slice(0, 10).split('-').map(Number);
+    head.append(el('span', '', s.title), el('span', 'when', `${DAYS[new Date(y, m - 1, d).getDay()]} ${MONTH_NAMES[m - 1]} ${d} · ${clockText(s.start)}`));
+    const skip = el('button', 'skip', t.skip ? 'Undo' : 'Not a session');
+    skip.type = 'button';
+    skip.addEventListener('click', () => setTick(s.id, 'skip', !t.skip));
+    head.append(skip);
+    row.append(head);
+    if (!t.skip) {
+      const chips = el('div', 'rj-ticks');
+      chips.append(
+        tickButton('t-chip', 'Documented', Boolean(t.doc), (on) => setTick(s.id, 'doc', on)),
+        tickButton('t-chip', 'Billed', Boolean(t.billed), (on) => setTick(s.id, 'billed', on)),
+      );
+      row.append(chips);
+    }
+    list.append(row);
+  });
+  if (!list.children.length) list.append(el('p', 't-empty', `All ${sessions.length} sessions since ${MONTH_NAMES[Number(previous.slice(5, 7)) - 1]} ${Number(previous.slice(8))} are documented and billed.`));
+  const doneCount = sessions.filter(isDone).length;
+  const out = [list];
+  if (doneCount) {
+    const more = el('button', 'rj-more', rjShowAll ? 'Hide finished ones' : `Show finished ones (${doneCount})`);
+    more.type = 'button';
+    more.addEventListener('click', () => { rjShowAll = !rjShowAll; renderSessions(all); });
+    out.push(more);
+  }
+  $('rj').replaceChildren(...out);
+}
+
+let pushTimer = 0;
+function setTick(id, field, value) {
+  const pending = lsJSON(PENDING_KEY, {});
+  pending[id] = { ...(pending[id] || {}), [field]: value };
+  lsSet(PENDING_KEY, JSON.stringify(pending));
+  renderSessions((lsJSON(DATA_KEY, {}) || {}).rjSessions || []);
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(pushTicks, 1200);
+  if (!accessKey()) $('updated').textContent = 'Ticks are saved on this device only until you add your access key in Settings.';
+}
+
+// Saves ticks made here into ticks.json, merged with whatever other devices saved.
+let pushing = false;
+async function pushTicks() {
+  const token = accessKey();
+  const pending = lsJSON(PENDING_KEY, {});
+  if (!token || pushing || !Object.keys(pending).length) return;
+  pushing = true;
+  try {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const file = await readFile('ticks.json', token).catch(() => undefined);
+      if (file === undefined) return;   // offline or no access: try again later
+      const sessions = { ...((file && file.json.sessions) || {}) };
+      Object.entries(pending).forEach(([id, change]) => { sessions[id] = { ...(sessions[id] || {}), ...change }; });
+      // Forget ticks for sessions more than four months old (ids start with the session's date).
+      const cutoff = addDays(todayISO(), -120);
+      Object.keys(sessions).forEach((id) => { if (id.slice(0, 10) < cutoff) delete sessions[id]; });
+      const json = { sessions };
+      const res = await fetch(`https://api.github.com/repos/${DATA_REPO}/contents/ticks.json`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+        body: JSON.stringify({ message: 'RJ session ticks', content: toBase64(`${JSON.stringify(json, null, 1)}\n`), ...(file ? { sha: file.sha } : {}) }),
+      }).catch(() => null);
+      if (!res) return;
+      if (res.ok) {
+        lsSet(TICKS_KEY, JSON.stringify(json));
+        // Keep anything ticked while this was saving.
+        const later = lsJSON(PENDING_KEY, {});
+        Object.keys(pending).forEach((id) => { if (JSON.stringify(later[id]) === JSON.stringify(pending[id])) delete later[id]; });
+        lsSet(PENDING_KEY, JSON.stringify(later));
+        return;
+      }
+      if (res.status !== 409 && res.status !== 422) return;   // someone else saved first: read again and retry
+    }
+  } finally {
+    pushing = false;
+  }
+}
+
+/* Autocross: upcoming events within about 150 miles of San Diego (MotorsportReg's calendar). */
+
+const AX_SHOWN = 5;
+
+function renderAutocross(events) {
+  const today = todayISO();
+  const near = events.filter((e) => (e.end || e.start) >= today && (e.miles == null || e.miles <= 150)).sort((a, b) => a.start.localeCompare(b.start));
+  $('ax-card').hidden = !near.length;
+  $('ax-list').replaceChildren(...near.slice(0, AX_SHOWN).map((e) => {
+    const [, m, d] = e.start.split('-').map(Number);
+    const a = el('a', 't-gig');
+    a.href = e.url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    // Date, title and where (David): club and distance are a click away on MotorsportReg.
+    // MotorsportReg's list has dates only, no start times.
+    a.innerHTML = '<div class="t-date"><b></b><span></span></div><div><div class="title"></div><div class="when"></div></div>';
+    a.querySelector('b').textContent = MONTHS[m - 1];
+    a.querySelector('.t-date span').textContent = d;
+    a.querySelector('.title').textContent = e.name;
+    const weekday = (iso) => { const [yy, mm, dd] = iso.split('-').map(Number); return DAYS[new Date(yy, mm - 1, dd).getDay()]; };
+    const days = e.end && e.end !== e.start ? `${weekday(e.start)}–${weekday(e.end)}` : weekday(e.start);
+    const town = e.city && e.city !== e.track ? `${e.city}${e.region ? `, ${e.region}` : ''}` : e.region;
+    a.querySelector('.when').textContent = [days, e.track, town].filter(Boolean).join(' · ');
+    return a;
+  }));
+}
+
 function renderToday() {
-  $('today-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  shownDay = todayISO();
+  renderClock();
   renderPractice();
   renderGigs(lsJSON(SAVED_KEY, {}).gigs);
   loadGigs();
   loadZ4();
+  renderData(lsJSON(DATA_KEY, null));
+  loadData();
+  pushTicks();
+  loadWeather();
 }
 
 renderToday();
+setTimeout(everyMinute, 60000 - (Date.now() % 60000) + 50);
+// Left open (an iPad on a stand): fetch fresh things every 15 minutes.
+setInterval(() => { if (!document.hidden) { loadData(); loadWeather(); loadGigs(); loadZ4(); } }, 15 * 60e3);
 
 /* ---------- Settings sheet ---------- */
 
@@ -562,3 +1009,4 @@ sheet.addEventListener('click', (e) => { if (e.target === sheet) sheet.close(); 
 renderOffline();
 renderKeys();
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { renderOffline(); renderKeys(); renderToday(); } });
+addEventListener('online', () => { pushTicks(); loadData(); });
