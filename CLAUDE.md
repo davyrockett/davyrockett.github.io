@@ -109,9 +109,11 @@ changes on its own).
   Every push to `main` also publishes. GitHub Pages source is "GitHub Actions", not a branch.
   The workflow commits `.keepalive` monthly so GitHub doesn't pause the hourly schedule.
 - Video section: plain dark background (David removed the live band photo, 2026-10-17).
-- Bio photo parallax (`setupBioParallax` in site.js): on screens 761px+ wide the guitar photo drifts down
-  its column slower than the text, from the top of the column as the bio enters to the bottom as it
-  leaves. Off on phones and for "reduce motion". (A full Wix-style parallax version was tried and undone.)
+- Bio photo (`images/davy-stage.jpg`, David on a stool with guitar and mic, added 2026-10-26): on screens
+  761px+ wide it fills the right side of the bio section and fades into the page on its left, top and bottom
+  (CSS mask in styles.css); on phones it sits full width at the top of the bio and fades out at the bottom.
+  It replaced the old blue-sweater cutout (`davy-guitar.png`, still the press kit's promo photo) and the
+  scrolling parallax that went with it. (A full Wix-style parallax version was tried and undone earlier.)
 - Gig times are Pacific wall-clock times and are shown as-is (not converted to the visitor's time zone).
   A gig stays "upcoming" until its end time.
 - Colours: the logo orange `#E27039` is used as the accent here (to match the logo artwork), not the app

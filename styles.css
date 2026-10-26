@@ -395,10 +395,23 @@ section { padding: 72px 0; }
   line-height: 1.5;
 }
 .bio blockquote cite { display: block; font-family: var(--body); font-style: normal; color: var(--grey); font-size: .9rem; margin-top: 4px; }
+/* Desktop: the photo fills the right side of the section and fades into the page on its left, top and bottom */
+.bio { position: relative; overflow: hidden; }
+.bio .wrap > div { position: relative; z-index: 1; }
 .bio-photo {
-  will-change: transform;  /* site.js slides it down the column as you scroll (parallax) */
-  border-radius: 14px;
-  box-shadow: 12px 12px 0 var(--orange), 0 14px 30px rgba(60, 40, 20, .14);
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: calc(50% - 100px);  /* starts about where the bio text column ends */
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: 40% 62%;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, transparent, rgba(0, 0, 0, .3) 12%, rgba(0, 0, 0, .8) 26%, #000 38%), linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, rgba(0, 0, 0, .3) 12%, rgba(0, 0, 0, .8) 26%, #000 38%), linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+  mask-composite: intersect;
 }
 
 /* ---------- Contact ---------- */
@@ -459,7 +472,18 @@ footer a { color: var(--grey); }
   .next-gig .when { font-size: 1.7rem; }
   .albums, .videos, .bio .wrap, .press .item { grid-template-columns: 1fr; }
   .videos { gap: 26px; }
-  .bio-photo { max-width: 240px; margin: 0 auto; }
+  /* Phone: full-width photo at the top of the bio, fading into the page below it */
+  .bio-photo {
+    position: static;
+    order: -1;
+    width: calc(100% + 40px);
+    height: auto;
+    aspect-ratio: 4 / 5;
+    margin: -52px -20px -8px;
+    object-position: 55% 78%;
+    -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent);
+    mask-image: linear-gradient(to bottom, #000 72%, transparent);
+  }
   .album { grid-template-columns: 120px 1fr; }
   .cal-day { min-height: 48px; align-items: center; justify-content: center; padding: 4px 0; }
   .cal-day .venue { display: none; }
