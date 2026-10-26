@@ -69,8 +69,9 @@ It's a public *website*, not an installable app, so some shared rules don't appl
 manifest, Settings gear or version bumping (visitors should always get the latest page, and the gig list
 changes on its own).
 
-- One page (`index.html`, `styles.css`, `site.js`): next gig card, music (4 songs in `music/`, album
-  links to Amazon), YouTube videos (load only when clicked), bio, booking contact.
+- One page (`index.html`, `styles.css`, `site.js`), top to bottom (order David chose 2026-10-26; the menu
+  links follow it): next gig card, YouTube videos (load only when clicked), bio, music (4 songs in `music/`,
+  album links to Amazon), booking contact.
 - **Upcoming gigs stay hidden** until a visitor clicks "See all upcoming gigs" in the next-gig card (or
   the "gigs" menu link / a `#gigs` link). The section then offers **List** and **Calendar** views (month
   grid limited to this month through the last gig's month). David asked (2026-10-17) for **no past gigs**
