@@ -1,6 +1,6 @@
 /* The Apps screen's clock header and today's cards (same as Rundown's rundown.css, 2026-10-21). */
 
-.top, .grid, .today { max-width: 1040px; }
+.top, .grid, .app-group, .today { max-width: 1040px; }
 
 /* Header: the time, the date and the weather right now, in place of the "apps" title. */
 .top { gap: 14px; }

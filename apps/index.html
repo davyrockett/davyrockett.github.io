@@ -75,6 +75,17 @@
     .tile:focus-visible { outline: none; }
     .tile:focus-visible img { outline: 3px solid var(--orange); outline-offset: 3px; }
     .grid li { position: relative; display: flex; justify-content: center; }
+    /* Groups of icons, each with a small heading (David, 2026-10-27). */
+    .app-group { margin: 0 auto; padding: 0; }
+    .app-group h2 {
+      margin: 18px 20px -6px;
+      font: 700 .78rem var(--body);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    .app-group h2::after { display: none; }
+    .app-group .grid { padding-top: 14px; }
     .share-badge {
       position: absolute;
       top: -8px;
@@ -257,22 +268,41 @@
 </header>
 
 <main>
-  <ul class="grid">
-    <li><a class="tile" href="../"><img src="icons/icon-192.png" alt="" width="76" height="76">Website</a></li>
-    <!-- Rundown tile hidden for now (David, 2026-10-21):
-    <li><a class="tile" href="../rundown/"><img src="../rundown/icons/icon-192.png" alt="" width="76" height="76">Rundown</a></li> -->
-    <li><a class="tile" href="../first-frets/"><img src="../first-frets/icons/icon-192.png" alt="" width="76" height="76">First Frets</a></li>
-    <li><a class="tile" href="../page-fright/"><img src="../page-fright/icons/icon-192.png" alt="" width="76" height="76">Page Fright</a></li>
-    <li><a class="tile" href="../lip-service/"><img src="../lip-service/icons/icon-192.png" alt="" width="76" height="76">Lip Service</a></li>
-    <li><a class="tile" href="../jam-session/"><img src="../jam-session/icons/icon-192.png" alt="" width="76" height="76">Jam Session</a></li>
-    <li><a class="tile" href="../memory-lane/"><img src="../memory-lane/icons/icon-192.png" alt="" width="76" height="76">Memory Lane</a></li>
-    <li><a class="tile" href="../song-party/"><img src="../song-party/icons/icon-192.png" alt="" width="76" height="76">Song Party</a></li>
-    <li><a class="tile" href="../sos-band-editor/"><img src="../sos-band-editor/icons/icon-192.png" alt="" width="76" height="76">SOS Editor</a></li>
-    <li><a class="tile" href="../sos-band/"><img src="../sos-band/icons/icon-192.png" alt="" width="76" height="76">SOS Band</a></li>
-    <li><a class="tile" href="../ge150-presets/"><img src="../ge150-presets/icons/icon-192.png" alt="" width="76" height="76">GE150 Presets</a></li>
-    <li><a class="tile" href="../health-log/"><img src="../health-log/icons/icon-192.png" alt="" width="76" height="76">Health Log</a></li>
-    <li><a class="tile" href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt="" width="76" height="76">Z4 Log</a></li>
-  </ul>
+  <!-- Icons in groups (David, 2026-10-27). The Website tile stays first. -->
+  <section class="app-group">
+    <h2>gigs</h2>
+    <ul class="grid">
+      <li><a class="tile" href="../"><img src="icons/icon-192.png" alt="" width="76" height="76">Website</a></li>
+      <!-- Rundown tile hidden for now (David, 2026-10-21):
+      <li><a class="tile" href="../rundown/"><img src="../rundown/icons/icon-192.png" alt="" width="76" height="76">Rundown</a></li> -->
+      <li><a class="tile" href="../sos-band-editor/"><img src="../sos-band-editor/icons/icon-192.png" alt="" width="76" height="76">SOS Editor</a></li>
+      <li><a class="tile" href="../sos-band/"><img src="../sos-band/icons/icon-192.png" alt="" width="76" height="76">SOS Band</a></li>
+      <li><a class="tile" href="../ge150-presets/"><img src="../ge150-presets/icons/icon-192.png" alt="" width="76" height="76">GE150 Presets</a></li>
+    </ul>
+  </section>
+  <section class="app-group">
+    <h2>practice</h2>
+    <ul class="grid">
+      <li><a class="tile" href="../page-fright/"><img src="../page-fright/icons/icon-192.png" alt="" width="76" height="76">Page Fright</a></li>
+      <li><a class="tile" href="../lip-service/"><img src="../lip-service/icons/icon-192.png" alt="" width="76" height="76">Lip Service</a></li>
+    </ul>
+  </section>
+  <section class="app-group">
+    <h2>students &amp; clients</h2>
+    <ul class="grid">
+      <li><a class="tile" href="../first-frets/"><img src="../first-frets/icons/icon-192.png" alt="" width="76" height="76">First Frets</a></li>
+      <li><a class="tile" href="../jam-session/"><img src="../jam-session/icons/icon-192.png" alt="" width="76" height="76">Jam Session</a></li>
+      <li><a class="tile" href="../memory-lane/"><img src="../memory-lane/icons/icon-192.png" alt="" width="76" height="76">Memory Lane</a></li>
+      <li><a class="tile" href="../song-party/"><img src="../song-party/icons/icon-192.png" alt="" width="76" height="76">Song Party</a></li>
+    </ul>
+  </section>
+  <section class="app-group">
+    <h2>personal</h2>
+    <ul class="grid">
+      <li><a class="tile" href="../health-log/"><img src="../health-log/icons/icon-192.png" alt="" width="76" height="76">Health Log</a></li>
+      <li><a class="tile" href="../z4-log/"><img src="../z4-log/icons/icon-192.png" alt="" width="76" height="76">Z4 Log</a></li>
+    </ul>
+  </section>
 
   <section class="today" aria-label="Today">
     <div class="t-cards">
