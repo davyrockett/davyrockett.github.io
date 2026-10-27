@@ -82,7 +82,8 @@ changes on its own).
   offline" button (registers each app's own `sw.js`), and one access key saved into every syncing app's own storage
   keys (`SYNCED` list; checked against each data repo first). The icons sit in four labelled groups (David, 2026-10-27): **gigs** (Website first, SOS Editor, SOS Band,
   GE150 Presets), **practice** (Page Fright, Lip Service), **students & clients** (First Frets, Jam Session,
-  Memory Lane, Song Party), **personal** (Health Log, Z4 Log). Add each new app to the right group, `APPS` in launcher.js
+  Memory Lane, Song Party), **personal** (Health Log, Z4 Log). On screens 900px+ wide the groups stay four
+  across in a left column and the cards below move to their right (David, 2026-10-27; `apps.css`). Add each new app to the right group, `APPS` in launcher.js
   and `APPS` in apps/sw.js.
   Each icon has a small share button (added by launcher.js) that opens a panel with the app's link: Copy link,
   and Share… where the device has a share sheet.

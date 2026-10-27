@@ -2,6 +2,15 @@
 
 .top, .grid, .app-group, .today { max-width: 1040px; }
 
+/* Wide screens: the icons keep their phone-style four-across groups on the left and today's cards
+   sit to their right (David, 2026-10-27). */
+@media (min-width: 900px) {
+  .top { max-width: 1240px; }
+  main { display: grid; grid-template-columns: 480px minmax(0, 1fr); gap: 0 16px; max-width: 1240px; margin: 0 auto; align-items: start; }
+  .app-group, .grid, .today { max-width: none; margin: 0; }
+  .today { padding-top: 22px; }
+}
+
 /* Header: the time, the date and the weather right now, in place of the "apps" title. */
 .top { gap: 14px; }
 .now { min-width: 0; }
