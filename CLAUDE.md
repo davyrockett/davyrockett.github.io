@@ -137,7 +137,9 @@ changes on its own).
     Page Fright while `#read-view` shows: everything but `#score` is hidden and the SVG is sized to fit the whole
     exercise on screen, keeping its shape, **always, ignoring z** (David: "the TV should just show the entire exercise
     at once always"; a zoom-and-follow version was removed the same day). Read's − / + are greyed out (`readShown()`).
-    The lines are as the remote laid them out, so a phone remote (2 bars a line) comes out tall and thin.
+    With 📺 TV on, Page Fright also draws a wide copy just for the TV (`#score-tv`, out of sight on the remote,
+    4 bars a line, highlights the same notes), and tv.js shows that instead of `#score` when it's there, so a phone
+    remote no longer comes out tall and thin (David, 2026-10-31).
     Not tried on a real TV; `zoom` needs a browser that supports it (Chrome, Safari, Firefox 126+).
   - `relay.js`: both public MQTT relays at once (EMQX + HiveMQ, sends through both, dedupe by `id`/`n`/`t`).
     Topics `davyrockett-tv/dr/state|tv`. **Testing:** never use `dr`. Put `?link=claude-test-…` on the TV page and

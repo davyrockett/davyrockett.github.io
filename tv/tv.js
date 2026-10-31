@@ -191,22 +191,33 @@
   /* ---------- Size and TV views ----------
      msg.z is the size picked with − / + on the iPad (1 = as the page comes). Page Fright's Read gets a music-only
      view: everything but the music is hidden, and the whole exercise always fits the screen, as big as it can be
-     (David: "the TV should just show the entire exercise at once always"), whatever the size setting. */
-  var MUSIC_CSS = 'body *{visibility:hidden!important}#score,#score *{visibility:visible!important}' +
-    '#score{position:fixed!important;left:0!important;top:0!important;right:0!important;bottom:0!important;' +
-    'width:auto!important;height:auto!important;max-width:none!important;margin:0!important;padding:2vh 2vw!important;' +
-    'border:0!important;border-radius:0!important;box-shadow:none!important;overflow:auto!important;' +
-    'box-sizing:border-box!important;z-index:2147483000!important}' +
-    '#score svg{display:block;max-width:none!important;max-height:none!important}';
+     (David: "the TV should just show the entire exercise at once always"), whatever the size setting.
+     Page Fright also draws a wide copy just for the TV (#score-tv, 4 measures a line), so a phone's narrow
+     layout isn't squeezed onto the TV; older copies of the app only have #score. Improv's lick music has a wide
+     copy too (#lscore-tv), shown in place of the remote's. */
+  function musicCss(id) {
+    return 'body *{visibility:hidden!important}#' + id + ',#' + id + ' *{visibility:visible!important}' +
+      '#' + id + '{position:fixed!important;left:0!important;top:0!important;right:0!important;bottom:0!important;' +
+      'width:auto!important;height:auto!important;max-width:none!important;margin:0!important;padding:2vh 2vw!important;' +
+      'border:0!important;border-radius:0!important;box-shadow:none!important;overflow:auto!important;' +
+      'box-sizing:border-box!important;z-index:2147483000!important}' +
+      '#' + id + ' svg{display:block;max-width:none!important;max-height:none!important}';
+  }
   function view(f, msg) {
     var d = f.el.contentDocument;
     if (!d || !d.head || msg.b == null) return;
     var z = msg.z > 0 ? msg.z : 1, css = '';
     var score = msg.app === 'page-fright' ? d.getElementById('score') : null;
+    var wide = score && d.getElementById('score-tv');
+    if (wide && wide.querySelector('svg')) score = wide;
     var read = d.getElementById('read-view');
     var music = score && read && read.getClientRects().length > 0;
-    if (music) css = MUSIC_CSS + musicSize(d, score);
+    if (music) css = musicCss(score.id) + musicSize(d, score);
     else if (z !== 1) css = 'html{zoom:' + z + '}';
+    var lick = msg.app === 'page-fright' && !music && d.getElementById('lscore-tv');
+    if (lick && lick.querySelector('svg')) css += '#lscore{display:none!important}' +
+      '#lscore-tv{position:static!important;visibility:visible!important;width:auto!important}' +
+      '#lscore-tv svg{max-width:100%!important}';
     var st = d.getElementById('tv-view');
     if (!st) { st = d.createElement('style'); st.id = 'tv-view'; d.head.appendChild(st); }
     if (st.textContent !== css) st.textContent = css;
@@ -218,7 +229,7 @@
     var W = d.documentElement.clientWidth * 0.96, H = d.documentElement.clientHeight * 0.96, asp = vb.width / vb.height;
     var w = Math.round(Math.min(W, H * asp)), h = Math.round(w / asp);
     var top = Math.max(0, Math.round((H - h) / 2));
-    return '#score svg{width:' + w + 'px!important;height:' + h + 'px!important;margin:' + top + 'px auto 0!important}';
+    return '#' + score.id + ' svg{width:' + w + 'px!important;height:' + h + 'px!important;margin:' + top + 'px auto 0!important}';
   }
   /* ---------- Messages from the iPad ---------- */
   function decode(bytes, done) {
