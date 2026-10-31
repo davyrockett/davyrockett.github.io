@@ -152,6 +152,7 @@
     timer = 0;
     if (!TVRelay.connected()) return;
     used = [];
+    pill();   // Read's − / + grey out as soon as Read shows
     var s = snapshot();
     for (var i = 0; i < used.length; i++) if (!pics.sent[used[i]]) sendPic(used[i]);   // pictures first
     var key = JSON.stringify(s);
@@ -212,6 +213,11 @@
     changed();
   }
 
+  function readShown() {
+    var r = app === 'page-fright' && document.getElementById('read-view');
+    return !!r && r.getClientRects().length > 0;
+  }
+
   /* ---------- On screen: "On TV" (tap to stop) with − / + beside it ---------- */
   function pill() {
     var toggle = document.getElementById('tv-toggle');   // the Apps screen has its own switch
@@ -219,7 +225,9 @@
     var ok = on && TVRelay.connected() > 0 && tv.online;
     try { document.dispatchEvent(new CustomEvent('tvstatus', { detail: { on: on, tv: ok } })); } catch (e) {}
     if (toggle || !on) { if (p) p.remove(); return; }
-    var sizable = !OWN[app] && !IDLE[app];   // greyed out where the TV doesn't show a copy of this page
+    // Greyed out where the TV doesn't show a copy of this page, and in Page Fright's Read, which always fits the
+    // whole exercise on the TV.
+    var sizable = !OWN[app] && !IDLE[app] && !readShown();
     if (!p) {
       p = document.createElement('div');
       p.id = 'tv-pill';
@@ -244,11 +252,17 @@
     }
     var main = p.querySelector('[data-tv="main"]');
     var showSize = sizable && Date.now() - sizeShown < 1500;
-    main.innerHTML = '<span style="width:9px;height:9px;border-radius:50%;background:' + (ok ? '#3BB273' : '#A3A3A3') + '"></span>' +
+    // Only touched when something differs (it's checked on every send, and a change here is a change on the page).
+    var html = '<span style="width:9px;height:9px;border-radius:50%;background:' + (ok ? '#3BB273' : '#A3A3A3') + '"></span>' +
       (showSize ? 'Size ' + Math.round(size() * 100) + '%' : ok ? 'On TV' : 'No TV yet');
-    main.setAttribute('aria-label', ok ? 'Showing on the TV. Tap to stop.' : 'Waiting for the TV. Tap to stop.');
+    if (main.tvHtml !== html) { main.innerHTML = html; main.tvHtml = html; }
+    var label = ok ? 'Showing on the TV. Tap to stop.' : 'Waiting for the TV. Tap to stop.';
+    if (main.getAttribute('aria-label') !== label) main.setAttribute('aria-label', label);
     var bs = p.querySelectorAll('[data-tv="-1"], [data-tv="1"]');
-    for (var i = 0; i < bs.length; i++) { bs[i].disabled = !sizable; bs[i].style.opacity = sizable ? '1' : '.35'; }
+    for (var i = 0; i < bs.length; i++) {
+      if (bs[i].disabled === !sizable) continue;
+      bs[i].disabled = !sizable; bs[i].style.opacity = sizable ? '1' : '.35';
+    }
   }
 
   function stop() {
@@ -297,7 +311,7 @@
     document.addEventListener('input', changed, true);
     document.addEventListener('change', changed, true);
     window.addEventListener('resize', changed);
-    window.addEventListener('hashchange', function () { changed(); pill(); });
+    window.addEventListener('hashchange', function () { changed(); setTimeout(pill, 50); });
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') send(true); });
     ['pointerdown', 'touchstart', 'keydown', 'wheel'].forEach(function (ev) {
       document.addEventListener(ev, activity, { capture: true, passive: true });

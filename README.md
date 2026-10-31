@@ -30,8 +30,8 @@ watches: sounds play on the iPad. Memory Lane and Song Party use their own TV vi
 charts on the iPad). The Apps screen, Health Log and Z4 Log aren't shown: the TV rests on "Davy Rockett".
 To stop, tap **On TV** at the bottom of any app (or the switch on the Apps screen).
 Use **−** and **+** beside **On TV** to make the TV smaller or bigger. Each app (and each part, like Page Fright's
-Read and Improv) remembers its own size. Page Fright's **Read** shows only the music on the TV, as big as fits; at
-more than 100% the TV follows the note being played.
+Read and Improv) remembers its own size. Page Fright's **Read** always shows the whole exercise on the TV, only the
+music, as big as fits (its − and + are greyed out).
 
 ## What's where
 

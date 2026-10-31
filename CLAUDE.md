@@ -132,8 +132,10 @@ changes on its own).
   - **Size + Read music-only view (David picked these 2026-10-30):** the "On TV" pill has − / + (steps 60%–300%),
     saved on the remote per app and hash part (`davyrockett-tv-size:<app>:<read|improv|…>`), sent as `z`; the pill shows
     "Size N%" for a moment. tv.js puts the CSS in a `<style id="tv-view">` in the frame: `html{zoom:z}` normally. For
-    Page Fright while `#read-view` shows: everything but `#score` is hidden, `#score` fills the screen and its SVG is
-    sized to fit (keeping its shape) × z; above 100% the TV scrolls to keep the lit note (`.on`) away from the edges.
+    Page Fright while `#read-view` shows: everything but `#score` is hidden and the SVG is sized to fit the whole
+    exercise on screen, keeping its shape, **always, ignoring z** (David: "the TV should just show the entire exercise
+    at once always"; a zoom-and-follow version was removed the same day). Read's − / + are greyed out (`readShown()`).
+    The lines are as the remote laid them out, so a phone remote (2 bars a line) comes out tall and thin.
     Not tried on a real TV; `zoom` needs a browser that supports it (Chrome, Safari, Firefox 126+).
   - `relay.js`: both public MQTT relays at once (EMQX + HiveMQ, sends through both, dedupe by `id`/`n`/`t`).
     Topics `davyrockett-tv/dr/state|tv`. **Testing:** never use `dr`. Put `?link=claude-test-…` on the TV page and

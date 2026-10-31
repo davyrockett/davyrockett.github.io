@@ -190,8 +190,8 @@
 
   /* ---------- Size and TV views ----------
      msg.z is the size picked with − / + on the iPad (1 = as the page comes). Page Fright's Read gets a music-only
-     view: everything but the music is hidden and the music fills the screen; − / + then zoom into it, and the TV
-     keeps the note being played on screen. */
+     view: everything but the music is hidden, and the whole exercise always fits the screen, as big as it can be
+     (David: "the TV should just show the entire exercise at once always"), whatever the size setting. */
   var MUSIC_CSS = 'body *{visibility:hidden!important}#score,#score *{visibility:visible!important}' +
     '#score{position:fixed!important;left:0!important;top:0!important;right:0!important;bottom:0!important;' +
     'width:auto!important;height:auto!important;max-width:none!important;margin:0!important;padding:2vh 2vw!important;' +
@@ -205,35 +205,21 @@
     var score = msg.app === 'page-fright' ? d.getElementById('score') : null;
     var read = d.getElementById('read-view');
     var music = score && read && read.getClientRects().length > 0;
-    if (music) css = MUSIC_CSS + musicSize(d, score, z);
+    if (music) css = MUSIC_CSS + musicSize(d, score);
     else if (z !== 1) css = 'html{zoom:' + z + '}';
     var st = d.getElementById('tv-view');
     if (!st) { st = d.createElement('style'); st.id = 'tv-view'; d.head.appendChild(st); }
     if (st.textContent !== css) st.textContent = css;
-    if (music && z > 1) follow(score);
   }
-  // The music as big as fits the screen (keeping its shape), times the size picked; centred while it fits.
-  function musicSize(d, score, z) {
+  // The whole exercise as big as fits the screen, keeping its shape, centred.
+  function musicSize(d, score) {
     var svg = score.querySelector('svg'), vb = svg && svg.viewBox && svg.viewBox.baseVal;
     if (!vb || !vb.width || !vb.height) return '';
     var W = d.documentElement.clientWidth * 0.96, H = d.documentElement.clientHeight * 0.96, asp = vb.width / vb.height;
-    var w = Math.round(Math.min(W, H * asp) * z), h = Math.round(w / asp);
+    var w = Math.round(Math.min(W, H * asp)), h = Math.round(w / asp);
     var top = Math.max(0, Math.round((H - h) / 2));
     return '#score svg{width:' + w + 'px!important;height:' + h + 'px!important;margin:' + top + 'px auto 0!important}';
   }
-  // Zoomed in on the music: when the lit note nears an edge, bring it back to the middle.
-  function follow(score) {
-    var lit = score.querySelector('.on');
-    if (!lit) return;
-    var r = lit.getBoundingClientRect(), b = score.getBoundingClientRect();
-    if (r.top < b.top + b.height * 0.2 || r.bottom > b.bottom - b.height * 0.2) {
-      score.scrollTop += (r.top + r.height / 2) - (b.top + b.height / 2);
-    }
-    if (r.left < b.left + b.width * 0.15 || r.right > b.right - b.width * 0.15) {
-      score.scrollLeft += (r.left + r.width / 2) - (b.left + b.width / 2);
-    }
-  }
-
   /* ---------- Messages from the iPad ---------- */
   function decode(bytes, done) {
     if (bytes.length > 1 && bytes[0] === 0x1f && bytes[1] === 0x8b) {
