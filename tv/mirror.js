@@ -91,6 +91,7 @@
       s.ba = attrs(document.body);
       s.b = copy(document.body).innerHTML;
       s.ws = ratio(document.scrollingElement || document.documentElement)[0];
+      s.z = size();
     }
     return s;
   }
@@ -189,31 +190,65 @@
     pill();
   }
 
-  /* ---------- On screen: a small "📺 TV" button (tap to stop) ---------- */
+  /* ---------- Size on the TV ----------
+     − / + on the "On TV" button make the TV's copy smaller or bigger. Remembered on this device for each app and
+     each part of it (Page Fright's #read, #improv…), so Read can stay big while Jam Session stays normal. */
+  var SIZES = [0.6, 0.7, 0.8, 0.9, 1, 1.15, 1.3, 1.5, 1.75, 2, 2.5, 3];
+  var sizeShown = 0;
+  function sizeKey() { return 'davyrockett-tv-size:' + app + ':' + ((/^#\/?([\w-]*)/.exec(location.hash) || [])[1] || ''); }
+  function size() {
+    var v = 0;
+    try { v = parseFloat(localStorage.getItem(sizeKey())); } catch (e) {}
+    return v > 0 ? v : 1;
+  }
+  function resize(d) {
+    var z = size(), i = 0;
+    while (i < SIZES.length - 1 && SIZES[i] < z - 0.001) i++;
+    i = Math.max(0, Math.min(SIZES.length - 1, i + d));
+    try { localStorage.setItem(sizeKey(), String(SIZES[i])); } catch (e) {}
+    sizeShown = Date.now();
+    pill();
+    setTimeout(pill, 1600);   // back to "On TV" after a moment
+    changed();
+  }
+
+  /* ---------- On screen: "On TV" (tap to stop) with − / + beside it ---------- */
   function pill() {
     var toggle = document.getElementById('tv-toggle');   // the Apps screen has its own switch
     var p = document.getElementById('tv-pill');
     var ok = on && TVRelay.connected() > 0 && tv.online;
     try { document.dispatchEvent(new CustomEvent('tvstatus', { detail: { on: on, tv: ok } })); } catch (e) {}
     if (toggle || !on) { if (p) p.remove(); return; }
+    var sizable = !OWN[app] && !IDLE[app];   // greyed out where the TV doesn't show a copy of this page
     if (!p) {
-      p = document.createElement('button');
+      p = document.createElement('div');
       p.id = 'tv-pill';
-      p.type = 'button';
       var left = document.getElementById('suite-home') ? 64 : 12;   // beside the "All apps" button
       p.style.cssText = 'position:fixed;z-index:2147483646;left:calc(' + left + 'px + env(safe-area-inset-left,0px));' +
-        'bottom:calc(12px + env(safe-area-inset-bottom,0px));height:44px;padding:0 14px;border-radius:22px;' +
-        'display:flex;align-items:center;gap:7px;background:rgba(30,27,24,.78);color:#fff;font:600 15px/1 system-ui,sans-serif;' +
+        'bottom:calc(12px + env(safe-area-inset-bottom,0px));height:44px;border-radius:22px;display:flex;align-items:stretch;' +
+        'background:rgba(30,27,24,.78);color:#fff;font:600 15px/1 system-ui,sans-serif;overflow:hidden;' +
         'box-shadow:0 4px 14px rgba(0,0,0,.28);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);' +
-        'border:1px solid rgba(255,255,255,.45);opacity:.92;cursor:pointer';
-      p.addEventListener('click', function () {
-        if (confirm('Stop showing this iPad on the TV?')) stop();
+        'border:1px solid rgba(255,255,255,.45);opacity:.92';
+      var btn = 'background:none;border:0;color:inherit;font:inherit;cursor:pointer;display:flex;align-items:center;';
+      p.innerHTML = '<button type="button" data-tv="main" style="' + btn + 'gap:7px;padding:0 12px 0 14px;min-width:7.4em"></button>' +
+        '<button type="button" data-tv="-1" aria-label="Smaller on the TV" style="' + btn + 'padding:0 13px;font-size:22px;border-left:1px solid rgba(255,255,255,.3)">−</button>' +
+        '<button type="button" data-tv="1" aria-label="Bigger on the TV" style="' + btn + 'padding:0 14px 0 13px;font-size:22px;border-left:1px solid rgba(255,255,255,.3)">+</button>';
+      p.addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('button') : null;
+        if (!b || b.disabled) return;
+        var what = b.getAttribute('data-tv');
+        if (what === 'main') { if (confirm('Stop showing this on the TV?')) stop(); }
+        else resize(+what);
       });
       document.body.appendChild(p);
     }
-    p.innerHTML = '<span style="width:9px;height:9px;border-radius:50%;background:' + (ok ? '#3BB273' : '#A3A3A3') + '"></span>' +
-      (ok ? 'On TV' : 'No TV yet');
-    p.setAttribute('aria-label', ok ? 'Showing on the TV. Tap to stop.' : 'Waiting for the TV. Tap to stop.');
+    var main = p.querySelector('[data-tv="main"]');
+    var showSize = sizable && Date.now() - sizeShown < 1500;
+    main.innerHTML = '<span style="width:9px;height:9px;border-radius:50%;background:' + (ok ? '#3BB273' : '#A3A3A3') + '"></span>' +
+      (showSize ? 'Size ' + Math.round(size() * 100) + '%' : ok ? 'On TV' : 'No TV yet');
+    main.setAttribute('aria-label', ok ? 'Showing on the TV. Tap to stop.' : 'Waiting for the TV. Tap to stop.');
+    var bs = p.querySelectorAll('[data-tv="-1"], [data-tv="1"]');
+    for (var i = 0; i < bs.length; i++) { bs[i].disabled = !sizable; bs[i].style.opacity = sizable ? '1' : '.35'; }
   }
 
   function stop() {
@@ -262,6 +297,7 @@
     document.addEventListener('input', changed, true);
     document.addEventListener('change', changed, true);
     window.addEventListener('resize', changed);
+    window.addEventListener('hashchange', function () { changed(); pill(); });
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') send(true); });
     ['pointerdown', 'touchstart', 'keydown', 'wheel'].forEach(function (ev) {
       document.addEventListener(ev, activity, { capture: true, passive: true });

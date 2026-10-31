@@ -133,6 +133,7 @@
     morph(d.body, tmp);
     drawPics(f);
     scrollTo(f, msg);
+    view(f, msg);
   }
   function scrollTo(f, msg) {
     var d = f.el.contentDocument;
@@ -184,6 +185,52 @@
         continue;
       }
       try { cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); cv.tvKey = key; } catch (e) {}
+    }
+  }
+
+  /* ---------- Size and TV views ----------
+     msg.z is the size picked with − / + on the iPad (1 = as the page comes). Page Fright's Read gets a music-only
+     view: everything but the music is hidden and the music fills the screen; − / + then zoom into it, and the TV
+     keeps the note being played on screen. */
+  var MUSIC_CSS = 'body *{visibility:hidden!important}#score,#score *{visibility:visible!important}' +
+    '#score{position:fixed!important;left:0!important;top:0!important;right:0!important;bottom:0!important;' +
+    'width:auto!important;height:auto!important;max-width:none!important;margin:0!important;padding:2vh 2vw!important;' +
+    'border:0!important;border-radius:0!important;box-shadow:none!important;overflow:auto!important;' +
+    'box-sizing:border-box!important;z-index:2147483000!important}' +
+    '#score svg{display:block;max-width:none!important;max-height:none!important}';
+  function view(f, msg) {
+    var d = f.el.contentDocument;
+    if (!d || !d.head || msg.b == null) return;
+    var z = msg.z > 0 ? msg.z : 1, css = '';
+    var score = msg.app === 'page-fright' ? d.getElementById('score') : null;
+    var read = d.getElementById('read-view');
+    var music = score && read && read.getClientRects().length > 0;
+    if (music) css = MUSIC_CSS + musicSize(d, score, z);
+    else if (z !== 1) css = 'html{zoom:' + z + '}';
+    var st = d.getElementById('tv-view');
+    if (!st) { st = d.createElement('style'); st.id = 'tv-view'; d.head.appendChild(st); }
+    if (st.textContent !== css) st.textContent = css;
+    if (music && z > 1) follow(score);
+  }
+  // The music as big as fits the screen (keeping its shape), times the size picked; centred while it fits.
+  function musicSize(d, score, z) {
+    var svg = score.querySelector('svg'), vb = svg && svg.viewBox && svg.viewBox.baseVal;
+    if (!vb || !vb.width || !vb.height) return '';
+    var W = d.documentElement.clientWidth * 0.96, H = d.documentElement.clientHeight * 0.96, asp = vb.width / vb.height;
+    var w = Math.round(Math.min(W, H * asp) * z), h = Math.round(w / asp);
+    var top = Math.max(0, Math.round((H - h) / 2));
+    return '#score svg{width:' + w + 'px!important;height:' + h + 'px!important;margin:' + top + 'px auto 0!important}';
+  }
+  // Zoomed in on the music: when the lit note nears an edge, bring it back to the middle.
+  function follow(score) {
+    var lit = score.querySelector('.on');
+    if (!lit) return;
+    var r = lit.getBoundingClientRect(), b = score.getBoundingClientRect();
+    if (r.top < b.top + b.height * 0.2 || r.bottom > b.bottom - b.height * 0.2) {
+      score.scrollTop += (r.top + r.height / 2) - (b.top + b.height / 2);
+    }
+    if (r.left < b.left + b.width * 0.15 || r.right > b.right - b.width * 0.15) {
+      score.scrollLeft += (r.left + r.width / 2) - (b.left + b.width / 2);
     }
   }
 

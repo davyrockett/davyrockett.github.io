@@ -29,6 +29,9 @@ Every app you then open on the iPad shows on the TV, and the TV follows each tap
 watches: sounds play on the iPad. Memory Lane and Song Party use their own TV view (words on the TV, your
 charts on the iPad). The Apps screen, Health Log and Z4 Log aren't shown: the TV rests on "Davy Rockett".
 To stop, tap **On TV** at the bottom of any app (or the switch on the Apps screen).
+Use **−** and **+** beside **On TV** to make the TV smaller or bigger. Each app (and each part, like Page Fright's
+Read and Improv) remembers its own size. Page Fright's **Read** shows only the music on the TV, as big as fits; at
+more than 100% the TV follows the note being played.
 
 ## What's where
 

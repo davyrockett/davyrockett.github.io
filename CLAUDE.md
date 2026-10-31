@@ -129,6 +129,12 @@ changes on its own).
     website made the TV jump between it and Page Fright). Each message carries `a`, when that page was last touched
     (pointerdown/touchstart/keydown/wheel/window focus; a page opened in the background starts at 0), and a touch sends
     even if nothing changed. tv.js follows one page (`owner`) and only switches to another when its `a` is newer.
+  - **Size + Read music-only view (David picked these 2026-10-30):** the "On TV" pill has − / + (steps 60%–300%),
+    saved on the remote per app and hash part (`davyrockett-tv-size:<app>:<read|improv|…>`), sent as `z`; the pill shows
+    "Size N%" for a moment. tv.js puts the CSS in a `<style id="tv-view">` in the frame: `html{zoom:z}` normally. For
+    Page Fright while `#read-view` shows: everything but `#score` is hidden, `#score` fills the screen and its SVG is
+    sized to fit (keeping its shape) × z; above 100% the TV scrolls to keep the lit note (`.on`) away from the edges.
+    Not tried on a real TV; `zoom` needs a browser that supports it (Chrome, Safari, Firefox 126+).
   - `relay.js`: both public MQTT relays at once (EMQX + HiveMQ, sends through both, dedupe by `id`/`n`/`t`).
     Topics `davyrockett-tv/dr/state|tv`. **Testing:** never use `dr`. Put `?link=claude-test-…` on the TV page and
     `localStorage['davyrockett-tv-link']` on the remote. For Memory Lane / Song Party, test with copies whose
