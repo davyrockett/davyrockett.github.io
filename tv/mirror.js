@@ -224,10 +224,11 @@
     var p = document.getElementById('tv-pill');
     var ok = on && TVRelay.connected() > 0 && tv.online;
     try { document.dispatchEvent(new CustomEvent('tvstatus', { detail: { on: on, tv: ok } })); } catch (e) {}
-    if (toggle || !on) { if (p) p.remove(); return; }
+    // Not on the Apps screen (its own switch), and not in Memory Lane / Song Party, which show their own "TV linked".
+    if (toggle || !on || OWN[app]) { if (p) p.remove(); return; }
     // Greyed out where the TV doesn't show a copy of this page, and in Page Fright's Read, which always fits the
     // whole exercise on the TV.
-    var sizable = !OWN[app] && !IDLE[app] && !readShown();
+    var sizable = !IDLE[app] && !readShown();
     if (!p) {
       p = document.createElement('div');
       p.id = 'tv-pill';
