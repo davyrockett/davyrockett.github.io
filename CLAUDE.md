@@ -125,6 +125,7 @@ changes on its own).
     `LINK_CODE` is changed (see memory-lane's notes about its real `ml` link). Tested 2026-10-30 with two tabs:
     Page Fright, Jam Session, Raise the Barre (phone size), Memory Lane hand-off, Health Log resting, late-joining TV,
     plain (no unzip) fallback. Not yet tried on a real smart TV.
+  - The publish workflow copies a fixed list of folders into `_site`: `tv` is on it (a new top-level folder must be added).
 - `promo-materials/` is the press kit; `portfolio/` only redirects home (David doesn't want the portfolio).
   Both keep the old Wix addresses working.
 - **Gigs come from the public Google Calendar "All Davy Rockett Gigs"**
