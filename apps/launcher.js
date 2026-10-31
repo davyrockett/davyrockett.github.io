@@ -48,6 +48,36 @@ try {
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 
+/* ---------- 📺 TV ----------
+   On: every app opened on this device shows on www.davyrockett.com/tv (each app's suite.js loads /tv/mirror.js).
+   This screen itself isn't shown: the TV rests while David is here. */
+
+function tvRender(state) {
+  const on = state ? state.on : lsGet('davyrockett-tv') === '1';
+  const linked = Boolean(state && state.tv);
+  $('tv-toggle').setAttribute('aria-pressed', String(on));
+  $('tv-toggle').classList.toggle('linked', on && linked);
+  $('tv-label').textContent = !on ? '📺 TV off' : linked ? '📺 On TV' : '📺 Waiting for TV';
+}
+function tvLoad() {
+  if (window.TVMirror) return;
+  const s = document.createElement('script');
+  s.src = '/tv/mirror.js';
+  document.head.appendChild(s);
+}
+document.addEventListener('tvstatus', (e) => tvRender(e.detail));
+$('tv-toggle').addEventListener('click', () => {
+  if (lsGet('davyrockett-tv') === '1') {
+    if (window.TVMirror) window.TVMirror.stop(); else lsSet('davyrockett-tv', null);
+  } else {
+    lsSet('davyrockett-tv', '1');
+    if (window.TVMirror) window.TVMirror.resume(); else tvLoad();
+  }
+  tvRender();
+});
+if (lsGet('davyrockett-tv') === '1') tvLoad();
+tvRender();
+
 /* ---------- Offline ---------- */
 
 async function offlineState(slug) {

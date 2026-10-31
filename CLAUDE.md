@@ -104,6 +104,27 @@ changes on its own).
   The suite's first tile is **Website** (same icon as the suite: the outline figure). The site's own
   pages load `suite.js` (copy of `Claude Apps/tools/suite.js`) so the "All apps" button shows there too when
   opened from the suite (no browser back button inside the installed suite).
+- **`tv/`: the one TV address (www.davyrockett.com/tv, 2026-10-30, David's request).** The TV's browser opens it once;
+  the **📺 TV** switch on the Apps screen (`#tv-toggle`, launcher.js) sets `localStorage['davyrockett-tv'] = '1'` for
+  that device, and then every app's `suite.js` loads `/tv/mirror.js`. David: "don't overcomplicate… have the tv mirror
+  the remote device", except the apps that already had a TV link.
+  - `mirror.js` (iPad): on every change (MutationObserver, scroll, input; throttled, bigger copies wait longer) sends a
+    copy of the page: head styles, `<html>`/`<body>` attributes, and the body HTML without scripts or the insides of
+    hidden elements, with scroll places (`data-tv-sc`), sliders/ticks and modal dialogs (`data-tv-modal`) written in.
+    Typed text (keys!) and canvas drawings are never copied. Gzipped unless a TV says it can't unzip.
+    Shows a small "On TV" pill beside the All apps button (tap to stop).
+  - **Memory Lane / Song Party** keep their own link: mirror.js only sends `{own: 'ml.link-role'}` and calls their
+    `linkStart('remote')`; the TV page sets that role to `tv` and opens the real app in its frame.
+  - **Private** (`IDLE` in mirror.js): the Apps screen, Rundown, Health Log, Z4 Log. The TV shows its resting screen.
+  - `tv.js` (TV, old-style JS): draws the copy in a same-origin frame (`srcdoc` with `<base>`), then updates only what
+    changed (its own small morph), so CSS animations keep running. Pages are laid out at the TV's own size.
+    Retained copies over 30 min old are ignored. Says `on:<id>:gz|plain` on `tv` (retained, 20 s, last will `off:<id>`).
+  - `relay.js`: both public MQTT relays at once (EMQX + HiveMQ, sends through both, dedupe by `id`/`n`/`t`).
+    Topics `davyrockett-tv/dr/state|tv`. **Testing:** never use `dr`. Put `?link=claude-test-…` on the TV page and
+    `localStorage['davyrockett-tv-link']` on the remote. For Memory Lane / Song Party, test with copies whose
+    `LINK_CODE` is changed (see memory-lane's notes about its real `ml` link). Tested 2026-10-30 with two tabs:
+    Page Fright, Jam Session, Raise the Barre (phone size), Memory Lane hand-off, Health Log resting, late-joining TV,
+    plain (no unzip) fallback. Not yet tried on a real smart TV.
 - `promo-materials/` is the press kit; `portfolio/` only redirects home (David doesn't want the portfolio).
   Both keep the old Wix addresses working.
 - **Gigs come from the public Google Calendar "All Davy Rockett Gigs"**

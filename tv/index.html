@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TV · davyrockett</title>
+  <!-- The one TV address: open www.davyrockett.com/tv in the TV's web browser once, and it shows whatever app David
+       has open on his iPad while 📺 TV is on (switched on the Apps screen). Not linked from the site. -->
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="../apps/icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800&family=Atkinson+Hyperlegible:wght@400&display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #FBF8F4; cursor: none; }
+    iframe { position: fixed; left: 0; top: 0; width: 100%; height: 100%; border: 0; background: #FBF8F4; pointer-events: none; }
+    iframe.waiting { visibility: hidden; }
+    #rest { position: fixed; left: 0; top: 0; width: 100%; height: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center; }
+    #rest h1 { margin: 0; font: 800 13vw/0.9 'Big Shoulders Display', 'Arial Narrow', sans-serif; color: #F57C14;
+               letter-spacing: .01em; text-transform: uppercase; }
+    #rest p { margin: 3vw 6vw 0; font: 2.4vw/1.4 'Atkinson Hyperlegible', sans-serif; color: #676767; }
+    #dot { position: fixed; right: 18px; bottom: 18px; width: 14px; height: 14px; border-radius: 50%; background: #D93A2B; z-index: 5; }
+  </style>
+</head>
+<body>
+  <div id="rest">
+    <h1>Davy Rockett</h1>
+    <p id="hint">On the iPad, open Apps and tap 📺 TV.</p>
+  </div>
+  <div id="dot" hidden title="Not connected"></div>
+  <script src="paho-mqtt.min.js"></script>
+  <script src="relay.js"></script>
+  <script src="tv.js"></script>
+</body>
+</html>

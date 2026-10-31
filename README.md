@@ -20,6 +20,16 @@ In a hurry? On GitHub open the repo → **Actions** → **Update gigs and publis
 Ask Claude (on the Mac or from your phone). Every change pushed to GitHub goes live in a minute or two.
 To look at it on the Mac first, double-click **Start Website.command**.
 
+## Showing an app on a TV
+
+1. On the TV's web browser, open **www.davyrockett.com/tv**. It shows "Davy Rockett" while it waits.
+2. On the iPad (or phone), open **Apps** and tap **📺 TV off** at the top so it says **📺 On TV**.
+
+Every app you then open on the iPad shows on the TV, and the TV follows each tap and scroll. The TV only
+watches: sounds play on the iPad. Memory Lane and Song Party use their own TV view (words on the TV, your
+charts on the iPad). The Apps screen, Health Log and Z4 Log aren't shown: the TV rests on "Davy Rockett".
+To stop, tap **On TV** at the bottom of any app (or the switch on the Apps screen).
+
 ## What's where
 
 | File | What it is |
@@ -30,6 +40,7 @@ To look at it on the Mac first, double-click **Start Website.command**.
 | `gigs.json` | Gigs copied from Google Calendar (updated automatically, don't edit) |
 | `music/`, `images/` | Songs and pictures |
 | `promo-materials/` | Press kit page (davyrockett.com/promo-materials) |
+| `tv/` | The TV page (davyrockett.com/tv) and the code every app uses to show itself there |
 | `tools/sync_gigs.py` | Reads the Google Calendar |
 
 ## The davyrockett.com domain

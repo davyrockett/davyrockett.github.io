@@ -41,6 +41,19 @@
       cursor: pointer;
     }
     .icon-btn svg { width: 21px; height: 21px; }
+    .top-btns { display: flex; align-items: center; gap: 10px; }
+    /* 📺 TV switch: every app opened on this device shows on the TV page (www.davyrockett.com/tv). Fixed width so
+       nothing moves when its words change. */
+    .tv-btn {
+      height: 42px; width: 10.5em; padding: 0 14px;
+      border-radius: 21px; border: 1px solid var(--line); background: var(--card); color: var(--grey);
+      font: inherit; font-size: .95rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .tv-btn .tv-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+    .tv-btn[aria-pressed="true"] { border-color: var(--orange); color: var(--ink); }
+    .tv-btn[aria-pressed="true"] .tv-dot { background: #A3A3A3; }
+    .tv-btn.linked .tv-dot { background: #3BB273; }
 
     /* Home-screen style: icon with its name underneath, no card around it. */
     .grid {
@@ -262,9 +275,12 @@
     <h1 class="clock" id="clock" aria-live="off"></h1>
     <div class="date" id="today-date"></div>
   </div>
-  <button type="button" class="icon-btn" id="settings-open" aria-label="Settings">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-  </button>
+  <div class="top-btns">
+    <button type="button" class="tv-btn" id="tv-toggle" aria-pressed="false"><span class="tv-dot"></span><span id="tv-label">📺 TV off</span></button>
+    <button type="button" class="icon-btn" id="settings-open" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
 </header>
 
 <main>
@@ -388,6 +404,14 @@
         <button type="button" class="btn" id="update-all" hidden>Update all</button>
         <button type="button" class="btn quiet" id="update-check">Check again</button>
       </div>
+    </div>
+
+    <div class="panel">
+      <h3>tv</h3>
+      <p style="margin:0">Open <b>www.davyrockett.com/tv</b> in the TV’s web browser, then tap <b>📺 TV</b> at the top of this
+        screen. Every app you open on this device then shows on the TV until you tap it again (or the <b>On TV</b> button
+        in an app). Memory Lane and Song Party use their own TV view: words on the TV, your charts here. This screen,
+        Health Log and Z4 Log aren’t shown.</p>
     </div>
 
     <div class="panel">
