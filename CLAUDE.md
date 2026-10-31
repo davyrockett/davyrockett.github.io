@@ -111,7 +111,13 @@ changes on its own).
   - `mirror.js` (iPad): on every change (MutationObserver, scroll, input; throttled, bigger copies wait longer) sends a
     copy of the page: head styles, `<html>`/`<body>` attributes, and the body HTML without scripts or the insides of
     hidden elements, with scroll places (`data-tv-sc`), sliders/ticks and modal dialogs (`data-tv-modal`) written in.
-    Typed text (keys!) and canvas drawings are never copied. Gzipped unless a TV says it can't unzip.
+    Typed text (keys!) is never copied. Gzipped unless a TV says it can't unzip.
+    **Canvas drawings (SOS Band charts, David's request 2026-10-30 "nice for rehearsals"):** each canvas becomes a JPEG
+    (max 1400 px wide) the first time it's seen (SOS draws a page before putting it on the page), sent once per TV on
+    `img` as `<key>\n<jpeg>`; the copy marks the canvas `data-tv-img`. tv.js draws it into the frame's canvas and asks
+    on `need` for any it missed. A canvas redrawn later at the same size isn't re-sent. TV_CSS makes SOS Band's
+    Perform page (`#pf-page`) fill the TV. Tested: chart viewer (scrolling sends only ~3 KB), Perform page turns,
+    late-joining TV at 1600×900.
     Shows a small "On TV" pill beside the All apps button (tap to stop).
   - **Memory Lane / Song Party** keep their own link: mirror.js only sends `{own: 'ml.link-role'}` and calls their
     `linkStart('remote')`; the TV page sets that role to `tv` and opens the real app in its frame.

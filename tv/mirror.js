@@ -8,7 +8,8 @@
    - Memory Lane and Song Party have their own TV link (words on the TV, charts on the iPad), so this only tells
      the TV to open that app as its TV screen, and turns this device into its remote.
    - The Apps screen, Rundown, Health Log and Z4 Log are private: the TV shows its resting screen instead.
-   - Typed text (access keys…) and canvas drawings (SOS Band's PDF pages) aren't copied. */
+   - Typed text (access keys…) is never copied.
+   Canvas drawings (SOS Band's chart pages) are sent as pictures, each one once, on their own (see "Pictures"). */
 (function () {
   'use strict';
   if (window.TVMirror || window.top !== window) return;
@@ -25,6 +26,7 @@
   var tv = { online: false, plain: false, ids: {} };   // per relay: the TV that last said "on"
   var last = '';
   var timer = 0, nextAt = 0;
+  var used = [];   // pictures in the copy being made
 
   /* ---------- A copy of the page ---------- */
   function attrs(el) {
@@ -50,7 +52,12 @@
       return c;
     }
     if (tag === 'OPTION') { if (src.selected) c.setAttribute('selected', ''); else c.removeAttribute('selected'); }
-    if (tag === 'TEXTAREA' || tag === 'CANVAS') return c;
+    if (tag === 'CANVAS') {
+      var key = picKey(src);
+      if (key) { c.setAttribute('data-tv-img', key); used.push(key); }
+      return c;
+    }
+    if (tag === 'TEXTAREA') return c;
     if (tag === 'DIALOG') { try { if (src.matches(':modal')) c.setAttribute('data-tv-modal', ''); } catch (e) {} }
     for (var k = src.firstChild; k; k = k.nextSibling) {
       if (k.nodeType === 3) { c.appendChild(k.cloneNode(false)); continue; }
@@ -84,6 +91,53 @@
     return s;
   }
 
+  /* ---------- Pictures ----------
+     A canvas (SOS Band draws each chart page on one, already finished when it's put on the page) becomes a JPEG
+     the first time it's seen, and goes to the TV by itself on 'img' ("<key>\n" + the JPEG), once per TV. The page
+     copy only marks the canvas with data-tv-img="<key>", so scrolling a chart sends just the small copy.
+     The TV asks again on 'need' for any it missed. A canvas drawn on again later at the same size isn't re-sent. */
+  var pics = { byCanvas: window.WeakMap ? new WeakMap() : null, data: {}, order: [], sent: {}, n: 0 };
+  function picKey(cv) {
+    if (!pics.byCanvas || !cv.width || !cv.height) return '';
+    var p = pics.byCanvas.get(cv);
+    if (p && p.w === cv.width && p.h === cv.height) return p.key;   // '' while it's being made
+    p = { w: cv.width, h: cv.height, key: '' };
+    pics.byCanvas.set(cv, p);
+    capture(cv, p);
+    return '';
+  }
+  function capture(cv, p) {
+    var w = Math.min(1400, cv.width), h = Math.max(1, Math.round(cv.height * w / cv.width));
+    var out = document.createElement('canvas');
+    out.width = w; out.height = h;
+    try {
+      var ctx = out.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(cv, 0, 0, w, h);
+      out.toBlob(function (blob) {
+        if (!blob) return;
+        blob.arrayBuffer().then(function (buf) {
+          var key = me + '-' + (++pics.n);
+          pics.data[key] = new Uint8Array(buf);
+          pics.order.push(key);
+          while (pics.order.length > 40) delete pics.data[pics.order.shift()];
+          p.key = key;
+          changed();
+        });
+      }, 'image/jpeg', 0.8);
+    } catch (e) { /* a drawing with pictures from another site can't be read */ }
+  }
+  function sendPic(key) {
+    var d = pics.data[key];
+    if (!d) return;
+    var head = key + '\n', out = new Uint8Array(head.length + d.length);
+    for (var i = 0; i < head.length; i++) out[i] = head.charCodeAt(i);
+    out.set(d, head.length);
+    TVRelay.send('img', out, false);
+    pics.sent[key] = 1;
+  }
+
   /* ---------- Sending ---------- */
   function gzip(text) {
     return new Response(new Blob([text]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()
@@ -92,7 +146,9 @@
   function send(force) {
     timer = 0;
     if (!TVRelay.connected()) return;
+    used = [];
     var s = snapshot();
+    for (var i = 0; i < used.length; i++) if (!pics.sent[used[i]]) sendPic(used[i]);   // pictures first
     var key = JSON.stringify(s);
     if (!force && key === last) return;
     last = key;
@@ -118,6 +174,7 @@
     else if (p[0] === 'off' && tv.ids[broker] && tv.ids[broker].id === p[1]) delete tv.ids[broker];
     tv.online = false; tv.plain = false;
     for (var b in tv.ids) { tv.online = true; if (tv.ids[b].plain) tv.plain = true; }
+    if (tv.online && !was) pics.sent = {};
     if (tv.online && (!was || tv.plain !== wasPlain)) send(true);   // a TV just joined: show it this screen now
     pill();
   }
@@ -175,14 +232,14 @@
     // Memory Lane / Song Party: this device becomes their remote (their own link does the rest).
     if (OWN[app] && typeof linkStart === 'function' && typeof link !== 'undefined' && link.role !== 'remote') linkStart('remote');
     TVRelay.start({
-      subs: ['state', 'tv'],
+      subs: ['state', 'tv', 'need'],
       onConnect: function () { changed(); },
       onStatus: pill,
       onMessage: function (suffix, bytes, retained, broker) {
-        if (suffix !== 'tv') return;
         var text = '';
         for (var i = 0; i < bytes.length; i++) text += String.fromCharCode(bytes[i]);
-        presence(text, broker);
+        if (suffix === 'tv') presence(text, broker);
+        else if (suffix === 'need') sendPic(text);   // the TV missed a picture
       }
     });
     if (window.MutationObserver) {

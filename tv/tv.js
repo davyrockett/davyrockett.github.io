@@ -15,7 +15,10 @@
 
   var TV_CSS = 'html{scrollbar-width:none}::-webkit-scrollbar{display:none}*{cursor:none!important}' +
     'dialog[data-tv-modal]{position:fixed;top:0;bottom:0;left:0;right:0;margin:auto;z-index:2147483000;' +
-    'box-shadow:0 0 0 100vmax rgba(0,0,0,.4)}';
+    'box-shadow:0 0 0 100vmax rgba(0,0,0,.4)}' +
+    // SOS Band's Perform screen sizes the chart page in pixels for the iPad: on the TV it fills the screen instead.
+    '#pf-page{position:absolute;top:0;left:0;right:0;bottom:0;display:block}' +
+    '#pf-page canvas[data-tv-img]{width:100%!important;height:100%!important;object-fit:contain;background:transparent}';
 
   function $(id) { return document.getElementById(id); }
 
@@ -127,6 +130,7 @@
     var tmp = d.createElement('body');
     tmp.innerHTML = msg.b || '';
     morph(d.body, tmp);
+    drawPics(f);
     scrollTo(f, msg);
   }
   function scrollTo(f, msg) {
@@ -145,6 +149,41 @@
     }
     var se = d.scrollingElement || d.documentElement;
     se.scrollTop = (msg.ws || 0) * (se.scrollHeight - se.clientHeight);
+  }
+
+  /* ---------- Pictures (canvas drawings, e.g. SOS Band's chart pages) ----------
+     They come on 'img' as "<key>\n" + a JPEG, and are drawn into each canvas marked data-tv-img="<key>".
+     One that hasn't come yet is asked for on 'need'. */
+  var pics = {}, picOrder = [], asked = {};
+  function gotPic(bytes) {
+    var i = 0, key = '';
+    while (i < bytes.length && bytes[i] !== 10) key += String.fromCharCode(bytes[i++]);
+    if (!key || pics[key]) return;
+    var img = new Image();
+    img.onload = function () {
+      pics[key] = img;
+      picOrder.push(key);
+      while (picOrder.length > 60) delete pics[picOrder.shift()];
+      URL.revokeObjectURL(img.src);
+      drawPics(frame);
+    };
+    img.src = URL.createObjectURL(new Blob([bytes.subarray(i + 1)], { type: 'image/jpeg' }));
+  }
+  function drawPics(f) {
+    if (!f || f.kind !== 'mirror') return;
+    var d = f.el.contentDocument;
+    if (!d) return;
+    var cvs = d.querySelectorAll('canvas[data-tv-img]');
+    for (var i = 0; i < cvs.length; i++) {
+      var cv = cvs[i], key = cv.getAttribute('data-tv-img');
+      if (cv.tvKey === key) continue;   // already showing this picture
+      var img = pics[key];
+      if (!img) {
+        if (!asked[key] || Date.now() - asked[key] > 4000) { asked[key] = Date.now(); TVRelay.send('need', key, false); }
+        continue;
+      }
+      try { cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); cv.tvKey = key; } catch (e) {}
+    }
   }
 
   /* ---------- Messages from the iPad ---------- */
@@ -176,12 +215,13 @@
   /* ---------- Connecting ---------- */
   function sayOn(broker) { TVRelay.send('tv', 'on:' + me + ':' + caps, true, broker); }
   TVRelay.start({
-    subs: ['state'],
+    subs: ['state', 'img'],
     will: ['tv', 'off:' + me],
     onConnect: sayOn,
     onStatus: function () { $('dot').hidden = TVRelay.connected() > 0; },
     onMessage: function (suffix, bytes, retained) {
       if (suffix === 'state') decode(bytes, function (text) { receive(text, retained); });
+      else if (suffix === 'img') gotPic(bytes);
     }
   });
   clearInterval(beat);
