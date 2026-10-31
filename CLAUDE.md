@@ -125,6 +125,10 @@ changes on its own).
   - `tv.js` (TV, old-style JS): draws the copy in a same-origin frame (`srcdoc` with `<base>`), then updates only what
     changed (its own small morph), so CSS animations keep running. Pages are laid out at the TV's own size.
     Retained copies over 30 min old are ignored. Says `on:<id>:gz|plain` on `tv` (retained, 20 s, last will `off:<id>`).
+  - **Several senders (2026-10-30 fix):** every davyrockett.com page with 📺 TV on sends (a forgotten Safari tab on the
+    website made the TV jump between it and Page Fright). Each message carries `a`, when that page was last touched
+    (pointerdown/touchstart/keydown/wheel/window focus; a page opened in the background starts at 0), and a touch sends
+    even if nothing changed. tv.js follows one page (`owner`) and only switches to another when its `a` is newer.
   - `relay.js`: both public MQTT relays at once (EMQX + HiveMQ, sends through both, dedupe by `id`/`n`/`t`).
     Topics `davyrockett-tv/dr/state|tv`. **Testing:** never use `dr`. Put `?link=claude-test-…` on the TV page and
     `localStorage['davyrockett-tv-link']` on the remote. For Memory Lane / Song Party, test with copies whose

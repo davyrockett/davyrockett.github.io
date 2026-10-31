@@ -27,6 +27,10 @@
   var last = '';
   var timer = 0, nextAt = 0;
   var used = [];   // pictures in the copy being made
+  // When this page was last touched (click, key, scroll, or switched to). Several pages can have 📺 TV on at once
+  // (another Safari tab, the iPad): the TV follows the one touched last. A page opened in the background starts at 0.
+  var act = document.hasFocus && document.hasFocus() ? Date.now() : 0;
+  var forceNext = false;
 
   /* ---------- A copy of the page ---------- */
   function attrs(el) {
@@ -150,9 +154,9 @@
     var s = snapshot();
     for (var i = 0; i < used.length; i++) if (!pics.sent[used[i]]) sendPic(used[i]);   // pictures first
     var key = JSON.stringify(s);
-    if (!force && key === last) return;
-    last = key;
-    s.n = ++seq; s.t = Date.now();
+    if (!force && !forceNext && key === last) return;
+    last = key; forceNext = false;
+    s.n = ++seq; s.t = Date.now(); s.a = act;
     var text = JSON.stringify(s);
     var ready = (window.CompressionStream && !tv.plain) ? gzip(text) : Promise.resolve(text);
     ready.then(function (payload) {
@@ -160,6 +164,12 @@
       // Big copies (Jam Session's pictures) wait a little longer before the next one.
       nextAt = Date.now() + 200 + Math.round((payload.length || 0) / 100);
     });
+  }
+  // Touched: this page takes the TV back (sent even if nothing on it changed).
+  function activity() {
+    act = Date.now();
+    forceNext = true;
+    changed();
   }
   function changed() {
     if (timer || !on) return;
@@ -208,6 +218,7 @@
 
   function stop() {
     on = false;
+    act = Date.now();
     try { localStorage.removeItem('davyrockett-tv'); } catch (e) {}
     send(true);   // the TV goes back to its resting screen
     if (OWN[app] && typeof linkStop === 'function') linkStop();
@@ -216,6 +227,7 @@
 
   function resume() {
     on = true;
+    act = Date.now();
     try { localStorage.setItem('davyrockett-tv', '1'); } catch (e) {}
     send(true);
     pill();
@@ -251,6 +263,10 @@
     document.addEventListener('change', changed, true);
     window.addEventListener('resize', changed);
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') send(true); });
+    ['pointerdown', 'touchstart', 'keydown', 'wheel'].forEach(function (ev) {
+      document.addEventListener(ev, activity, { capture: true, passive: true });
+    });
+    window.addEventListener('focus', activity);
     pill();
   }
 

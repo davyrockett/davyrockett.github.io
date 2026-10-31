@@ -8,7 +8,8 @@
   var me = Math.random().toString(36).slice(2, 10);
   // Old TV browsers can't unzip, so the TV says what it can read and the iPad sends it that way.
   var caps = (window.DecompressionStream && window.Blob && Blob.prototype.stream && window.Response) ? 'gz' : 'plain';
-  var latest = { t: 0, id: '', n: 0 };
+  var seen = {};                        // newest message number shown from each page
+  var owner = { id: '', a: -1 };        // the page the TV follows: the one touched last (see mirror.js `act`)
   var frame = null;                     // what's on screen: { el, kind: 'mirror' | 'own', key, scrolled }
   var next = null;                      // a frame still loading: { el, kind, key, msg }
   var beat = 0;
@@ -202,8 +203,12 @@
     var msg;
     try { msg = JSON.parse(text); } catch (e) { return; }
     if (!msg || msg.k !== 'tv1') return;
-    if (msg.t < latest.t || (msg.id === latest.id && msg.n <= latest.n)) return;   // older, or the same one through the other relay
-    latest = { t: msg.t, id: msg.id, n: msg.n };
+    if (seen[msg.id] >= msg.n) return;   // older, or the same one through the other relay
+    // Another page with 📺 TV on (a tab left open, the iPad) only takes over once it's touched after this one.
+    var a = msg.a || 0;
+    if (owner.id && msg.id !== owner.id && a <= owner.a) return;
+    seen[msg.id] = msg.n;
+    owner = { id: msg.id, a: a };
     // A screen left over from long ago (e.g. last week) isn't shown.
     if (retained && Math.abs(Date.now() - msg.t) > 30 * 60 * 1000) { rest(true); return; }
     if (msg.off) rest(true);
