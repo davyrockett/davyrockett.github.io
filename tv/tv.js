@@ -18,8 +18,11 @@
     'dialog[data-tv-modal]{position:fixed;top:0;bottom:0;left:0;right:0;margin:auto;z-index:2147483000;' +
     'box-shadow:0 0 0 100vmax rgba(0,0,0,.4)}' +
     // SOS Band's Perform screen sizes the chart page in pixels for the iPad: on the TV it fills the screen instead.
-    '#pf-page{position:absolute;top:0;left:0;right:0;bottom:0;display:block}' +
-    '#pf-page canvas[data-tv-img]{width:100%!important;height:100%!important;object-fit:contain;background:transparent}';
+    // Two pages side by side (iPad on its side) share the screen, meeting in the middle.
+    '#pf-page{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;gap:1.5vw}' +
+    '#pf-page canvas[data-tv-img]{flex:1 1 0;min-width:0;width:auto!important;height:100%!important;object-fit:contain;background:transparent}' +
+    '#pf-page canvas[data-tv-img]:first-child:not(:last-child){object-position:right center}' +
+    '#pf-page canvas[data-tv-img]:last-child:not(:first-child){object-position:left center}';
 
   function $(id) { return document.getElementById(id); }
 

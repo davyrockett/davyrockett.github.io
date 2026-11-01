@@ -118,7 +118,7 @@ changes on its own).
     (max 1400 px wide) the first time it's seen (SOS draws a page before putting it on the page), sent once per TV on
     `img` as `<key>\n<jpeg>`; the copy marks the canvas `data-tv-img`. tv.js draws it into the frame's canvas and asks
     on `need` for any it missed. A canvas redrawn later at the same size isn't re-sent. TV_CSS makes SOS Band's
-    Perform page (`#pf-page`) fill the TV. Tested: chart viewer (scrolling sends only ~3 KB), Perform page turns,
+    Perform page (`#pf-page`) fill the TV; two pages side by side (iPad landscape, since 2026-11-01) share it, meeting in the middle. Tested: chart viewer (scrolling sends only ~3 KB), Perform page turns,
     late-joining TV at 1600×900.
     Shows a small "On TV" pill beside the All apps button (tap to stop).
   - **Memory Lane / Song Party** keep their own link: mirror.js only sends `{own: 'ml.link-role'}` and calls their
