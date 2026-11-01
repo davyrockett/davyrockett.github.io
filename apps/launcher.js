@@ -605,8 +605,18 @@ function renderClock() {
   const d = new Date();
   const h = d.getHours();
   $('clock').innerHTML = `${h % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}<small>${h < 12 ? 'am' : 'pm'}</small>`;
-  $('today-date').textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  fitDate(d);
 }
+/* The date stays on one line (David): if the full month doesn't fit beside the buttons, use "Sep", then "Wed, Sep". */
+function fitDate(d = new Date()) {
+  const box = $('today-date');
+  for (const [weekday, month] of [['long', 'long'], ['long', 'short'], ['short', 'short']]) {
+    box.textContent = d.toLocaleDateString('en-US', { weekday, month, day: 'numeric' });
+    if (box.scrollWidth <= box.clientWidth) break;
+  }
+}
+window.addEventListener('resize', () => fitDate());
+if (document.fonts) document.fonts.ready.then(() => fitDate());
 function everyMinute() {
   if (todayISO() !== shownDay) renderToday();
   else { renderClock(); renderData(lsJSON(DATA_KEY, null)); }

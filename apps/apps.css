@@ -16,10 +16,14 @@
 .now { min-width: 0; }
 .clock { font-family: var(--head); font-size: 2.6rem; line-height: 1; letter-spacing: .01em; }
 .clock small { font-size: 1.1rem; margin-left: 4px; color: var(--grey); }
-.date { color: var(--grey); font-size: .98rem; margin-top: 4px; }
+.now { flex: 1 1 auto; }
+.date { color: var(--grey); font-size: .98rem; margin-top: 4px; white-space: nowrap; overflow: hidden; }
 @media (max-width: 520px) {
   .clock { font-size: 2.2rem; }
   .date { font-size: .9rem; }
+  /* A slightly smaller TV switch leaves the date room for one line. */
+  .top-btns { gap: 8px; }
+  .tv-btn { font-size: .82rem; padding: 0 10px; gap: 6px; }
 }
 
 /* Cards flow down in columns, so short and tall cards pack together. */
