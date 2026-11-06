@@ -56,7 +56,10 @@ var TVRelay = (function () {
         c.on = false; c.connecting = false; status(); retry(i);
       }
     };
-    if (opts.will) o.willMessage = message(opts.will[0], opts.will[1], true);   // the relay says this if we drop off
+    if (opts.will) {   // the relay says this if we drop off (a function gets a fresh one for each connection)
+      var w = typeof opts.will === 'function' ? opts.will(i) : opts.will;
+      o.willMessage = message(w[0], w[1], true);
+    }
     try { client.connect(o); } catch (e) { retry(i); }
   }
   function retry(i) {
@@ -70,7 +73,8 @@ var TVRelay = (function () {
 
   return {
     code: code,
-    // opts: { subs: ['state'], onMessage(suffix, bytes, retained, broker), onConnect(broker), onStatus(), will: [suffix, text] }
+    // opts: { subs: ['state'], onMessage(suffix, bytes, retained, broker), onConnect(broker), onStatus(),
+    //         will: [suffix, text] or function (broker) { return [suffix, text]; } }
     start: function (o) {
       opts = o;
       for (var i = 0; i < BROKERS.length; i++) {

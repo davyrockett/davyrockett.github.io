@@ -264,20 +264,32 @@
     else if (msg.b != null) mirror(msg);
   }
 
-  /* ---------- Connecting ---------- */
-  function sayOn(broker) { TVRelay.send('tv', 'on:' + me + ':' + caps, true, broker); }
+  /* ---------- Connecting ----------
+     The TV says "on:<name>" on 'tv' (kept by the relay, again every 20 s); the relay says "off:<name>" for it when it
+     drops off. Each relay connection gets its own name (me.1, me.2…): a relay can notice a dropped connection late,
+     after this TV has already reconnected, and that old "off" mustn't count for the new connection. Any "off" that
+     isn't this connection's (an old one of this TV, or another TV page that closed) would be kept by the relay, and
+     every app opened on the iPad would read it and say there's no TV, so the TV says "on" again straight away. */
+  var conn = [], connN = 0;   // this TV's name on each relay
+  function sayOn(broker) { if (conn[broker]) TVRelay.send('tv', 'on:' + conn[broker] + ':' + caps, true, broker); }
   TVRelay.start({
-    subs: ['state', 'img'],
-    will: ['tv', 'off:' + me],
+    subs: ['state', 'img', 'tv'],
+    will: function (broker) { conn[broker] = me + '.' + (++connN); return ['tv', 'off:' + conn[broker]]; },
     onConnect: sayOn,
     onStatus: function () { $('dot').hidden = TVRelay.connected() > 0; },
-    onMessage: function (suffix, bytes, retained) {
+    onMessage: function (suffix, bytes, retained, broker) {
       if (suffix === 'state') decode(bytes, function (text) { receive(text, retained); });
       else if (suffix === 'img') gotPic(bytes);
+      else if (suffix === 'tv') {
+        var t = '';
+        for (var i = 0; i < bytes.length && i < 80; i++) t += String.fromCharCode(bytes[i]);
+        var p = t.split(':');
+        if (p[0] === 'off' && p[1] !== conn[broker]) sayOn(broker);
+      }
     }
   });
   clearInterval(beat);
-  beat = setInterval(function () { TVRelay.send('tv', 'on:' + me + ':' + caps, true); }, 20000);
+  beat = setInterval(function () { for (var i = 0; i < conn.length; i++) sayOn(i); }, 20000);
   $('dot').hidden = false;
   rest(true);
 })();

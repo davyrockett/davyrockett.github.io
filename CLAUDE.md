@@ -127,6 +127,10 @@ changes on its own).
   - `tv.js` (TV, old-style JS): draws the copy in a same-origin frame (`srcdoc` with `<base>`), then updates only what
     changed (its own small morph), so CSS animations keep running. Pages are laid out at the TV's own size.
     Retained copies over 30 min old are ignored. Says `on:<id>:gz|plain` on `tv` (retained, 20 s, last will `off:<id>`).
+    **Each relay connection has its own name** (`<id>.1`, `<id>.2`…, 2026-11-06 fix): a relay can send a dropped
+    connection's last will late, after the TV has reconnected, and that retained `off` made every app opened on the
+    iPad say "No TV yet" / "Waiting for TV" for up to 20 s while the TV worked. The TV also listens on `tv` and says
+    `on` again at once when it sees any `off` that isn't its current connection's (tested with a planted stale `off`).
   - **Several senders (2026-10-30 fix):** every davyrockett.com page with 📺 TV on sends (a forgotten Safari tab on the
     website made the TV jump between it and Page Fright). Each message carries `a`, when that page was last touched
     (pointerdown/touchstart/keydown/wheel/window focus; a page opened in the background starts at 0), and a touch sends
