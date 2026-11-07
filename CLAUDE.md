@@ -146,6 +146,9 @@ changes on its own).
     remote no longer comes out tall and thin (David, 2026-10-31).
     Not tried on a real TV; `zoom` needs a browser that supports it (Chrome, Safari, Firefox 126+).
   - `relay.js`: both public MQTT relays at once (EMQX + HiveMQ, sends through both, dedupe by `id`/`n`/`t`).
+    **Pointer + full screen (2026-11-06, David needed the pointer to click full screen):** the pointer is hidden on
+    the TV page except for 4 s after the mouse moves, when an orange "⛶ Full screen" button shows at the bottom
+    (stays while the mouse is on it). Double-click anywhere or F also toggles full screen.
     Topics `davyrockett-tv/dr/state|tv`. **Testing:** never use `dr`. Put `?link=claude-test-…` on the TV page and
     `localStorage['davyrockett-tv-link']` on the remote. For Memory Lane / Song Party, test with copies whose
     `LINK_CODE` is changed (see memory-lane's notes about its real `ml` link). Tested 2026-10-30 with two tabs:

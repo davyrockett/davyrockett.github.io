@@ -288,6 +288,31 @@
       }
     }
   });
+  /* ---------- Mouse and full screen ----------
+     The pointer stays hidden on the TV, except for a few seconds after the mouse moves, when a Full screen button
+     shows too (browsers only allow full screen from a click or key). Double-click anywhere or press F does the same. */
+  var mouseTimer = 0;
+  function isFull() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  function fullLabel() { $('full').textContent = isFull() ? '✕ Exit full screen' : '⛶ Full screen'; }
+  function toggleFull() {
+    var d = document.documentElement;
+    if (isFull()) { var x = document.exitFullscreen || document.webkitExitFullscreen; if (x) x.call(document); }
+    else { var r = d.requestFullscreen || d.webkitRequestFullscreen; if (r) { var p = r.call(d); if (p && p.catch) p.catch(function () {}); } }
+  }
+  function mouseShow() {
+    document.body.className = 'mouse';
+    fullLabel();
+    clearTimeout(mouseTimer);
+    mouseTimer = setTimeout(function () { if (!$('full').matches || !$('full').matches(':hover')) document.body.className = ''; else mouseShow(); }, 4000);
+  }
+  document.addEventListener('mousemove', mouseShow);
+  document.addEventListener('mousedown', mouseShow);
+  $('full').addEventListener('click', function (e) { e.stopPropagation(); toggleFull(); });
+  document.addEventListener('dblclick', function (e) { if (e.target !== $('full')) toggleFull(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'f' || e.key === 'F') toggleFull(); });
+  document.addEventListener('fullscreenchange', fullLabel);
+  document.addEventListener('webkitfullscreenchange', fullLabel);
+
   clearInterval(beat);
   beat = setInterval(function () { for (var i = 0; i < conn.length; i++) sayOn(i); }, 20000);
   $('dot').hidden = false;
