@@ -4,50 +4,59 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>davyrockett · live music in San Diego</title>
-  <meta name="description" content="davyrockett: San Diego guitarist and singer for restaurants, breweries, wineries, private parties and events. Upcoming gigs, videos and booking.">
+  <meta name="description" content="Davy Rockett: San Diego guitarist and singer for restaurants, breweries, wineries, private parties and events. Upcoming gigs, videos and booking.">
   <meta property="og:title" content="davyrockett">
-  <meta property="og:description" content="Upcoming gigs, music, videos and booking.">
-  <meta property="og:image" content="images/live.jpg">
+  <meta property="og:description" content="Songs you know, played like new. Upcoming gigs, music, videos and booking.">
+  <meta property="og:image" content="images/davy-stage.jpg">
   <link rel="icon" href="images/figure.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Questrial&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="wrap">
+<div class="wrap">
+  <header class="masthead">
     <a class="brand" href="#top" aria-label="davyrockett home"><img src="images/logo.png" alt="davyrockett" width="522" height="115"></a>
-    <nav>
-      <a href="#gigs">gigs</a>
-      <a href="#video">video</a>
-      <a href="#bio">bio</a>
-      <a href="#music">music</a>
-      <a href="#contact">contact</a>
+    <span class="tagline">Live acoustic music · San Diego</span>
+    <nav aria-label="Main">
+      <a href="#gigs">Gigs</a>
+      <a href="#watch">Watch</a>
+      <a href="#listen">Listen</a>
+      <a href="#about">About</a>
+      <a class="nav-book" href="#book">Book a date</a>
     </nav>
-  </div>
-</header>
+  </header>
+</div>
 
 <main id="top">
 
-  <section class="hero">
-    <div class="wrap">
-      <div class="hero-art" aria-hidden="true">
-        <p class="vertical-logo">davy<span>r</span>ockett</p>
-        <img src="images/figure.png" alt="" width="516" height="612">
+  <!-- The dark stage band: the photo's own dark room is the background -->
+  <section class="band">
+    <div class="wrap band-inner">
+      <div class="band-head">
+        <h1>Hi, I'm <span>Davy.</span></h1>
+        <p class="sub">Songs you know, played like new.</p>
       </div>
-      <div class="next-gig" id="next-gig" aria-live="polite">
-        <div class="eyebrow">next gig</div>
-        <div class="when">&nbsp;</div>
+      <img class="band-photo" src="images/davy-stage.jpg" alt="Davy singing and playing acoustic guitar on a stool" width="1333" height="2000">
+      <p class="intro">Guitar and vocals for restaurants, breweries, wineries, private parties and events. From the Beatles to today's favorites, requests always welcome.</p>
+      <div class="cta">
+        <a class="btn btn-orange" href="#book">Check a date →</a>
+        <a class="btn btn-ghost" href="#watch" id="watch-reel">▶ Watch the reel</a>
+      </div>
+      <div class="next-card" id="next-gig" aria-live="polite">
+        <p class="nc-eyebrow">Next show</p>
+        <p class="nc-date">&nbsp;</p>
       </div>
     </div>
   </section>
 
-  <section id="gigs" class="gigs" hidden>
-    <div class="wrap">
+  <div class="wrap">
+
+    <section id="gigs" class="gigs" hidden>
       <div class="gigs-head">
-        <h2>upcoming gigs</h2>
+        <h2>Upcoming gigs</h2>
         <div class="view-switch" role="group" aria-label="Show gigs as">
           <button type="button" data-view="list" aria-pressed="true">List</button>
           <button type="button" data-view="calendar" aria-pressed="false">Calendar</button>
@@ -71,96 +80,98 @@
         <a id="sub-google" href="#">Google Calendar</a> or
         <a id="sub-ical" href="#">Apple / other calendars</a>.
       </p>
-    </div>
-  </section>
+    </section>
 
-  <section id="video" class="video">
-    <div class="wrap">
-      <h2>video</h2>
-      <div class="videos">
-        <figure class="vid" data-id="9X2zRvnam9s"><figcaption>davyrockett reel</figcaption></figure>
-        <figure class="vid" data-id="jb20GdQDYV0"><figcaption>Dancing in the Dark at Koi Zen</figcaption></figure>
-        <figure class="vid" data-id="XCoCTi0VZfg"><figcaption>Uptown Funk at Brew Bar</figcaption></figure>
-        <figure class="vid" data-id="2eL2wYj4M9w"><figcaption>Guitar Medley at Brew Bar</figcaption></figure>
-        <figure class="vid" data-id="hyH4ro0EBAk"><figcaption>Zoot Suit Riot at Whiskey Girl</figcaption></figure>
-        <figure class="vid" data-id="n_TUrSrVx_A"><figcaption>Folsom Prison Blues at Whiskey Girl</figcaption></figure>
+    <section id="watch" class="watch">
+      <div class="watch-main">
+        <h2>Watch</h2>
+        <div class="player" id="player">
+          <button type="button" class="poster" data-id="9X2zRvnam9s" aria-label="Play video: The davyrockett reel">
+            <img src="images/live.jpg" alt="" loading="lazy">
+            <span class="play-square" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+            <span class="player-label">The davyrockett reel</span>
+          </button>
+        </div>
       </div>
-    </div>
-  </section>
+      <div class="watch-list">
+        <ul class="playlist">
+          <li><button type="button" data-id="9X2zRvnam9s" aria-current="true"><span class="pl-title">▶ The davyrockett reel</span><span class="pl-where">Highlights</span></button></li>
+          <li><button type="button" data-id="jb20GdQDYV0"><span class="pl-title">▶ Dancing in the Dark</span><span class="pl-where">Koi Zen</span></button></li>
+          <li><button type="button" data-id="XCoCTi0VZfg"><span class="pl-title">▶ Uptown Funk</span><span class="pl-where">Brew Bar</span></button></li>
+          <li><button type="button" data-id="2eL2wYj4M9w"><span class="pl-title">▶ Guitar Medley</span><span class="pl-where">Brew Bar</span></button></li>
+          <li><button type="button" data-id="hyH4ro0EBAk"><span class="pl-title">▶ Zoot Suit Riot</span><span class="pl-where">Whiskey Girl</span></button></li>
+          <li><button type="button" data-id="n_TUrSrVx_A"><span class="pl-title">▶ Folsom Prison Blues</span><span class="pl-where">Whiskey Girl</span></button></li>
+        </ul>
+        <a class="more-link" href="https://www.youtube.com/channel/UCaC_6eV6p68mARrJ4yp2RQw" target="_blank" rel="noopener">More on YouTube →</a>
+      </div>
+    </section>
 
-  <section id="bio" class="bio">
-    <div class="wrap">
+    <section class="room">
+      <div class="room-head">
+        <h2>Music that fills the room</h2>
+        <p>…without taking it over.</p>
+      </div>
+      <div class="room-grid">
+        <div><h3>Restaurants</h3><p>Dinner-friendly sets that people talk over, then stop to listen to.</p></div>
+        <div><h3>Breweries &amp; bars</h3><p>The songs everyone knows, arranged so they feel fresh.</p></div>
+        <div><h3>Wineries</h3><p>Warm, easygoing vocals for a long afternoon.</p></div>
+        <div><h3>Private parties</h3><p>Send your requests ahead and hear them live.</p></div>
+      </div>
+    </section>
+
+    <section class="about-listen">
+      <div id="about" class="about">
+        <img src="images/live.jpg" alt="Davy playing acoustic guitar on stage next to an upright bass player" width="2000" height="1500" loading="lazy">
+        <div>
+          <h2>About Davy</h2>
+          <p>Davy grew up just outside Denver, Colorado, picking up nearly every instrument he could get his hands on. He came to California to study voice and composition, earned a BM in music, worked in the recording studio of a major music publishing company and recorded two albums in a studio of his own.</p>
+          <p>These days it's all about the live show: reading the room, building every set on his own guitar arrangements, and playing the right song at the right moment.</p>
+          <a class="bold-link" href="#book">Planning an event? Check a date →</a>
+        </div>
+      </div>
+      <div id="listen" class="listen">
+        <h2>Listen</h2>
+        <div class="album">
+          <img src="images/untandem.jpg" alt="untandem… album cover" width="800" height="800" loading="lazy">
+          <div>
+            <h3>untandem…</h3>
+            <ul class="tracks">
+              <li class="track" data-src="music/spent.m4a" data-name="Spent"></li>
+              <li class="track" data-src="music/old-timey.m4a" data-name="Old Timey"></li>
+            </ul>
+          </div>
+        </div>
+        <div class="album">
+          <img src="images/love-and-lonely.jpg" alt="love &amp; lonely album cover" width="800" height="800" loading="lazy">
+          <div>
+            <h3>love &amp; lonely</h3>
+            <ul class="tracks">
+              <li class="track" data-src="music/love-and-lonely.m4a" data-name="Love and Lonely"></li>
+              <li class="track" data-src="music/miranda.m4a" data-name="Miranda"></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="book" class="book">
       <div>
-        <h2>bio</h2>
-        <p>Davy Rockett is a San Diego guitarist and singer who plays live music for restaurants, breweries, wineries, private parties and events. Every set is built on his own guitar arrangements and warm, easygoing vocals; music that fills the room without taking it over.</p>
-        <p>The songlist runs from the Beatles and the classics everyone grew up with to today’s favorites, the songs people know and love, arranged so they feel fresh. Requests are always welcome.</p>
-        <p>He grew up just outside Denver, Colorado, picking up nearly every instrument he could get his hands on. He came to California to study voice and composition, earned a BM in music, worked in the recording studio of a major music publishing company, and recorded two albums in a studio of his own. These days his focus is the live show: reading the room and playing the right song at the right moment.</p>
-        <p><a href="#contact">Planning an event? Get in touch to check dates.</a></p>
+        <p class="book-eyebrow">Booking</p>
+        <h2>Got a date<br><span>in mind?</span></h2>
       </div>
-      <img class="bio-photo" src="images/davy-stage.jpg" alt="davyrockett singing and playing acoustic guitar on a stool" width="1333" height="2000" loading="lazy">
-    </div>
-  </section>
+      <div class="book-side">
+        <p>Send the date, the place and the kind of event. You'll hear back about availability.</p>
+        <a class="btn btn-orange" href="mailto:bookrockett@gmail.com">bookrockett@gmail.com</a>
+      </div>
+    </section>
 
-  <section id="music" class="music">
-    <div class="wrap">
-      <h2>music</h2>
-      <div class="albums">
-        <div class="album">
-          <a class="cover" href="https://www.amazon.com/untandem-Explicit-David-Ryan-Norgren/dp/B004Y8XMTA" target="_blank" rel="noopener">
-            <img src="images/untandem.jpg" alt="untandem… album cover" width="800" height="800" loading="lazy">
-          </a>
-          <div>
-          <h3>untandem…</h3>
-          <a class="buy" href="https://www.amazon.com/untandem-Explicit-David-Ryan-Norgren/dp/B004Y8XMTA" target="_blank" rel="noopener">Get the album on Amazon</a>
-          </div>
-          <ul class="tracks">
-            <li class="track" data-src="music/spent.m4a" data-name="Spent"></li>
-            <li class="track" data-src="music/old-timey.m4a" data-name="Old Timey"></li>
-          </ul>
-        </div>
-        <div class="album">
-          <a class="cover" href="https://www.amazon.com/Love-Lonely-Explicit-David-Norgren/dp/B00BCJEXSI" target="_blank" rel="noopener">
-            <img src="images/love-and-lonely.jpg" alt="love &amp; lonely album cover" width="800" height="800" loading="lazy">
-          </a>
-          <div>
-          <h3>love &amp; lonely</h3>
-          <a class="buy" href="https://www.amazon.com/Love-Lonely-Explicit-David-Norgren/dp/B00BCJEXSI" target="_blank" rel="noopener">Get the album on Amazon</a>
-          </div>
-          <ul class="tracks">
-            <li class="track" data-src="music/love-and-lonely.m4a" data-name="Love and Lonely"></li>
-            <li class="track" data-src="music/miranda.m4a" data-name="Miranda"></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="contact" class="contact">
-    <div class="wrap">
-      <h2>booking &amp; contact</h2>
-      <p class="muted">Restaurants, breweries, private parties and events. Get in touch:</p>
-      <a class="email" href="mailto:bookrockett@gmail.com">bookrockett@gmail.com</a>
-      <div class="social">
-        <a href="https://www.facebook.com/drnrockett/" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg>
-          Facebook
-        </a>
-        <a href="https://www.youtube.com/channel/UCaC_6eV6p68mARrJ4yp2RQw" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
-          YouTube
-        </a>
-      </div>
-    </div>
-  </section>
+    <footer>
+      <span>© davyrockett · San Diego</span>
+      <a href="https://www.youtube.com/channel/UCaC_6eV6p68mARrJ4yp2RQw" target="_blank" rel="noopener">YouTube</a>
+    </footer>
+  </div>
 
 </main>
-
-<footer>
-  <div class="wrap">
-    <span>© davyrockett</span>
-    <a href="promo-materials/">Press kit &amp; promo materials</a>
-  </div>
-</footer>
 
 <script src="site.js"></script>
 <script src="suite.js" defer></script>

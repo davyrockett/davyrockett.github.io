@@ -5,6 +5,8 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const MONTHS_LONG = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const DAYS_LONG = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+// The public "All Davy Rockett Gigs" Google Calendar (gigs.json names it too).
+let calendarId = "qlfaf5pt3ubfrqb158kub26g98@group.calendar.google.com";
 
 /* ---------- Gigs ---------- */
 
@@ -61,38 +63,62 @@ function mapLink(location) {
   return a;
 }
 
+const googleCalendarUrl = () =>
+  "https://calendar.google.com/calendar/render?cid=" + encodeURIComponent(calendarId);
+const appleCalendarUrl = () =>
+  "webcal://calendar.google.com/calendar/ical/" + encodeURIComponent(calendarId) + "/public/basic.ics";
+
+// "Add to my calendar" subscribes to every gig: Apple devices get the calendar app, everyone else Google.
+function calendarButton() {
+  const a = el("a", null, "Add to my calendar");
+  const apple = /iPhone|iPad|Macintosh/.test(navigator.userAgent);
+  a.href = apple ? appleCalendarUrl() : googleCalendarUrl();
+  if (!apple) { a.target = "_blank"; a.rel = "noopener"; }
+  return a;
+}
+
+// The next-show card in the dark band. With no gig booked it says new dates are coming.
 function renderNext(gig, today) {
   const box = document.getElementById("next-gig");
   box.replaceChildren();
-  const eyebrow = el("div", "eyebrow", "next gig");
+  const eyebrow = el("p", "nc-eyebrow", "Next show");
+  const buttons = el("div", "nc-buttons");
   box.append(eyebrow);
   if (!gig) {
     box.append(
-      el("div", "when", "Nothing on the calendar right now"),
-      el("p", "time", "New dates are added all the time. Want davyrockett at your event? Email bookrockett@gmail.com.")
+      el("p", "nc-date", "New dates soon"),
+      el("p", "nc-note", "Add the gig calendar and new shows appear in your calendar as soon as they're booked.")
     );
+    const cal = calendarButton();
+    cal.className = "solid";
+    const book = el("a", null, "Book a date");
+    book.href = "#book";
+    buttons.append(cal, book);
+    box.append(buttons);
     return;
   }
   const p = parts(gig.start);
   const isToday = gig.start.slice(0, 10) <= today && gigEnd(gig).slice(0, 10) >= today;
   if (isToday) eyebrow.append(el("span", "tag", "Today"));
-  box.append(
-    el("div", "when", `${DAYS_LONG[p.dow]}, ${MONTHS_LONG[p.m - 1]} ${p.d}`),
-    el("div", "what", gig.title),
-    el("div", "time", timeRange(gig))
+  const when = el("div", "nc-when");
+  when.append(
+    el("p", "nc-date", `${MONTHS[p.m - 1]} ${p.d}`),
+    el("p", "nc-day", `${DAYS_LONG[p.dow]} · ${timeRange(gig)}`)
   );
+  box.append(when, el("p", "nc-what", gig.title));
   if (gig.location) {
-    const where = el("div", "where");
+    const where = el("p", "nc-where");
     where.append(mapLink(gig.location));
     box.append(where);
   }
-  const more = el("button", "more", "See all upcoming gigs");
+  const more = el("button", "solid", "All upcoming gigs");
   more.type = "button";
   more.id = "toggle-gigs";
   more.setAttribute("aria-controls", "gigs");
   more.setAttribute("aria-expanded", "false");
   more.addEventListener("click", () => showGigs(document.getElementById("gigs").hidden));
-  box.append(more);
+  buttons.append(more, calendarButton());
+  box.append(buttons);
 }
 
 // Show or hide the upcoming gigs section (it starts hidden).
@@ -102,7 +128,7 @@ function showGigs(open, scroll = true) {
   section.hidden = !open;
   const btn = document.getElementById("toggle-gigs");
   if (btn) {
-    btn.textContent = open ? "Hide upcoming gigs" : "See all upcoming gigs";
+    btn.textContent = open ? "Hide upcoming gigs" : "All upcoming gigs";
     btn.setAttribute("aria-expanded", String(open));
   }
   if (open && scroll) section.scrollIntoView({ behavior: "smooth" });
@@ -241,28 +267,25 @@ function setupViewSwitch() {
 }
 
 async function loadGigs() {
+  const now = nowPacific();
+  const today = now.slice(0, 10);
   try {
     const res = await fetch("gigs.json", { cache: "no-cache" });
     const data = await res.json();
-    const now = nowPacific();
-    const today = now.slice(0, 10);
+    if (data.calendar) calendarId = data.calendar;
     const upcoming = data.gigs.filter(g => gigEnd(g) >= now);
     renderNext(upcoming[0], today);
     renderUpcoming(upcoming, today);
     setupCalendar(upcoming, today);
-
-    const id = data.calendar;
-    document.getElementById("sub-google").href =
-      "https://calendar.google.com/calendar/render?cid=" + encodeURIComponent(id);
-    document.getElementById("sub-ical").href =
-      "webcal://calendar.google.com/calendar/ical/" + encodeURIComponent(id) + "/public/basic.ics";
   } catch (err) {
     console.error(err);
-    renderNext(null);
+    renderNext(null, today);
     document.getElementById("upcoming").replaceChildren(
       el("li", "empty", "The gig calendar couldn't load. Please try again in a minute.")
     );
   }
+  document.getElementById("sub-google").href = googleCalendarUrl();
+  document.getElementById("sub-ical").href = appleCalendarUrl();
   // The "gigs" menu link (or a link to davyrockett.com/#gigs) opens the list.
   document.querySelectorAll('a[href="#gigs"]').forEach(a => a.addEventListener("click", e => {
     e.preventDefault();
@@ -331,31 +354,33 @@ function resetTrack(track) {
   track.querySelector(".t").textContent = "";
 }
 
-/* ---------- Videos (load YouTube only when clicked) ---------- */
+/* ---------- Videos (YouTube loads only when a video is played) ---------- */
+
+// Plays a video in the big player and marks it in the list.
+function playVideo(id, title) {
+  audio.pause();
+  const iframe = document.createElement("iframe");
+  iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+  iframe.title = title;
+  iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+  iframe.allowFullscreen = true;
+  document.getElementById("player").replaceChildren(iframe);
+  document.querySelectorAll(".playlist button").forEach(b =>
+    b.setAttribute("aria-current", String(b.dataset.id === id)));
+}
+
+const videoTitle = btn => btn.querySelector(".pl-title").textContent.replace("▶", "").trim();
 
 function setupVideos() {
-  document.querySelectorAll(".vid").forEach(fig => {
-    const id = fig.dataset.id;
-    const title = fig.querySelector("figcaption").textContent;
-    const frame = el("div", "frame");
-    const btn = el("button");
-    btn.setAttribute("aria-label", "Play video: " + title);
-    const img = el("img");
-    img.src = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
-    img.alt = "";
-    img.loading = "lazy";
-    btn.append(img);
-    btn.addEventListener("click", () => {
-      audio.pause();
-      const iframe = document.createElement("iframe");
-      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
-      iframe.title = title;
-      iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
-      iframe.allowFullscreen = true;
-      frame.replaceChildren(iframe);
-    });
-    frame.append(btn);
-    fig.prepend(frame);
+  const reel = document.querySelector(".playlist button");
+  document.querySelector("#player .poster").addEventListener("click", () => playVideo(reel.dataset.id, videoTitle(reel)));
+  document.querySelectorAll(".playlist button").forEach(btn =>
+    btn.addEventListener("click", () => playVideo(btn.dataset.id, videoTitle(btn))));
+  // "Watch the reel" in the band scrolls down and starts it.
+  document.getElementById("watch-reel").addEventListener("click", e => {
+    e.preventDefault();
+    document.getElementById("watch").scrollIntoView({ behavior: "smooth" });
+    playVideo(reel.dataset.id, videoTitle(reel));
   });
 }
 

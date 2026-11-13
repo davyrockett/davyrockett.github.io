@@ -70,11 +70,23 @@ On the Mac the folder is still `Claude Apps/website`.
 It's a public *website*, not an installable app, so some shared rules don't apply: no service worker,
 manifest, Settings gear or version bumping (visitors should always get the latest page, and the gig list
 changes on its own).
-
-- One page (`index.html`, `styles.css`, `site.js`), top to bottom (order David chose 2026-10-26; the menu
-  links follow it): next gig card, YouTube videos (load only when clicked), bio, music (4 songs in `music/`,
-  album links to Amazon), booking contact.
-- **Upcoming gigs stay hidden** until a visitor clicks "See all upcoming gigs" in the next-gig card (or
+- One page (`index.html`, `styles.css`, `site.js`). **Design since 2026-11-12: "ruled poster"** (David picked mockup
+  AB3 on the redesign canvas, claude.ai/artifact/ViV61ffAdHCYngrw4aY2eJ): cream paper `#EFE8DC`, black ink `#1B1816`,
+  logo orange `#E27039` (text-orange `#B84F1B`/`#8A3A12` on paper), thick black rules, square corners, Anton capitals
+  for headings, Archivo text, the logo image in the masthead. Top to bottom: masthead (logo, "Live acoustic music ·
+  San Diego", menu), **dark stage band** (`--stage #2A231E`, the colour of the room in `images/davy-stage.jpg`; the
+  photo fills its right side and fades in from the left; on phones it sits between subtitle and intro, fading top and
+  bottom) with "HI, I'M DAVY." (DAVY. orange), subtitle "Songs you know, played like new." (David's choices), intro,
+  Check a date / Watch the reel buttons and the cream **next-show card** (site.js; with no gig it says "NEW DATES SOON"
+  with Add to my calendar + Book a date); the hidden upcoming-gigs section; WATCH (big player + list of six, the reel
+  first; YouTube loads only when played; Watch the reel scrolls down and starts it); "Music that fills the room…
+  without taking it over" (restaurants, breweries & bars, wineries, private parties); About Davy + Listen (4 songs in
+  `music/`); booking (email only); footer (YouTube only). David dropped Facebook, the press-kit link and the Amazon
+  album links (2026-11-12); he wants Spotify / Apple Music album links instead once he sends them (couldn't find them
+  online). About photo is `images/live.jpg` for now: **David wants his giraffe-hat photo there** once he sends it.
+  "Add to my calendar" subscribes to the whole gig calendar (Apple devices: webcal, others: Google). Bio stays in third
+  person even though the headline is first person (David, 2026-11-12).
+- **Upcoming gigs stay hidden** until a visitor clicks "All upcoming gigs" in the next-show card (or
   the "gigs" menu link / a `#gigs` link). The section then offers **List** and **Calendar** views (month
   grid limited to this month through the last gig's month). David asked (2026-10-17) for **no past gigs**
   on the site, so `gigs.json` only holds gigs from yesterday on.
@@ -155,7 +167,7 @@ changes on its own).
     Page Fright, Jam Session, Raise the Barre (phone size), Memory Lane hand-off, Health Log resting, late-joining TV,
     plain (no unzip) fallback. Not yet tried on a real smart TV.
   - The publish workflow copies a fixed list of folders into `_site`: `tv` is on it (a new top-level folder must be added).
-- `promo-materials/` is the press kit; `portfolio/` only redirects home (David doesn't want the portfolio).
+- `promo-materials/` is the press kit (its own `press.css`, the pre-2026-11-12 stylesheet, so the redesign doesn't touch it; not linked from the home page any more); `portfolio/` only redirects home (David doesn't want the portfolio).
   Both keep the old Wix addresses working.
 - **Gigs come from the public Google Calendar "All Davy Rockett Gigs"**
   (`qlfaf5pt3ubfrqb158kub26g98@group.calendar.google.com`). `.github/workflows/site.yml` runs hourly:
@@ -163,19 +175,9 @@ changes on its own).
   only; title, time, location, never the event description), commits it if it changed, then publishes the site.
   Every push to `main` also publishes. GitHub Pages source is "GitHub Actions", not a branch.
   The workflow commits `.keepalive` monthly so GitHub doesn't pause the hourly schedule.
-- Video section: plain dark background (David removed the live band photo, 2026-10-17).
-- Bio photo (`images/davy-stage.jpg`, David on a stool with guitar and mic, added 2026-10-26): on screens
-  761px+ wide it fills the right side of the bio section and fades into the page on its left, top and bottom
-  (CSS mask in styles.css); on phones it sits full width at the top of the bio and fades out at the bottom.
-  It replaced the old blue-sweater cutout (`davy-guitar.png`, still the press kit's promo photo) and the
-  scrolling parallax that went with it. (A full Wix-style parallax version was tried and undone earlier.)
 - Gig times are Pacific wall-clock times and are shown as-is (not converted to the visitor's time zone).
   A gig stays "upcoming" until its end time.
-- Colours: the logo orange `#E27039` is used as the accent here (to match the logo artwork), not the app
-  orange `#F57C14`. Fonts: Questrial headings (lowercase, like the logo), Atkinson Hyperlegible body.
-- Domain (switched 2026-10-17): bought through **Wix** (account davidrnorgren2@gmail.com, auto-renews
-  Mar 22, 2027 for $56.50/2 yrs). DNS is edited in Wix (A records → GitHub's 4 IPs, `www` CNAME →
-  davyrockett.github.io). **Keep the 7 Google MX records.** Pages custom domain: www.davyrockett.com.
-  Wix Premium plan (Light) is no longer needed; next charge $336 on Mar 9, 2027 (cancel before then).
-  Optional: transfer the domain to Cloudflare Registrar before Mar 2027. Details in README.
+- Domain: DNS moved to Cloudflare 2026-11-01 and the registration transferred there 2026-11-07 (renews at Cloudflare,
+  expiry 2028-04-22); Wix Premium cancelled 2026-11-08. **Keep the Google MX records.** Pages custom domain:
+  www.davyrockett.com. Details: `Claude Apps/domain-move-to-cloudflare.md`.
 - Local preview: `Start Website.command` (port 8775).
