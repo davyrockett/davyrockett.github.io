@@ -1,4 +1,4 @@
-// davyrockett.com: gig calendar, song players and videos.
+// davyrockett.com: gig calendar, song players and the reel.
 // Gig times in gigs.json are San Diego (Pacific) wall-clock times, shown as-is to every visitor.
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -356,37 +356,31 @@ function resetTrack(track) {
   track.querySelector(".t").textContent = "";
 }
 
-/* ---------- Videos (YouTube loads only when a video is played) ---------- */
+/* ---------- The reel (a pop-up; YouTube loads only when it is opened) ---------- */
 
-// Plays a video in the big player and marks it in the list.
-function playVideo(id, title) {
-  audio.pause();
-  const iframe = document.createElement("iframe");
-  iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
-  iframe.title = title;
-  iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
-  iframe.allowFullscreen = true;
-  document.getElementById("player").replaceChildren(iframe);
-  document.querySelectorAll(".playlist button").forEach(b =>
-    b.setAttribute("aria-current", String(b.dataset.id === id)));
-}
-
-const videoTitle = btn => btn.querySelector(".pl-title").textContent.replace("▶", "").trim();
-
-function setupVideos() {
-  const reel = document.querySelector(".playlist button");
-  document.querySelector("#player .poster").addEventListener("click", () => playVideo(reel.dataset.id, videoTitle(reel)));
-  document.querySelectorAll(".playlist button").forEach(btn =>
-    btn.addEventListener("click", () => playVideo(btn.dataset.id, videoTitle(btn))));
-  // "Watch the reel" in the band scrolls down and starts it.
-  document.getElementById("watch-reel").addEventListener("click", e => {
+function setupReel() {
+  const dialog = document.getElementById("reel");
+  const player = document.getElementById("player");
+  const open = e => {
     e.preventDefault();
-    document.getElementById("watch").scrollIntoView({ behavior: "smooth" });
-    playVideo(reel.dataset.id, videoTitle(reel));
-  });
+    audio.pause();
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://www.youtube-nocookie.com/embed/${player.dataset.id}?autoplay=1&rel=0`;
+    iframe.title = player.dataset.title;
+    iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    iframe.allowFullscreen = true;
+    player.replaceChildren(iframe);
+    dialog.showModal();
+  };
+  document.querySelectorAll("[data-reel]").forEach(a => a.addEventListener("click", open));
+  dialog.querySelector(".reel-close").addEventListener("click", () => dialog.close());
+  // A tap outside the video closes it too.
+  dialog.addEventListener("click", e => { if (e.target === dialog) dialog.close(); });
+  // Closing takes the video away, so the sound stops.
+  dialog.addEventListener("close", () => player.replaceChildren());
 }
 
 setupViewSwitch();
 loadGigs();
 setupTracks();
-setupVideos();
+setupReel();

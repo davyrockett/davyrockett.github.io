@@ -242,75 +242,32 @@ h2 { font-size: 3.5rem; line-height: .9; }
 .cal-detail { margin-top: 16px; min-height: 92px; }
 .cal-hint { list-style: none; padding: 14px 0; font-weight: 600; }
 
-/* ---------- Watch ---------- */
-.watch {
-  padding: 32px 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px 32px;
-  border-bottom: 3px solid var(--ink);
-}
-.watch-main { flex: 1 1 400px; min-width: 0; }
-.watch-main h2 { margin-bottom: 14px; }
-.watch-list { flex: 1 1 400px; align-self: flex-end; }
-.player {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  background: var(--stage);
+/* ---------- The reel pop-up ---------- */
+.reel {
+  width: min(1100px, calc(100vw - 24px));
+  max-width: none;
+  padding: 0;
   border: 3px solid var(--ink);
-  overflow: hidden;
-}
-.player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.poster { all: unset; position: absolute; inset: 0; cursor: pointer; }
-.poster img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 40%; }
-.play-square {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 72px;
-  height: 72px;
-  margin: -36px 0 0 -36px;
-  background: var(--orange);
-  border: 3px solid var(--ink);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.play-square svg { width: 28px; height: 28px; fill: var(--ink); }
-.poster:hover .play-square, .poster:focus-visible .play-square { background: #EE8752; }
-.poster:focus-visible { outline: 3px solid var(--orange); outline-offset: -6px; }
-.player-label {
-  position: absolute;
-  left: 0;
-  bottom: 0;
   background: var(--ink);
   color: var(--paper);
-  font: 1.25rem var(--head);
-  letter-spacing: .04em;
+}
+.reel::backdrop { background: rgba(27, 24, 22, .85); }
+.player { position: relative; aspect-ratio: 16 / 9; width: min(100%, calc((100vh - 110px) * 16 / 9)); margin: 0 auto; background: var(--stage); }
+.player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.reel-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 8px 8px 14px; }
+.reel-bar a { color: var(--paper); font-weight: 800; }
+.reel-close {
+  font: 1.2rem var(--head);
+  letter-spacing: .06em;
   text-transform: uppercase;
-  padding: 8px 14px;
-}
-.playlist { list-style: none; margin: 0; padding: 0; border-top: 3px solid var(--ink); }
-.playlist li { border-bottom: 1px solid var(--ink); }
-.playlist button {
-  all: unset;
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  min-height: 44px;
+  padding: 0 18px;
+  background: var(--orange);
+  color: var(--ink);
+  border: 0;
   cursor: pointer;
-  padding: 0 4px;
 }
-.playlist button:focus-visible { outline: 3px solid var(--orange); }
-.playlist button:hover .pl-title { color: var(--brown); }
-.playlist button[aria-current="true"] { background: var(--ink); color: var(--paper); padding: 0 10px; }
-.playlist button[aria-current="true"]:hover .pl-title { color: var(--paper); }
-.pl-title { font: 1.5rem var(--head); text-transform: uppercase; }
-.pl-where { font-size: .9rem; font-weight: 600; text-align: right; }
-.more-link { display: inline-block; margin-top: 12px; font-weight: 800; }
+.reel-close:hover { background: #EE8752; }
 
 /* ---------- Music that fills the room ---------- */
 .room {
@@ -345,7 +302,7 @@ h2 { font-size: 3.5rem; line-height: .9; }
 /* ---------- About + listen ---------- */
 .about-listen { display: flex; flex-wrap: wrap; border-bottom: 3px solid var(--ink); }
 .about { flex: 999 1 600px; padding: 40px 24px 40px 0; display: flex; flex-wrap: wrap; gap: 24px; }
-.about img { flex: 1 1 260px; min-width: 0; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; object-position: 22% 50%; }
+.about img { flex: 1 1 260px; min-width: 0; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; object-position: 50% 20%; border: 3px solid var(--ink); }
 .about > div { flex: 1 1 300px; }
 .about h2 { font-size: 4rem; margin-bottom: 14px; }
 .about p { margin: 0 0 14px; }
@@ -474,7 +431,6 @@ footer a { font-weight: 800; }
   .room-head p { font-size: 1.4rem; }
   .room-grid h3 { font-size: 1.3rem; }
   .room-grid p { font-size: .9rem; }
-  .pl-title { font-size: 1.25rem; }
   .book { margin: 28px -18px 0; padding: 40px 18px; }
   .cal-day { min-height: 52px; padding: 3px; }
   .cal-day .venue { display: none; }
