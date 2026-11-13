@@ -313,14 +313,32 @@ h2 { font-size: 3.5rem; line-height: .9; }
 .more-link { display: inline-block; margin-top: 12px; font-weight: 800; }
 
 /* ---------- Music that fills the room ---------- */
-.room { padding: 40px 0; border-bottom: 3px solid var(--ink); }
-.room-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 24px; margin-bottom: 26px; }
-.room-head h2 { font-size: 4rem; line-height: .95; }
-.room-head p { margin: 0; font: 1.9rem var(--head); text-transform: uppercase; color: var(--brown); }
-.room-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 0; }
-.room-grid > div { padding: 0 24px; }
-.room-grid > div:first-child { padding-left: 0; }
-.room-grid > div + div { border-left: 1.5px solid var(--ink); }
+.room {
+  padding: 40px 0;
+  border-bottom: 3px solid var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 32px 48px;
+}
+/* images/empty-venue.jpg: Davy from behind, facing a hall full of tables */
+.room-photo {
+  flex: 1 1 420px;
+  min-width: 0;
+  width: 100%;
+  max-height: 640px;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: 50% 72%;
+  border: 3px solid var(--ink);
+}
+.room-body { flex: 999 1 520px; }
+.room-head { margin-bottom: 28px; }
+.room-head h2 { font-size: 4.5rem; line-height: .92; }
+.room-head p { margin: 6px 0 0; font: 2rem var(--head); text-transform: uppercase; color: var(--brown); }
+.room-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 0; border-top: 3px solid var(--ink); padding-top: 24px; }
+.room-grid > div { padding-right: 24px; }
+.room-grid > div:nth-child(even) { border-left: 1.5px solid var(--ink); padding-left: 24px; }
 .room-grid h3 { font-size: 1.9rem; margin-bottom: 6px; }
 .room-grid p { margin: 0; }
 
@@ -408,10 +426,9 @@ footer a { font-weight: 800; }
     -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
     mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
   }
-  .room-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .room-grid > div, .room-grid > div:first-child { padding: 0 16px 0 0; }
-  .room-grid > div + div { border-left: 0; }
-  .room-grid > div:nth-child(even) { border-left: 1.5px solid var(--ink); padding-left: 16px; }
+  .room-photo { max-height: 520px; }
+  .room-grid > div { padding-right: 16px; }
+  .room-grid > div:nth-child(even) { padding-left: 16px; }
   .about, .listen { padding-left: 0; padding-right: 0; border-left: 0; }
   .listen { border-top: 1.5px solid var(--ink); }
 }
