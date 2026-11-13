@@ -108,7 +108,9 @@ function renderNext(gig, today) {
   box.append(when, el("p", "nc-what", gig.title));
   if (gig.location) {
     const where = el("p", "nc-where");
-    where.append(mapLink(gig.location));
+    const link = mapLink(gig.location);
+    link.textContent = link.textContent.split(",")[0];  // just the place name; the map has the rest
+    where.append(link);
     box.append(where);
   }
   const more = el("button", "solid", "All upcoming gigs");
