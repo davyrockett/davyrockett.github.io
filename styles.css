@@ -434,7 +434,7 @@ footer a { font-weight: 800; }
 }
 
 @media (max-width: 560px) {
-  .wrap { padding: 0 18px; }
+  .wrap { padding-left: 18px; padding-right: 18px; }
   .masthead { padding: 12px 0; }
   .brand img { height: 28px; }
   .masthead nav { width: 100%; justify-content: space-between; gap: 4px 10px; }
