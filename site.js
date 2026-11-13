@@ -136,6 +136,14 @@ function showGigs(open, scroll = true) {
   if (open && scroll) section.scrollIntoView({ behavior: "smooth" });
 }
 
+// Closing the gig list takes the visitor back to the next-show card, where it was opened.
+function closeGigs() {
+  if (document.getElementById("gigs").hidden) return;
+  showGigs(false);
+  document.getElementById("next-gig")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  document.getElementById("toggle-gigs")?.focus({ preventScroll: true });
+}
+
 function gigItem(g, today) {
   const p = parts(g.start);
   const li = el("li", "gig");
@@ -293,6 +301,14 @@ async function loadGigs() {
     e.preventDefault();
     showGigs(true);
   }));
+  // Ways to close it: the ✕ beside its heading, and the Esc key.
+  document.querySelectorAll("[data-close-gigs]").forEach(b => b.addEventListener("click", closeGigs));
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    // Esc closes the reel if it's open, otherwise the gig list.
+    if (!document.getElementById("reel").hidden) closeReel();
+    else closeGigs();
+  });
   if (location.hash === "#gigs") showGigs(true);
 }
 
@@ -356,28 +372,42 @@ function resetTrack(track) {
   track.querySelector(".t").textContent = "";
 }
 
-/* ---------- The reel (a pop-up; YouTube loads only when it is opened) ---------- */
+/* ---------- The reel (a strip that opens under the stage band; YouTube loads only then) ---------- */
+
+function closeReel() {
+  const strip = document.getElementById("reel");
+  if (strip.hidden) return;
+  document.getElementById("player").replaceChildren();  // takes the video away, so the sound stops
+  strip.hidden = true;
+  const btn = document.querySelector(".cta [data-reel]");
+  btn.setAttribute("aria-expanded", "false");
+  btn.scrollIntoView({ behavior: "smooth", block: "center" });
+  btn.focus({ preventScroll: true });
+}
 
 function setupReel() {
-  const dialog = document.getElementById("reel");
+  const strip = document.getElementById("reel");
   const player = document.getElementById("player");
+  const btn = document.querySelector(".cta [data-reel]");
+  btn.setAttribute("aria-controls", "reel");
+  btn.setAttribute("aria-expanded", "false");
   const open = e => {
     e.preventDefault();
     audio.pause();
-    const iframe = document.createElement("iframe");
-    iframe.src = `https://www.youtube-nocookie.com/embed/${player.dataset.id}?autoplay=1&rel=0`;
-    iframe.title = player.dataset.title;
-    iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
-    iframe.allowFullscreen = true;
-    player.replaceChildren(iframe);
-    dialog.showModal();
+    if (strip.hidden) {
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube-nocookie.com/embed/${player.dataset.id}?autoplay=1&rel=0`;
+      iframe.title = player.dataset.title;
+      iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+      iframe.allowFullscreen = true;
+      player.replaceChildren(iframe);
+      strip.hidden = false;
+      btn.setAttribute("aria-expanded", "true");
+    }
+    strip.scrollIntoView({ behavior: "smooth", block: "center" });
   };
   document.querySelectorAll("[data-reel]").forEach(a => a.addEventListener("click", open));
-  dialog.querySelector(".reel-close").addEventListener("click", () => dialog.close());
-  // A tap outside the video closes it too.
-  dialog.addEventListener("click", e => { if (e.target === dialog) dialog.close(); });
-  // Closing takes the video away, so the sound stops.
-  dialog.addEventListener("close", () => player.replaceChildren());
+  strip.querySelector(".reel-close").addEventListener("click", closeReel);
 }
 
 setupViewSwitch();

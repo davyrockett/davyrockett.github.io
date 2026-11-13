@@ -79,14 +79,21 @@ changes on its own).
   bottom) with "HI, I'M DAVY." (DAVY. orange), subtitle "Songs you know, played like new." (David's choices), intro,
   Check a date / Watch the reel buttons and the cream **next-show card** (site.js; with no gig it says "NEW DATES SOON"
   with Add to my calendar + Book a date); the hidden upcoming-gigs section; **no WATCH section** (David removed it 2026-11-12 so visitors reach the room section sooner; he also rejected a
-  "Played at" venue list): "Watch the reel" and the Watch menu link open the reel in a pop-up (`<dialog id="reel">`,
-  YouTube loads only then, closes with Close or a tap outside); "Music that fills the room…
+  "Played at" venue list): "Watch the reel" and the Watch menu link open the reel strip (see below); "Music that fills the room…
   without taking it over" (photo `images/empty-venue.jpg`, David from behind facing a hall of tables, sent 2026-11-12; then restaurants, breweries & bars, wineries, private parties; under 700px the headline sits over the photo's ceiling and the photo fades up out of the paper with no frame, 700-1035px photo and words stay side by side: David approved 2026-11-12); About Davy + Listen (4 songs in
   `music/`); booking (email only); footer (YouTube only). David dropped Facebook, the press-kit link and the Amazon
   album links (2026-11-12); he wants Spotify / Apple Music album links instead once he sends them (couldn't find them
   online). About photo is `images/davy-smile.jpg` (flat cap, laughing at the mic; David sent it 2026-11-12 "to use if you see fit"); he had earlier said he wants his giraffe-hat photo there once he sends it.
   "Add to my calendar" subscribes to the whole gig calendar (Apple devices: webcal, others: Google). Bio stays in third
   person even though the headline is first person (David, 2026-11-12).
+- **Top band and reel, David's choices 2026-11-12:** the band holds headline, intro, the next-show card, then
+  "▶ Watch the reel" as its last thing (he removed the "Check a date" button there; "Book a date" in the menu and the
+  About link still go to booking). The reel is **not a pop-up** (he asked for something classier): it opens a strip
+  (`<section id="reel">`) right under the band in the same stage colour, video + a plain ✕ + "More videos on YouTube";
+  ✕ or Esc closes it. YouTube loads only when it opens.
+- **Closing the gig list:** just an ✕ right beside the "Upcoming gigs" heading (he rejected labelled Close buttons),
+  plus Esc; closing scrolls back to the next-show card. The About photo is shown black and white by a CSS filter
+  (David loves it).
 - **Upcoming gigs stay hidden** until a visitor clicks "All upcoming gigs" in the next-show card (or
   the "gigs" menu link / a `#gigs` link). The section then offers **List** and **Calendar** views (month
   grid limited to this month through the last gig's month). David asked (2026-10-17) for **no past gigs**
