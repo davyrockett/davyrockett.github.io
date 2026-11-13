@@ -426,11 +426,35 @@ footer a { font-weight: 800; }
     -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
     mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%);
   }
-  .room-photo { max-height: 520px; }
   .room-grid > div { padding-right: 16px; }
   .room-grid > div:nth-child(even) { padding-left: 16px; }
   .about, .listen { padding-left: 0; padding-right: 0; border-left: 0; }
   .listen { border-top: 1.5px solid var(--ink); }
+}
+
+/* Room section, in-between widths: photo and words stay side by side */
+@media (min-width: 700px) and (max-width: 1035px) {
+  .room { flex-wrap: nowrap; gap: 32px; }
+  .room-photo { flex: 0 0 38%; }
+  .room-body { flex: 1 1 0; min-width: 0; }
+  .room-head h2 { font-size: 3.4rem; }
+  .room-head p { font-size: 1.6rem; }
+}
+/* Room section on phones: the hall rises out of the paper and the headline sits in its ceiling */
+@media (max-width: 699px) {
+  .room { position: relative; flex-direction: column; align-items: stretch; gap: 20px; padding-top: 32px; }
+  .room-photo {
+    flex: none;
+    max-height: none;
+    object-position: 50% 30%;
+    border: 0;
+    border-bottom: 3px solid var(--ink);
+    -webkit-mask-image: linear-gradient(180deg, transparent 5%, rgba(0,0,0,.3) 28%, #000 52%);
+    mask-image: linear-gradient(180deg, transparent 5%, rgba(0,0,0,.3) 28%, #000 52%);
+  }
+  .room-head { position: absolute; top: 32px; left: 0; right: 0; margin: 0; }
+  .room-body { flex: none; }
+  .room-grid { border-top: 0; padding-top: 0; }
 }
 
 @media (max-width: 560px) {

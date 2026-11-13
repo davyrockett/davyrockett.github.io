@@ -80,7 +80,7 @@ changes on its own).
   Check a date / Watch the reel buttons and the cream **next-show card** (site.js; with no gig it says "NEW DATES SOON"
   with Add to my calendar + Book a date); the hidden upcoming-gigs section; WATCH (big player + list of six, the reel
   first; YouTube loads only when played; Watch the reel scrolls down and starts it); "Music that fills the room…
-  without taking it over" (photo `images/empty-venue.jpg`, David from behind facing a hall of tables, sent 2026-11-12; then restaurants, breweries & bars, wineries, private parties); About Davy + Listen (4 songs in
+  without taking it over" (photo `images/empty-venue.jpg`, David from behind facing a hall of tables, sent 2026-11-12; then restaurants, breweries & bars, wineries, private parties; under 700px the headline sits over the photo's ceiling and the photo fades up out of the paper with no frame, 700-1035px photo and words stay side by side: David approved 2026-11-12); About Davy + Listen (4 songs in
   `music/`); booking (email only); footer (YouTube only). David dropped Facebook, the press-kit link and the Amazon
   album links (2026-11-12); he wants Spotify / Apple Music album links instead once he sends them (couldn't find them
   online). About photo is `images/live.jpg` for now: **David wants his giraffe-hat photo there** once he sends it.
