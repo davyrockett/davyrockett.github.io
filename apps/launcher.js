@@ -15,6 +15,7 @@ const APPS = [
   ['rundown', 'Rundown'], ['first-frets', 'First Frets'], ['page-fright', 'Page Fright'], ['lip-service', 'Lip Service'],
   ['jam-session', 'Jam Session'], ['memory-lane', 'Memory Lane'], ['song-party', 'Song Party'], ['session-notes', 'Session Notes'], ['sos-band-editor', 'SOS Band Editor'],
   ['sos-band', 'SOS Band'], ['ge150-presets', 'GE150 Presets'], ['health-log', 'Health Log'], ['z4-log', 'Z4 Log'],
+  ['call-time', 'Call Time'],
 ];
 
 // Where each syncing app keeps its key (and which data repo it uses). Values are stored exactly as each
@@ -146,7 +147,7 @@ $('offline-btn').addEventListener('click', async () => {
 const CACHE_PREFIX = {
   rundown: 'rundown-v', 'first-frets': 'firstfrets-v', 'page-fright': 'pagefright-v', 'lip-service': 'lipservice-v',
   'jam-session': 'jamsession-v', 'memory-lane': 'memory-lane-v', 'song-party': 'song-party-v', 'session-notes': 'sessionnotes-v', 'sos-band-editor': 'sos-band-editor-v',
-  'sos-band': 'sos-band-v', 'ge150-presets': 'presets-v', 'health-log': 'healthlog-v', 'z4-log': 'z4log-v',
+  'sos-band': 'sos-band-v', 'ge150-presets': 'presets-v', 'health-log': 'healthlog-v', 'z4-log': 'z4log-v', 'call-time': 'calltime-v',
 };
 
 // Version numbers saved on this device for one app (oldest first). With an update waiting there are two.

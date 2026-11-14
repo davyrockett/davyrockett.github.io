@@ -2,9 +2,9 @@
 // Each app keeps its own offline copy (its own sw.js); this one only covers the launcher and the icons.
 // Uses the internet when it's there (so the page and its script always match after an update) and the
 // saved copy when it isn't.
-const CACHE = 'davyrockett-apps-v25';
+const CACHE = 'davyrockett-apps-v26';
 const APPS = ['rundown', 'first-frets', 'page-fright', 'lip-service', 'jam-session', 'memory-lane', 'song-party', 'session-notes',
-  'sos-band-editor', 'sos-band', 'ge150-presets', 'health-log', 'z4-log'];
+  'sos-band-editor', 'sos-band', 'ge150-presets', 'health-log', 'z4-log', 'call-time'];
 const ASSETS = [
   './',
   './launcher.js',
