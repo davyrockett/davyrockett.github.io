@@ -1,7 +1,7 @@
 /* tv.js: the TV page (www.davyrockett.com/tv/). Shows whatever app David has open on his iPad while 📺 TV is on.
    The iPad's mirror.js sends a copy of its page; this draws it in a frame and, on each change, updates only
    what changed (so animations keep running and nothing flashes). Memory Lane and Song Party open as
-   themselves, in their own TV mode. The resting screen ("Davy Rockett") shows when nothing is being shown.
+   themselves, in their own TV mode. The resting screen ("Hi, I’m David") shows when nothing is being shown.
    Old-style JavaScript on purpose: smart-TV browsers. */
 (function () {
   'use strict';
