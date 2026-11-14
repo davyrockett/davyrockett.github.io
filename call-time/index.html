@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Call Time</title>
+<meta name="description" content="Works out when you need to start getting ready, and counts down your free time until then.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png?v=1">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Call Time">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F1F0EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151310" media="(prefers-color-scheme: dark)">
+<script src="move.js" data-keep="ct."></script>
+<script src="suite.js" defer></script>
+<script src="share.js" defer></script>
+<script>
+// Light unless changed in Settings. Set before the page draws so it never flashes dark first.
+(function(){var t='light';try{var v=localStorage.getItem('ct.theme');if(v)t=JSON.parse(v);}catch(e){}if(t!=='auto')document.documentElement.setAttribute('data-theme',t);})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="26" fill="none" stroke="var(--line)" stroke-width="7"/>
+        <path d="M32 6 A26 26 0 1 1 9.5 19" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round"/>
+        <path d="M32 32 V17 M32 32 L42 38" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1>Call Time</h1>
+        <p class="tagline">Your free time, counted down</p>
+      </div>
+    </div>
+    <button type="button" class="btn icon" id="settings-open" aria-label="Settings" title="Settings">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6a.5.5 0 0 0 .1-.6l-2-3.5a.5.5 0 0 0-.6-.2l-2.5 1a7.4 7.4 0 0 0-1.7-1l-.4-2.6a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 0-.5.4l-.4 2.7a7.6 7.6 0 0 0-1.7 1l-2.5-1a.5.5 0 0 0-.6.2l-2 3.5a.5.5 0 0 0 .1.6L4.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6a.5.5 0 0 0-.1.6l2 3.5c.1.2.4.3.6.2l2.5-1c.5.4 1.1.7 1.7 1l.4 2.6c0 .3.2.5.5.5h4c.3 0 .5-.2.5-.4l.4-2.7c.6-.3 1.2-.6 1.7-1l2.5 1c.2.1.5 0 .6-.2l2-3.5a.5.5 0 0 0-.1-.6zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <!-- The next plan: free time left, then its timeline. -->
+    <section class="hero card" id="hero" aria-live="polite">
+      <p class="hero-kicker" id="hero-kicker"></p>
+      <p class="hero-big" id="hero-big"></p>
+      <p class="hero-small" id="hero-small"></p>
+      <p class="tl-head" id="tl-head"></p>
+      <ol class="timeline" id="timeline"></ol>
+      <div class="hero-actions" id="hero-actions">
+        <button type="button" class="btn primary" id="cal-btn">Add to calendar</button>
+        <button type="button" class="btn" id="edit-btn">Edit</button>
+      </div>
+      <p class="cap cal-note" id="cal-note"></p>
+    </section>
+
+    <section class="later" id="later-wrap">
+      <h2>Coming up</h2>
+      <ul class="later-list" id="later"></ul>
+    </section>
+
+    <button type="button" class="btn block add" id="add-btn">+ Add a plan</button>
+  </main>
+</div>
+
+<!-- Add / edit a plan -->
+<div class="tmodal" id="plan-sheet" role="dialog" aria-modal="true" aria-labelledby="plan-title" hidden>
+  <form class="tmodal-card" id="plan-form" autocomplete="off">
+    <div class="sheet-head">
+      <h2 id="plan-title">New plan</h2>
+      <button type="button" class="btn icon x" data-close aria-label="Close" title="Close"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+
+    <label class="field"><span>Where you need to be</span>
+      <input type="text" name="what" placeholder="e.g. Idlewild" maxlength="80" required></label>
+
+    <div class="two">
+      <label class="field"><span>Day</span><input type="date" name="day" required></label>
+      <label class="field"><span>Be there at</span><input type="time" name="time" required></label>
+    </div>
+
+    <div class="field"><span>Travel time</span>
+      <div class="dur">
+        <select name="th" aria-label="Travel hours"></select><span>h</span>
+        <select name="tm" aria-label="Travel minutes"></select><span>m</span>
+      </div>
+    </div>
+
+    <div class="field"><span>Getting ready</span>
+      <p class="cap">Tap your routines to add them. Change or add routines in Settings.</p>
+      <div class="chips" id="routine-chips"></div>
+      <ul class="steps" id="steps"></ul>
+    </div>
+
+    <p class="summary" id="plan-summary"></p>
+
+    <div class="sheet-actions">
+      <button type="button" class="btn danger" id="plan-delete">Delete</button>
+      <span class="grow"></span>
+      <button type="button" class="btn" data-close>Cancel</button>
+      <button type="submit" class="btn primary">Save</button>
+    </div>
+  </form>
+</div>
+
+<!-- Settings -->
+<div class="tmodal" id="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+  <div class="tmodal-card">
+    <div class="sheet-head">
+      <h2 id="settings-title">Settings</h2>
+      <button type="button" class="btn icon x" data-close aria-label="Close" title="Close"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="settings">
+      <div class="set-block">
+        <b>Routines</b>
+        <p class="cap">Things you do to get ready, and how long each takes.</p>
+        <ul class="routines" id="routines"></ul>
+        <button type="button" class="btn" id="routine-add">+ Add a routine</button>
+      </div>
+      <div class="set-row"><div><b>Calendar heads-up</b><p class="cap">An extra alert this long before your free time ends.</p></div>
+        <div class="seg" data-key="headsup" role="group" aria-label="Calendar heads-up">
+          <button type="button" class="btn" data-v="0">Off</button><button type="button" class="btn" data-v="5">5 m</button><button type="button" class="btn" data-v="10">10 m</button><button type="button" class="btn" data-v="15">15 m</button>
+        </div></div>
+      <div class="set-row"><div><b>Appearance</b><p class="cap">Light unless you change it. Auto follows your device's light or dark setting.</p></div>
+        <div class="seg" data-key="theme" role="group" aria-label="Appearance">
+          <button type="button" class="btn" data-v="light">Light</button><button type="button" class="btn" data-v="dark">Dark</button><button type="button" class="btn" data-v="auto">Auto</button>
+        </div></div>
+      <div class="set-row" data-share><div><b>Share this app</b><p class="cap" data-share-link></p></div>
+        <div class="btns"><button type="button" class="btn" data-share-copy>Copy link</button><button type="button" class="btn" data-share-send hidden>Share…</button></div></div>
+      <div class="set-row"><div><b>App version</b><p class="cap" id="ver-line"></p></div><button type="button" class="btn" id="set-update">Check for updates</button></div>
+      <p class="cap">Your plans and settings are saved on this device only.</p>
+    </div>
+  </div>
+</div>
+
+<div class="update" id="update-banner" role="status" hidden><span>A new version is ready.</span><button type="button" class="btn primary" id="update-btn">Update</button></div>
+
+<script>
+// The version shown in Settings. tools/bump.sh keeps this in step with VERSION in sw.js.
+window.APP_VERSION = 'v1';
+</script>
+<script src="app.js"></script>
+</body>
+</html>
