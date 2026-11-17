@@ -83,3 +83,15 @@
 .rj-ticks .t-chk svg { width: 11px; height: 11px; }
 .rj-more { border: 0; background: none; padding: 6px 0 0; color: var(--orange-dark); font: 700 .8rem var(--body); cursor: pointer; }
 .rj-row.done .rj-head > span:first-child { color: var(--grey); }
+
+/* Call Time card: free time left, big, with when it ends and where David is due beside it (2026-11-17). */
+.ct-card { display: block; color: var(--ink); text-decoration: none; -webkit-tap-highlight-color: transparent; }
+.ct-card:active { background: var(--bg); }
+.ct-open { margin-left: auto; font: 700 .8rem var(--body); color: var(--orange-dark); text-transform: none; }
+.ct-row { display: flex; align-items: center; gap: 14px; }
+.ct-big { flex: none; font: 2.1rem/1 var(--head); color: var(--orange-dark); white-space: nowrap; }
+.ct-big small { font-size: 1rem; color: var(--grey); margin-left: 1px; }
+.ct-big.words { flex: 0 1 auto; min-width: 0; font-size: 1.35rem; line-height: 1.15; white-space: normal; color: var(--ink); }
+.ct-lines { min-width: 0; font-size: .88rem; line-height: 1.35; }
+.ct-lines div:first-child { font-weight: 700; }
+.ct-lines div:last-child { color: var(--grey); }

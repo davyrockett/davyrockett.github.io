@@ -437,6 +437,76 @@ function renderPractice() {
   })));
 }
 
+/* Call Time: free time left before the next plan (2026-11-17, David: "a Call Time widget … that shows my free time
+   left"). Reads Call Time's own saved plans on this device (localStorage 'ct.plans', same site so same storage) and
+   never changes them. The sums match call-time/app.js: be there − travel = leave; leave − getting-ready steps = free until. */
+
+const CT_MIN = 60000;
+function ctArrive(p) {
+  const [y, mo, d] = p.day.split('-').map(Number), [h, mi] = p.time.split(':').map(Number);
+  return new Date(y, mo - 1, d, h, mi);
+}
+function ctTimes(p) {
+  const arrive = ctArrive(p);
+  const leave = new Date(arrive - (Number(p.travel) || 0) * CT_MIN);
+  const steps = [];
+  let t = leave;
+  for (const s of [...(p.steps || [])].reverse()) {
+    const start = new Date(t - s.min * CT_MIN);
+    steps.unshift({ name: s.name, start, end: t });
+    t = start;
+  }
+  return { arrive, leave, free: t, steps };
+}
+const ctClock = (d) => `${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')} ${d.getHours() < 12 ? 'am' : 'pm'}`;
+// "10:45 am", "tomorrow 10:45 am", "Friday 10:45 am", "Mon, Nov 24, 10:45 am".
+function ctWhen(d, now) {
+  const days = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
+  const day = days === 0 ? '' : days === 1 ? 'tomorrow ' : days < 7 ? `${d.toLocaleDateString('en-US', { weekday: 'long' })} `
+    : `${d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}, `;
+  return day + ctClock(d);
+}
+// "45m", "1h 40m", "2 days 3h"; with small=true the units are drawn smaller.
+function ctSpan(ms, small) {
+  const m = Math.max(0, Math.ceil(ms / CT_MIN));
+  const u = (s) => small ? `<small>${s}</small>` : s;
+  if (m >= 1440) { const d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60); return `${d}${u(d === 1 ? ' day' : ' days')}${h ? ` ${h}${u('h')}` : ''}`; }
+  if (m >= 60) { const h = Math.floor(m / 60), r = m % 60; return `${h}${u('h')}${r ? ` ${r}${u('m')}` : ''}`; }
+  return `${m}${u('m')}`;
+}
+function renderCallTime() {
+  const now = new Date();
+  const plans = lsJSON('ct.plans', []).filter((p) => p && p.day && p.time && ctArrive(p) > now)
+    .sort((a, b) => ctArrive(a) - ctArrive(b));
+  const p = plans[0];
+  const big = $('ct-big'), line1 = $('ct-line1'), line2 = $('ct-line2');
+  if (!p) {
+    big.className = 'ct-big words';
+    big.textContent = 'All free';
+    line1.textContent = 'Nothing planned';
+    line2.textContent = 'Add a plan in Call Time';
+    return;
+  }
+  const t = ctTimes(p);
+  big.className = now < t.free ? 'ct-big' : 'ct-big words';
+  if (now < t.free) {
+    big.innerHTML = ctSpan(t.free - now, true);
+    line1.textContent = `Free until ${ctWhen(t.free, now)}`;
+    line2.textContent = `${p.what} · be there ${ctWhen(t.arrive, now)}`;
+  } else if (now < t.leave) {
+    const s = t.steps.find((x) => now < x.end);
+    big.textContent = s.name;
+    line1.textContent = `Now · ${ctSpan(s.end - now)} left`;
+    line2.textContent = `Leave at ${ctClock(t.leave)} for ${p.what}`;
+  } else {
+    big.textContent = now - t.leave < 10 * CT_MIN ? 'Time to leave' : 'On your way';
+    line1.textContent = p.what;
+    line2.textContent = `Be there at ${ctClock(t.arrive)}`;
+  }
+}
+// Call Time open in another tab: show its changes straight away.
+addEventListener('storage', (e) => { if (e.key === 'ct.plans') renderCallTime(); });
+
 /* Gigs: the next Davy Rockett gig (the website's gigs.json, from the Google Calendar) and the next SOS
    Band show (sos-band-data, public). Gig times are Pacific wall-clock times, shown as written. */
 
@@ -621,7 +691,7 @@ window.addEventListener('resize', () => fitDate());
 if (document.fonts) document.fonts.ready.then(() => fitDate());
 function everyMinute() {
   if (todayISO() !== shownDay) renderToday();
-  else { renderClock(); renderData(lsJSON(DATA_KEY, null)); }
+  else { renderClock(); renderCallTime(); renderData(lsJSON(DATA_KEY, null)); }
   setTimeout(everyMinute, 60000 - (Date.now() % 60000) + 50);
 }
 
@@ -1025,6 +1095,7 @@ function renderToday() {
   shownDay = todayISO();
   renderClock();
   renderPractice();
+  renderCallTime();
   renderGigs(lsJSON(SAVED_KEY, {}).gigs);
   loadGigs();
   loadZ4();

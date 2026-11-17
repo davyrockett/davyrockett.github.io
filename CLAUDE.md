@@ -116,7 +116,12 @@ changes on its own).
   the icons (never make the icons smaller, no badges on icons): **practice first**, a small 5-day San Diego weather
   forecast, next gigs (Davy Rockett from `gigs.json` + next SOS show), Z4 to-dos, autocross (date, title, weekday ·
   track · town), plus The Crossing and RJ sessions, which stay hidden until rundown-data has them. The calendar
-  card and the Z4 to-dos card are commented out for now (David). Cards read the public `davyrockett/rundown-data` (details in the rundown repo's
+  card and the Z4 to-dos card are commented out for now (David).
+  **Call Time card** (2026-11-17, David asked for "a Call Time widget … that shows my free time left"), right after
+  practice: free time left (big), "Free until …" and the plan beside it; while getting ready it shows the current step,
+  then "Time to leave". It reads Call Time's own `ct.plans` from this device's storage (same site, so the same storage
+  as the app) and never writes to it; the sums are copied from call-time/app.js (`ctTimes` in launcher.js), so if Call
+  Time's maths change, change both. The whole card opens Call Time. Cards read the public `davyrockett/rundown-data` (details in the rundown repo's
   CLAUDE.md). Practice / Z4 ticks are only on this screen and Rundown (same storage keys); they never change or
   read anything in Lip Service, Page Fright or Z4 Log. If Rundown changes later, this screen doesn't follow
   automatically: copy the change over only if David asks.
