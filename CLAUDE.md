@@ -121,7 +121,9 @@ changes on its own).
   practice: free time left (big), "Free until …" and the plan beside it; while getting ready it shows the current step,
   then "Time to leave". It reads Call Time's own `ct.plans` from this device's storage (same site, so the same storage
   as the app) and never writes to it; the sums are copied from call-time/app.js (`ctTimes` in launcher.js), so if Call
-  Time's maths change, change both. The whole card opens Call Time. Cards read the public `davyrockett/rundown-data` (details in the rundown repo's
+  Time's maths change, change both. The whole card opens Call Time. The same also shows as one orange line under the date in the header (David, same day: on
+  a phone the card is below the icons), longest wording that fits ("3h 15m free · until 5:39 pm" → "3h 15m free"),
+  hidden when nothing is planned; it opens Call Time too. Cards read the public `davyrockett/rundown-data` (details in the rundown repo's
   CLAUDE.md). Practice / Z4 ticks are only on this screen and Rundown (same storage keys); they never change or
   read anything in Lip Service, Page Fright or Z4 Log. If Rundown changes later, this screen doesn't follow
   automatically: copy the change over only if David asks.

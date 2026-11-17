@@ -485,6 +485,7 @@ function renderCallTime() {
     big.textContent = 'All free';
     line1.textContent = 'Nothing planned';
     line2.textContent = 'Add a plan in Call Time';
+    fitCtNow([]);
     return;
   }
   const t = ctTimes(p);
@@ -493,17 +494,34 @@ function renderCallTime() {
     big.innerHTML = ctSpan(t.free - now, true);
     line1.textContent = `Free until ${ctWhen(t.free, now)}`;
     line2.textContent = `${p.what} · be there ${ctWhen(t.arrive, now)}`;
+    fitCtNow([`${ctSpan(t.free - now)} free · until ${ctWhen(t.free, now)}`, `${ctSpan(t.free - now)} free`]);
   } else if (now < t.leave) {
     const s = t.steps.find((x) => now < x.end);
     big.textContent = s.name;
     line1.textContent = `Now · ${ctSpan(s.end - now)} left`;
     line2.textContent = `Leave at ${ctClock(t.leave)} for ${p.what}`;
+    fitCtNow([`Now: ${s.name} · ${ctSpan(s.end - now)} left`, `${s.name} · ${ctSpan(s.end - now)} left`, s.name]);
   } else {
     big.textContent = now - t.leave < 10 * CT_MIN ? 'Time to leave' : 'On your way';
     line1.textContent = p.what;
     line2.textContent = `Be there at ${ctClock(t.arrive)}`;
+    fitCtNow([`${big.textContent} for ${p.what}`, big.textContent]);
   }
 }
+/* The same, one line under the date (David, 2026-11-17: on a phone the card is below the icons). Hidden when nothing
+   is planned. Like the date it stays on one line: the longest wording that fits. */
+let ctNowTexts = [];
+function fitCtNow(texts = ctNowTexts) {
+  ctNowTexts = texts;
+  const box = $('ct-now');
+  box.hidden = !texts.length;
+  for (const text of texts) {
+    box.textContent = text;
+    if (box.scrollWidth <= box.clientWidth) break;
+  }
+}
+window.addEventListener('resize', () => fitCtNow());
+if (document.fonts) document.fonts.ready.then(() => fitCtNow());
 // Call Time open in another tab: show its changes straight away.
 addEventListener('storage', (e) => { if (e.key === 'ct.plans') renderCallTime(); });
 
