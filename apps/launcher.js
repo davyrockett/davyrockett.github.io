@@ -30,6 +30,7 @@ const SYNCED = [
   { name: 'SOS Band Editor', repo: 'sos-band-data', token: 'sosed.sync-token', last: 'sosed.sync-last' },
   { name: 'GE150 Presets', repo: 'ge150-presets-data', token: 'ge150.sync-token', last: 'ge150.sync-last' },
   { name: 'Rundown', repo: 'rundown-data', token: 'rundown.sync-token', last: 'rundown.sync-last' },
+  { name: 'Call Time', repo: 'call-time-data', token: 'ct.sync-token', last: 'ct.sync-last' },
 ];
 
 const $ = (id) => document.getElementById(id);
